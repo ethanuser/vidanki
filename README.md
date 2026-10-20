@@ -2,6 +2,45 @@
 
 Watch B&B and Sketchy videos in dark mode, then do their high-yield Anki cards before the next video.
 
+![VidAnki in dark mode: the player, progress toward the goal date, and the study queue](docs/images/overview-dark.png)
+
+<sub>Screenshots use a made-up demo slide and sample progress, not real course videos.</sub>
+
+## Features
+
+**Smart dark mode for videos.** White slides turn near-black and black ink turns light, while colored ink keeps its color, like Dark Reader for video. Highlighter fills darken so the text on them stays readable. It follows your system theme, and you can switch to Invert, Dim or Original.
+
+<table>
+<tr><td><img src="docs/images/player-original.png" alt="Original video frame"></td><td><img src="docs/images/player-smart-dark.png" alt="Same frame in smart dark mode"></td></tr>
+<tr><td align="center">Original</td><td align="center">Smart dark</td></tr>
+</table>
+
+**Video → Anki → next video.** Near the end of a video VidAnki offers to mark it done. That renames the file with a leading `_`, unsuspends its high-yield AnKing cards, and puts the new ones in a filtered deck. The next video waits until you've studied them; you can always skip.
+
+<table>
+<tr><td><img src="docs/images/end-of-video.png" alt="End-of-video prompt"></td><td><img src="docs/images/anki-gate.png" alt="Anki gate showing new cards left"></td></tr>
+</table>
+
+**One queue for everything.** Sketchy Micro and Pharm videos sit next to the B&B video that covers the same topic, followed by ScholarRx brick questions and AMBOSS question sets. Opening a brick starts its timer, and you can edit or reset any timer.
+
+![A ScholarRx brick with its timer](docs/images/brick-timer.png)
+
+**Time estimates that learn.** VidAnki counts videos, new cards, the reviews they'll create, bricks and AMBOSS questions, and tells you the hours per day you need to hit your goal date. It starts from defaults and adjusts to how long you actually take. You can change the goal date, override any estimate, and choose which card tiers get unsuspended.
+
+<table>
+<tr><td width="34%"><img src="docs/images/time-breakdown.png" alt="Time breakdown by type of work"></td><td><img src="docs/images/settings.png" alt="Settings: goal date, estimates and card tiers"></td></tr>
+</table>
+
+**Keyboard first.** ⌘K searches every command and jumps to any item; `?` lists the shortcuts.
+
+<table>
+<tr><td><img src="docs/images/command-palette.png" alt="Command palette"></td><td><img src="docs/images/shortcuts.png" alt="Keyboard shortcuts"></td></tr>
+</table>
+
+**Light mode too.** The interface follows your system theme. In light mode, videos play as they are.
+
+![VidAnki in light mode](docs/images/overview-light.png)
+
 ## Setup
 
 1. Install [Anki](https://apps.ankiweb.net) with the [AnkiConnect](https://ankiweb.net/shared/info/2055492159) add-on and the AnKing Step 1 deck. VidAnki uses the deck's `#AK_Step1_v12::#B&B`, `#SketchyMicro`, `#SketchyPharm` and `#Low/HighYield` tags.

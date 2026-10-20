@@ -44,6 +44,11 @@ window.SmartDark = (function () {
       float C = length(lab.yz);
       float inv = mix(fg, bg, L);                  // neutral: flip lightness
       float keep = clamp(max(inv, L), 0.0, 0.86);  // colour: keep, but lift dark ink
+      // Very light colours (highlighter, pastel boxes) are backgrounds, not ink:
+      // darken them like white so the black text on them (now light) stays readable.
+      float fill = smoothstep(0.78, 0.9, L);
+      keep = mix(keep, max(inv, 0.26), fill);
+      lab.yz *= mix(1.0, 0.65, fill);              // less chroma so dark fills stay in gamut
       float w = smoothstep(0.035, 0.11, C);        // how "coloured" the pixel is
       lab.x = mix(inv, keep, w);
       gl_FragColor = vec4(toSrgb(clamp(fromOklab(lab), 0.0, 1.0)), 1.0);

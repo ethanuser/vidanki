@@ -182,7 +182,7 @@ main { display: grid; grid-template-columns: 1fr 360px; height: calc(100% - 58px
 .est-details summary { cursor: pointer; }
 .est-details table { width: 100%; margin-top: 6px; border-collapse: collapse; }
 .est-details td { padding: 3px 0; }
-.est-details td:last-child { text-align: right; color: var(--text); }
+.est-details td:last-child { text-align: right; color: var(--text); white-space: nowrap; padding-left: 12px; }
 
 /* modals */
 .modal { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; background: transparent; }
