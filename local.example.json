@@ -1,0 +1,8 @@
+{
+  "bases": {
+    "bnb": "~/Videos/Boards and Beyond",
+    "sketchy": "~/Videos/Sketchy"
+  },
+  "ankiConnectUrl": "http://127.0.0.1:8766",
+  "ankiProfileDir": "~/Library/Application Support/Anki2/User 1"
+}

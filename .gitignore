@@ -1,0 +1,11 @@
+# personal data and machine-specific settings
+data/
+local.json
+anki_addon/ankiconnect_config.backup.json
+.claude/
+
+# build output
+macapp/build/
+__pycache__/
+*.pyc
+.DS_Store
