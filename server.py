@@ -373,9 +373,12 @@ ANKI_ROW_MIN_SEC = 10 * 60  # below this, the queue's Anki row hides (stragglers
 def refresh_deck_now():
     """What's studyable in the VidAnki deck right now."""
     deck = f'"deck:{FILTERED_DECK}"'
+    # same three numbers Anki shows next to the deck (suspended/buried cards don't count)
+    avail = "-is:suspended -is:buried"
     cache["deckNow"] = {
-        "due": len(anki("findCards", query=f"{deck} is:due -is:new")),
-        "new": len(anki("findCards", query=f"{deck} is:new")),
+        "review": len(anki("findCards", query=f"{deck} is:review is:due -is:learn {avail}")),
+        "learn": len(anki("findCards", query=f"{deck} is:learn is:due {avail}")),
+        "new": len(anki("findCards", query=f"{deck} is:new {avail}")),
         "at": time.time(),
     }
 
@@ -641,8 +644,9 @@ def estimates(block):
 
 def anki_now(rates):
     d = cache.get("deckNow", {})
-    sec = d.get("due", 0) * rates["reviewSec"] + d.get("new", 0) * rates["cardSec"]
-    return {"due": d.get("due", 0), "new": d.get("new", 0), "sec": sec, "minSec": ANKI_ROW_MIN_SEC}
+    review, learn, new = d.get("review", 0), d.get("learn", 0), d.get("new", 0)
+    sec = (review + learn) * rates["reviewSec"] + new * rates["cardSec"]
+    return {"review": review, "learn": learn, "new": new, "sec": sec, "minSec": ANKI_ROW_MIN_SEC}
 
 
 def day_breakdown(block):

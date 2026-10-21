@@ -153,7 +153,8 @@ function renderQueue() {
   const a = S.stats.ankiNow;
   // Anki row: only when there's a real chunk of cards (or a video is waiting on them)
   if (S.anki.ok && (a.sec >= a.minSec || S.anki.gate)) {
-    const parts = [a.due && `${a.due} review${a.due === 1 ? "" : "s"}`, a.new && `${a.new} new`].filter(Boolean);
+    // same order and wording as Anki's deck list: new · learning · review
+    const parts = [a.new && `${a.new} new`, a.learn && `${a.learn} learning`, a.review && `${a.review} review`].filter(Boolean);
     html += `<div class="cluster today-anki"><div class="cluster-title"><span>Anki</span><span>${hrs(a.sec)}</span></div>
       <div class="qi today ${view === "anki" ? "current" : ""}" data-id="__anki" title="VidAnki deck: due reviews and new cards">
         <span class="chk"></span><span class="qt"><span class="tag anki">ANKI</span>${parts.join(" · ") || "Cards waiting"}</span>
@@ -620,12 +621,13 @@ function renderAnkiPanel() {
   const a = S.stats.ankiNow, r = S.stats.rates, g = S.anki.gate;
   $("ankiLabel").textContent = `In the ${S.anki.deck} deck`;
   const rows = [
-    ["Reviews due now", a.due, r.reviewSec],
-    ["New cards from finished videos", a.new, r.cardSec],
+    ["New", a.new, r.cardSec],
+    ["Learning", a.learn, r.reviewSec],
+    ["Review", a.review, r.reviewSec],
   ];
   $("ankiTable").innerHTML = `<thead><tr><th></th><th>Cards</th><th>Each</th><th>Time</th></tr></thead><tbody>` +
     rows.map(([k, n, sec]) => `<tr><td>${k}</td><td>${n}</td><td>${Math.round(sec)} s</td><td>${hrs(n * sec)}</td></tr>`).join("") +
-    `</tbody><tfoot><tr><td>Total</td><td>${a.due + a.new}</td><td></td><td>${hrs(a.sec)}</td></tr></tfoot>`;
+    `</tbody><tfoot><tr><td>Total</td><td>${a.new + a.learn + a.review}</td><td></td><td>${hrs(a.sec)}</td></tr></tfoot>`;
   $("ankiSub").innerHTML = [
     g ? `<b>${g.newLeft}</b> new from <b>${g.title}</b> left before the next video.` : "",
     "Learning cards return later today; small leftovers hide from the queue.",
