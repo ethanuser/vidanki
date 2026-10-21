@@ -366,12 +366,30 @@ def refresh_reviews_due(block):
         "n": n, "dueToday": due_today, "waitingNew": len(waiting), "through": goal_date(block), "at": time.time()}
 
 
+REVIEW_DECK = LOCAL.get("reviewDeck", "AnKing Step Deck")
+
+
 def rebuild_filtered_deck():
+    """VidAnki deck = new cards from finished videos + (optionally) reviews due today
+    in your AnKing deck, so everything can be studied from one place. Reviews done
+    here count as normal reviews (the deck reschedules)."""
+    parts = []
     open_cids = sorted({c for b in state["batches"] if not b.get("closed") for c in b.get("cids", [])})
-    if not open_cids:
+    if open_cids:
+        parts.append(f'(cid:{",".join(map(str, open_cids))} (is:new OR is:learn))')
+    if state["settings"].get("reviewsInDeck", True):
+        parts.append(f'("deck:{REVIEW_DECK}" is:due -is:new -is:suspended)')
+    state["deckBuiltDay"] = study_day()
+    if not parts:
+        anki("vidankiEmptyFilteredDeck", name=FILTERED_DECK)
         return 0
-    search = f'cid:{",".join(map(str, open_cids))} (is:new OR is:learn)'
-    res = anki("vidankiFilteredDeck", name=FILTERED_DECK, search=search)
+    try:
+        res = anki("vidankiFilteredDeck", name=FILTERED_DECK, search=" OR ".join(parts))
+    except AnkiError as e:
+        if "no cards" in str(e).lower() or "matched" in str(e).lower():  # nothing to study yet
+            anki("vidankiEmptyFilteredDeck", name=FILTERED_DECK)
+            return 0
+        raise
     return res["cards"]
 
 
@@ -657,6 +675,10 @@ def anki_worker():
                     for block in BLOCKS.values():
                         if block["id"] not in cache["cardCounts"]:
                             refresh_card_counts_from_anki(block)
+                    if state.get("deckBuiltDay") != study_day():  # new day: pull in today's reviews
+                        with lock:
+                            rebuild_filtered_deck()
+                            save_state()
                     missing_due = any(b not in cache.get("reviewsDue", {}) for b in BLOCKS)
                     if missing_due or time.time() - slow_at > 60:
                         slow_at = time.time()
@@ -796,6 +818,10 @@ def api_skip_gate(body):
     return {"ok": True}
 
 
+def api_rebuild_deck(_body):
+    return {"cards": rebuild_filtered_deck()}
+
+
 def api_open_anki(_body):
     try:
         anki("guiDeckOverview", name=FILTERED_DECK)
@@ -824,6 +850,9 @@ def api_settings(body):
                 pins[k] = float(v)
     if "tiers" in body:
         state["settings"]["tiers"] = [t for t in TIERS if t in body["tiers"]] or ["1"]
+    if "reviewsInDeck" in body:
+        state["settings"]["reviewsInDeck"] = bool(body["reviewsInDeck"])
+        state["deckBuiltDay"] = None  # the worker rebuilds the deck within a few seconds
     save_state()
     return state["settings"]
 
@@ -844,6 +873,7 @@ POST_ROUTES = {
     "/api/undone": api_undone,
     "/api/skip-gate": api_skip_gate,
     "/api/open-anki": api_open_anki,
+    "/api/rebuild-deck": api_rebuild_deck,
     "/api/settings": api_settings,
     "/api/refresh-counts": api_refresh_counts,
 }

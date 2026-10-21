@@ -614,6 +614,15 @@ function renderSettings() {
   });
   $("setTiers").innerHTML = Object.entries(TIER_LABELS).map(([t, label]) =>
     `<label class="check"><input type="checkbox" data-tier="${t}" ${S.stats.cards.tiers.includes(t) ? "checked" : ""}><span></span>Unsuspend ${label.toLowerCase()} cards</label>`).join("");
+  const rev = S.settings.reviewsInDeck !== false;
+  $("setTiers").insertAdjacentHTML("beforeend",
+    `<label class="check"><input type="checkbox" id="setReviewsInDeck" ${rev ? "checked" : ""}><span></span>Also put today's due AnKing reviews in the VidAnki deck</label>`);
+  $("setReviewsInDeck").onchange = async (e) => {
+    await api("/api/settings", { reviewsInDeck: e.target.checked });
+    await api("/api/rebuild-deck", {}).catch((err) => toast(err.message, true));
+    await load();
+    toast(e.target.checked ? "VidAnki deck now includes today's AnKing reviews" : "Reviews left in your AnKing deck");
+  };
   $("setTiers").querySelectorAll("[data-tier]").forEach((el) => (el.onchange = async () => {
     const tiers = [...$("setTiers").querySelectorAll("[data-tier]:checked")].map((x) => x.dataset.tier);
     await api("/api/settings", { tiers });
@@ -686,6 +695,9 @@ const COMMANDS = [
       await load();
     },
   })),
+  { group: "Anki", title: "Rebuild VidAnki deck (pull in reviews due now)", run: async () => {
+    try { const r = await api("/api/rebuild-deck", {}); toast(`VidAnki deck: ${r.cards} cards`); } catch (e) { toast(e.message, true); }
+  } },
   { group: "Anki", title: "Refresh card counts", run: async () => { await api("/api/refresh-counts", { block: blockId }); await load(); toast("Card counts refreshed"); } },
   { group: "App", title: "Toggle hide done", run: () => { $("hideDone").checked = !$("hideDone").checked; renderQueue(); } },
   { group: "App", title: "Settings: goal date & estimates", keys: [","], run: openSettings },
