@@ -61,22 +61,26 @@
     </div>
 
     <!-- brick / amboss task -->
-    <div id="task" class="panel" hidden>
-      <p id="taskInstr"></p>
-      <div class="row" id="brickRow" hidden>
+    <div id="task" class="panel task" hidden>
+      <div class="task-sec">
+        <div class="sec-label" id="taskKind">ScholarRx brick</div>
+        <p id="taskInstr"></p>
         <a id="brickLink" class="btn primary" target="_blank" rel="noopener">Open brick ↗</a>
+        <div id="ambossFields" class="fields" hidden>
+          <label>Questions done <input type="number" id="ambN" min="0" inputmode="numeric"></label>
+          <label>Correct <input type="number" id="ambC" min="0" inputmode="numeric"></label>
+          <a id="ambLink" class="btn primary" href="https://next.amboss.com/us/questions" target="_blank" rel="noopener">Open AMBOSS ↗</a>
+        </div>
       </div>
-      <div id="ambossFields" class="fields" hidden>
-        <label>Questions done <input type="number" id="ambN" min="0" inputmode="numeric"></label>
-        <label>Correct <input type="number" id="ambC" min="0" inputmode="numeric"></label>
-        <a id="ambLink" class="btn" href="https://next.amboss.com/us/questions" target="_blank" rel="noopener">Open AMBOSS ↗</a>
-      </div>
-      <div class="timer">
-        <span id="timerVal" title="Click to edit">0:00</span>
-        <input id="timerEdit" placeholder="m:ss or minutes" hidden>
-        <button id="timerBtn">Start timer</button>
-        <button id="timerEditBtn" class="ghost">Edit</button>
-        <button id="timerReset" class="ghost">Reset</button>
+      <div class="task-sec">
+        <div class="sec-label">Time spent</div>
+        <div class="timer">
+          <span id="timerVal" title="Click to edit">0:00</span>
+          <input id="timerEdit" placeholder="m:ss or minutes" hidden>
+          <button id="timerBtn">Start timer</button>
+          <button id="timerEditBtn">Edit</button>
+          <button id="timerReset">Reset</button>
+        </div>
       </div>
     </div>
 

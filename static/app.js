@@ -231,11 +231,12 @@ function showItem(id) {
 function setupTask(it) {
   const amb = it.type === "amboss";
   $("ambossFields").hidden = !amb;
-  $("brickRow").hidden = amb || !it.url;
+  $("brickLink").hidden = amb || !it.url;
   if (it.url) $("brickLink").href = it.url;
+  $("taskKind").textContent = amb ? "AMBOSS questions" : "ScholarRx brick";
   $("taskInstr").innerHTML = amb
-    ? `Do about <b>${it.questions}</b> AMBOSS questions on <b>${it.title}</b> (only topics you've covered so far). Log how many you did when you mark it done.`
-    : `ScholarRx brick: <b>${it.title}</b>. Do only the end-of-brick questions.`;
+    ? `Do about <b>${it.questions}</b> questions on these topics, only what you've covered so far. Log them below before marking done.`
+    : "Do only the end-of-brick questions.";
   if (timer.id !== it.id) {  // first time showing this item (polling re-renders must not wipe input)
     timer.running = false;
     timer.id = it.id;
@@ -607,11 +608,33 @@ $("undoneBtn").onclick = async () => {
     await load();
   } catch (e) { toast(e.message, true); }
 };
-$("nextBtn").onclick = goNext;
-function goPrev() {
-  const i = flat.findIndex((x) => x.id === curId);
-  if (i > 0) { view = "item"; showItem(flat[i - 1].id); renderQueue(); }
+$("nextBtn").onclick = () => step(1);
+// Prev/Next walk exactly what the queue shows: the Anki row (when shown), then
+// items, skipping done ones while "hide done" is on.
+function ankiRowShown() {
+  const a = S.stats.ankiNow;
+  return S.anki.ok && (a.sec >= a.minSec || !!S.anki.gate);
 }
+function queueOrder() {
+  const hide = $("hideDone").checked;
+  const ids = flat.filter((i) => !hide || !i.done || i.id === curId).map((i) => i.id);
+  return ankiRowShown() ? ["__anki", ...ids] : ids;
+}
+function step(dir) {
+  const order = queueOrder();
+  const at = order.indexOf(view === "anki" ? "__anki" : curId);
+  const id = order[at + dir];
+  if (id === undefined) { toast(dir > 0 ? "That's the end of the queue" : "That's the top of the queue"); return; }
+  if (id === "__anki") { showAnki(); return; }
+  const it = flat.find((x) => x.id === id);
+  if (dir > 0 && S.anki.gate && it.type === "video" && !it.done) {
+    gateFor = S.anki.gate.title; view = "gate"; renderGate(); return;
+  }
+  view = "item";
+  showItem(id);
+  renderQueue();
+}
+const goPrev = () => step(-1);
 $("prevBtn").onclick = goPrev;
 $("queueList").onclick = (e) => {
   const el = e.target.closest(".qi");
@@ -720,7 +743,7 @@ const COMMANDS = [
   { group: "Video", title: "Mute / unmute", keys: ["M"], when: isVideo, run: () => (video.muted = !video.muted) },
   ...RATES.map((r) => ({ group: "Speed", title: `Speed ${r}×`, when: isVideo, run: () => setRate(r) })),
   ...DARK_MODES.map((m) => ({ group: "Picture", title: `Picture: ${m.label}`, when: isVideo, run: () => setDark(m.value) })),
-  { group: "Items", title: "Next item", keys: ["N"], run: goNext },
+  { group: "Items", title: "Next item", keys: ["N"], run: () => step(1) },
   { group: "Items", title: "Previous item", keys: ["P"], run: goPrev },
   { group: "Items", title: "Mark done", when: () => view === "item" && cur() && !cur().done, run: markDone },
   { group: "Items", title: "Mark not done", when: () => view === "item" && cur() && cur().done, run: () => $("undoneBtn").onclick() },

@@ -258,3 +258,14 @@ input[type=date]::-webkit-calendar-picker-indicator { filter: var(--cal-filter, 
 .anki-table td { padding: 4px 18px 4px 0; }
 .anki-table td:nth-child(2) { text-align: right; font-weight: 600; }
 .anki-table td:nth-child(3) { color: var(--muted); }
+
+/* brick / AMBOSS panel: what to do on top, time spent below */
+.panel.task { padding: 0; max-width: 560px; }
+.task-sec { padding: 16px 20px; }
+.task-sec + .task-sec { border-top: 1px solid var(--line); }
+.sec-label { font-size: 11px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 600; margin-bottom: 6px; }
+#taskInstr { margin: 0 0 14px; }
+.task .fields { margin: 0; }
+.task .timer { margin: 0; gap: 8px; }
+.task #timerVal { font-size: 28px; line-height: 1; min-width: 96px; margin-right: 8px; }
+.task #timerEdit { margin-right: 8px; }
