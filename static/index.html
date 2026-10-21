@@ -93,6 +93,17 @@
       </div>
     </div>
 
+    <!-- today's anki (from the queue's Anki row) -->
+    <div id="ankiPanel" class="panel" hidden>
+      <p id="ankiText"></p>
+      <table class="anki-table" id="ankiTable"></table>
+      <p id="ankiSub" class="muted small"></p>
+      <div class="row">
+        <button class="primary" id="ankiOpen">Open Anki</button>
+        <button id="ankiRebuild" title="Pull in reviews that became due since the deck was built">Rebuild deck</button>
+      </div>
+    </div>
+
     <div id="actions" class="row actions">
       <button id="prevBtn" title="Previous item (p)">◂ Prev</button>
       <button class="primary" id="doneBtn">Mark done</button>

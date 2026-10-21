@@ -367,6 +367,17 @@ def refresh_reviews_due(block):
 
 
 REVIEW_DECK = LOCAL.get("reviewDeck", "AnKing Step Deck")
+ANKI_ROW_MIN_SEC = 10 * 60  # below this, the queue's Anki row hides (stragglers aren't worth a row)
+
+
+def refresh_deck_now():
+    """What's studyable in the VidAnki deck right now."""
+    deck = f'"deck:{FILTERED_DECK}"'
+    cache["deckNow"] = {
+        "due": len(anki("findCards", query=f"{deck} is:due -is:new")),
+        "new": len(anki("findCards", query=f"{deck} is:new")),
+        "at": time.time(),
+    }
 
 
 def rebuild_filtered_deck():
@@ -593,6 +604,7 @@ def estimates(block):
                   "freshReviews": fresh_reviews, "tiers": tiers,
                   "dueToday": due_today, "waitingNew": waiting_new},
         "todayAnkiSec": today_anki,
+        "ankiNow": anki_now(rates),
         "openBatchNew": open_new,
         "bnb": {"doneSec": bnb_done, "totalSec": bnb_total,
                 "done": sum(1 for it in bnb if is_done(block, it)), "count": len(bnb)},
@@ -608,6 +620,12 @@ def estimates(block):
         "days": day_totals,
         "cardCountsSource": cache.get("cardCountsSource"),
     }
+
+
+def anki_now(rates):
+    d = cache.get("deckNow", {})
+    sec = d.get("due", 0) * rates["reviewSec"] + d.get("new", 0) * rates["cardSec"]
+    return {"due": d.get("due", 0), "new": d.get("new", 0), "sec": sec, "minSec": ANKI_ROW_MIN_SEC}
 
 
 def day_breakdown(block):
@@ -672,6 +690,7 @@ def anki_worker():
                         with lock:
                             process_pending_batches(block)
                     refresh_batches()
+                    refresh_deck_now()
                     for block in BLOCKS.values():
                         if block["id"] not in cache["cardCounts"]:
                             refresh_card_counts_from_anki(block)
@@ -819,7 +838,10 @@ def api_skip_gate(body):
 
 
 def api_rebuild_deck(_body):
-    return {"cards": rebuild_filtered_deck()}
+    cards = rebuild_filtered_deck()
+    save_state()
+    refresh_deck_now()
+    return {"cards": cards}
 
 
 def api_open_anki(_body):

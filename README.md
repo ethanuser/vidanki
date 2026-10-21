@@ -79,7 +79,7 @@ Then open http://localhost:8770. Keep Anki open: it's needed to unsuspend cards 
 
 If Anki is closed, steps 2 and 3 wait and run as soon as Anki is open.
 
-The VidAnki deck also pulls in the reviews due today from your AnKing deck, so you can study everything from one deck. Reviews done there count as normal reviews. The deck is rebuilt each study day (after 4 am) and whenever you mark a video done; "Rebuild VidAnki deck" in ⌘K refreshes it on demand. Turn this off in Settings, or set `reviewDeck` in `local.json` if your deck has a different name.
+The VidAnki deck also pulls in the reviews due today from your AnKing deck, so you can study everything from one deck. Reviews done there count as normal reviews. The deck is rebuilt each study day (after 4 am) and whenever you mark a video done; "Rebuild VidAnki deck" in ⌘K refreshes it on demand. An **Anki** row at the top of the queue shows what's in the deck right now (e.g. "38 reviews · 36 new"). It hides when less than about 10 minutes of cards is left and no video is waiting on its cards. Turn this off in Settings, or set `reviewDeck` in `local.json` if your deck has a different name.
 
 ## Keyboard
 

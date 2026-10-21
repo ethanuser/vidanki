@@ -18,6 +18,7 @@
   --sketchy: #c58cff;
   --brick: #e8b04d;
   --amboss: #5fc48a;
+  --anki: #ef8fb1;
   --ctl-bg: #16181b;
   --thumb: #3b4047;
   color-scheme: dark;
@@ -43,6 +44,7 @@
     --sketchy: #8a3fd1;
     --brick: #b7780d;
     --amboss: #23894f;
+    --anki: #c2416f;
     --thumb: #c3c8ce;
     color-scheme: light;
   }
@@ -245,3 +247,10 @@ input[type=date]::-webkit-calendar-picker-indicator { filter: var(--cal-filter, 
 #timerVal:hover { color: var(--accent); }
 #timerEdit { background: var(--panel2); border: 1px solid var(--accent); padding: 4px 8px; width: 130px; font: 600 22px/1.2 inherit; font-variant-numeric: tabular-nums; color: var(--text); outline: none; }
 #timerReset.confirm { color: var(--bad); border-color: var(--bad); }
+
+.tag.anki { color: var(--anki); }
+.cluster.today-anki .cluster-title { color: var(--anki); }
+.anki-table { border-collapse: collapse; margin: 6px 0 10px; font-variant-numeric: tabular-nums; }
+.anki-table td { padding: 4px 18px 4px 0; }
+.anki-table td:nth-child(2) { text-align: right; font-weight: 600; }
+.anki-table td:nth-child(3) { color: var(--muted); }

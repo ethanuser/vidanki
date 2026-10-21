@@ -67,6 +67,7 @@ function render() {
   dot.className = "anki-dot" + (S.anki.ok ? " ok" : "");
   dot.title = S.anki.ok ? "Anki connected" : "Anki not running (cards get unsuspended once it's open)";
   if (view === "gate") renderGate();
+  else if (view === "anki") renderAnkiPanel();
   else showItem(curId);
 }
 
@@ -139,6 +140,15 @@ function renderQueue() {
   const hide = $("hideDone").checked;
   const today = todaySet();
   let html = "";
+  const a = S.stats.ankiNow;
+  // Anki row: only when there's a real chunk of cards (or a video is waiting on them)
+  if (S.anki.ok && (a.sec >= a.minSec || S.anki.gate)) {
+    const parts = [a.due && `${a.due} review${a.due === 1 ? "" : "s"}`, a.new && `${a.new} new`].filter(Boolean);
+    html += `<div class="cluster today-anki"><div class="cluster-title"><span>Anki</span><span>${mins(a.sec)}</span></div>
+      <div class="qi today ${view === "anki" ? "current" : ""}" data-id="__anki" title="VidAnki deck: due reviews and new cards">
+        <span class="chk"></span><span class="qt"><span class="tag anki">ANKI</span>${parts.join(" · ") || "Cards waiting"}</span>
+        <span class="qm">${mins(a.sec)}</span></div></div>`;
+  }
   for (const c of S.clusters) {
     const items = c.items.filter((i) => !hide || !i.done || i.id === curId);
     if (!items.length) continue;
@@ -153,7 +163,7 @@ function renderQueue() {
         title = `Video ${mins(i.est.video || 0)} + Anki ${mins(i.est.anki || 0)} (${i.est.cards || 0} HY cards)`;
         if (i.missing) meta = "missing";
       }
-      html += `<div class="qi ${i.done ? "done" : ""} ${i.id === curId ? "current" : ""} ${today.has(i.id) ? "today" : ""}" data-id="${i.id}" title="${title}">
+      html += `<div class="qi ${i.done ? "done" : ""} ${i.id === curId && view !== "anki" ? "current" : ""} ${today.has(i.id) ? "today" : ""}" data-id="${i.id}" title="${title}">
         <span class="chk">${i.done ? "✓" : ""}</span>
         <span class="qt"><span class="tag ${cls}">${tag}</span>${i.title.replace(/^Sketchy (Micro|Pharm): /, "")}</span>
         <span class="qm">${meta}</span></div>`;
@@ -201,6 +211,7 @@ function showItem(id) {
   curId = id;
   view = "item";
   $("gate").hidden = true;
+  $("ankiPanel").hidden = true;
   $("crumbs").textContent = `${S.block.name} · ${it.cluster}`;
   $("itemTitle").textContent = it.title;
   $("itemNote").hidden = !it.note;
@@ -505,6 +516,7 @@ function goNext() {
 function renderGate() {
   flushTime();
   pauseVideo();
+  $("ankiPanel").hidden = true;
   $("player").hidden = true;
   $("task").hidden = true;
   $("gate").hidden = false;
@@ -543,6 +555,36 @@ function renderGate() {
   ].filter(Boolean).join(" · ");
 }
 
+function showAnki() {
+  flushTime();
+  view = "anki";
+  renderAnkiPanel();
+  renderQueue();
+}
+function renderAnkiPanel() {
+  pauseVideo();
+  ["player", "task", "gate"].forEach((id) => ($(id).hidden = true));
+  $("ankiPanel").hidden = false;
+  $("doneBtn").hidden = true;
+  $("undoneBtn").hidden = true;
+  $("itemNote").hidden = true;
+  $("crumbs").textContent = `${S.block.name} · Anki`;
+  $("itemTitle").textContent = "Today's Anki";
+  const a = S.stats.ankiNow, r = S.stats.rates, g = S.anki.gate;
+  $("ankiText").innerHTML = `Everything below is in the <b>${S.anki.deck}</b> deck, so you can study it all in one place.`;
+  $("ankiTable").innerHTML = `
+    <tr><td>Reviews due now</td><td>${a.due}</td><td>× ${r.reviewSec} s = ${mins(a.due * r.reviewSec)}</td></tr>
+    <tr><td>New cards from finished videos</td><td>${a.new}</td><td>× ${Math.round(r.cardSec)} s = ${mins(a.new * r.cardSec)}</td></tr>`;
+  $("ankiSub").textContent = [
+    g ? `${g.newLeft} new cards from ${g.title} must be done before the next video.` : "",
+    "Anki brings back learning cards later in the day; small leftovers don't show in the queue.",
+  ].filter(Boolean).join(" ");
+}
+$("ankiOpen").onclick = () => api("/api/open-anki", {}).catch((e) => toast(e.message, true));
+$("ankiRebuild").onclick = async () => {
+  try { const r = await api("/api/rebuild-deck", {}); toast(`VidAnki deck: ${r.cards} cards`); await load(); }
+  catch (e) { toast(e.message, true); }
+};
 $("gateOpen").onclick = () => api("/api/open-anki", {}).catch((e) => toast(e.message, true));
 $("gateSkip").onclick = async () => {
   await api("/api/skip-gate", { block: blockId });
@@ -574,6 +616,7 @@ $("prevBtn").onclick = goPrev;
 $("queueList").onclick = (e) => {
   const el = e.target.closest(".qi");
   if (!el) return;
+  if (el.dataset.id === "__anki") { showAnki(); return; }
   view = "item";
   showItem(el.dataset.id);
   renderQueue();
@@ -695,6 +738,7 @@ const COMMANDS = [
       await load();
     },
   })),
+  { group: "Anki", title: "Today's Anki (reviews + new cards)", run: showAnki },
   { group: "Anki", title: "Rebuild VidAnki deck (pull in reviews due now)", run: async () => {
     try { const r = await api("/api/rebuild-deck", {}); toast(`VidAnki deck: ${r.cards} cards`); } catch (e) { toast(e.message, true); }
   } },
