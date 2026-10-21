@@ -288,3 +288,15 @@ button.t-pause:hover { background: var(--pause-bg2); border-color: var(--pause-b
 .task .timer { margin: 0; gap: 8px; }
 .task #timerVal { font-size: 28px; line-height: 1; min-width: 96px; margin-right: 8px; }
 .task #timerEdit { margin-right: 8px; }
+
+/* time breakdown table (queue side panel) */
+.est-table { width: 100%; border-collapse: collapse; margin-top: 8px; font-variant-numeric: tabular-nums; }
+.est-table th { font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 600; text-align: right; padding: 0 0 4px 8px; }
+.est-table td { padding: 5px 0 5px 8px; border-top: 1px solid var(--line); text-align: right; color: var(--muted); white-space: nowrap; }
+.est-table td:first-child, .est-table th:first-child { text-align: left; padding-left: 0; color: var(--text); }
+.est-table td:last-child { color: var(--text); }
+.est-table tfoot td { font-weight: 600; color: var(--text); border-top: 1px solid var(--line2); }
+.est-sub { margin: 14px 0 6px; font-size: 10px; text-transform: uppercase; letter-spacing: .05em; color: var(--muted); font-weight: 600; }
+.est-notes { margin-top: 12px; display: grid; gap: 3px; }
+.today-dot { display: inline-block; width: 6px; height: 6px; background: var(--warn); margin-right: 5px; vertical-align: 1px; }
+#taskInstr { color: var(--muted); }

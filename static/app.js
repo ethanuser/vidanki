@@ -171,31 +171,57 @@ function renderQueue() {
     html += "</div>";
   }
   $("queueList").innerHTML = html;
+  syncQueue();
 }
 
 const TIER_LABELS = { 1: "High yield", 2: "Relatively high yield", 3: "High yield (temporary)" };
 function renderEstimates() {
-  const st = S.stats, r = st.rates, l = r.learnedFrom, w = st.work, c = st.cards;
+  const st = S.stats, r = st.rates, w = st.work, c = st.cards;
+  const pending = flat.filter((i) => !i.done);
+  const vidLeft = pending.filter((i) => i.type === "video").reduce((s, i) => s + Math.max((i.duration || 0) - (i.pos || 0), 0), 0);
+  const bricks = pending.filter((i) => i.type === "brick").length;
+  const aq = pending.filter((i) => i.type === "amboss").reduce((s, i) => s + (i.questions || 0), 0);
   const total = Object.values(w).reduce((a, b) => a + b, 0);
-  const aq = flat.filter((i) => i.type === "amboss" && !i.done).reduce((a, i) => a + (i.questions || 0), 0);
-  const row = (k, v, sub = "") => `<tr><td>${k}${sub ? `<div class="small">${sub}</div>` : ""}</td><td>${v}</td></tr>`;
-  $("estBody").innerHTML = `<table>
-    ${row("Videos", hrs(w.video), `B&B ${r.videoFactor.bnb.toFixed(2)}×, Sketchy ${r.videoFactor.sketchy.toFixed(2)}× video length (starts at 1.5× / 2×, adjusts as you watch here)`)}
-    ${row("New cards", hrs(w.newCards), `${c.newLeft} cards × ${Math.round(r.cardSec)} s` +
-      (c.waitingNew ? `, incl. ${c.waitingNew} already unsuspended in your decks` : ""))}
-    ${row("Reviews until goal", hrs(w.reviews), `${c.dueToday} due today, ${c.existingReviews} scheduled before the goal + ~${Math.round(c.freshReviews)} from new cards, × ${r.reviewSec} s`)}
-    ${row("Bricks", hrs(w.bricks), `${mins(r.brickSec)} each`)}
-    ${row("AMBOSS", hrs(w.amboss), `${aq} questions × ${(r.ambossSecPerQ / 60).toFixed(1)} min incl. explanations`)}
-    <tr class="total"><td>Total</td><td>${hrs(total)}</td></tr>
+  const row = (k, amount, rate, sec, tip = "") =>
+    `<tr title="${tip}"><td>${k}</td><td>${amount}</td><td>${rate}</td><td>${hrs(sec)}</td></tr>`;
+  $("estBody").innerHTML = `<table class="est-table">
+    <thead><tr><th></th><th>Left</th><th>Each</th><th>Time</th></tr></thead>
+    <tbody>
+    ${row("Videos", mins(vidLeft), `${r.videoFactor.bnb.toFixed(1)}× / ${r.videoFactor.sketchy.toFixed(1)}×`, w.video, "B&B / Sketchy time per minute of video")}
+    ${row("New cards", c.newLeft, `${Math.round(r.cardSec)} s`, w.newCards, c.waitingNew ? `incl. ${c.waitingNew} already unsuspended in your decks` : "")}
+    ${row("Reviews", c.existingReviews + Math.round(c.freshReviews), `${r.reviewSec} s`, w.reviews, `${c.existingReviews} scheduled before the goal + ~${Math.round(c.freshReviews)} from new cards`)}
+    ${row("Bricks", bricks, mins(r.brickSec), w.bricks)}
+    ${row("AMBOSS", `${aq} Q`, `${(r.ambossSecPerQ / 60).toFixed(1)} min`, w.amboss)}
+    </tbody>
+    <tfoot><tr><td>Total</td><td></td><td></td><td>${hrs(total)}</td></tr></tfoot>
   </table>
-  <div class="tiers"><div class="small">Unsuspend these tiers when a video is done</div>
+  <div class="est-sub">Unsuspend</div>
+  <div class="tiers">
     ${Object.entries(TIER_LABELS).map(([t, label]) =>
       `<label class="check"><input type="checkbox" data-tier="${t}" ${c.tiers.includes(t) ? "checked" : ""}><span></span>${label}</label>`).join("")}
   </div>
-  <p class="small">Card time is Anki's logged time × ${r.revlogOverhead.toFixed(1)} (your log shows ~27 s per new card; you spend ~70 s reading and re-reviewing).
-  It moves toward your real numbers as you study. Card counts come from ${st.cardCountsSource || "—"}; cards shared between videos are counted once.
-  ■ marks what fits in today's target, after today's Anki (${mins(st.todayAnkiSec)}: due reviews and unlocked new cards).</p>`;
+  <div class="est-notes">
+    <div>Rates adapt as you study. Card time = Anki log × ${r.revlogOverhead.toFixed(1)}.</div>
+    <div><span class="today-dot"></span>= fits in today's target</div>
+  </div>`;
   $("estBody").querySelectorAll("[data-tier]").forEach((el) => (el.onchange = setTiers));
+}
+// Keep the selected row in view and Prev/Next enabled only when they can move.
+let scrolledTo = null;
+function syncQueue() {
+  setTimeout(() => {  // after the DOM update (not rAF: it pauses in background tabs)
+    const key = view === "anki" ? "__anki" : curId;
+    const el = document.querySelector(`.qi[data-id="${key}"]`);
+    if (el && key !== scrolledTo) {
+      const q = $("queue").getBoundingClientRect(), r = el.getBoundingClientRect();
+      if (r.top < q.top + 40 || r.bottom > q.bottom - 8) el.scrollIntoView({ block: "center" });  // only if off-screen
+      scrolledTo = key;
+    }
+    if (!S) return;
+    const order = queueOrder(), at = order.indexOf(key);
+    $("prevBtn").disabled = at <= 0;
+    $("nextBtn").disabled = at < 0 || at >= order.length - 1;
+  }, 0);
 }
 async function setTiers() {
   const tiers = [...$("estBody").querySelectorAll("[data-tier]:checked")].map((el) => el.dataset.tier);
@@ -226,6 +252,7 @@ function showItem(id) {
   if (isVideo) setupVideo(it);
   else { pauseVideo(); setupTask(it); }
   document.querySelectorAll(".qi").forEach((el) => el.classList.toggle("current", el.dataset.id === curId));
+  syncQueue();
 }
 
 function setupTask(it) {
@@ -233,10 +260,9 @@ function setupTask(it) {
   $("ambossFields").hidden = !amb;
   $("brickLink").hidden = amb || !it.url;
   if (it.url) $("brickLink").href = it.url;
-  $("taskKind").textContent = amb ? "AMBOSS questions" : "ScholarRx brick";
-  $("taskInstr").innerHTML = amb
-    ? `Do about <b>${it.questions}</b> questions on these topics, only what you've covered so far. Log them below before marking done.`
-    : "Do only the end-of-brick questions.";
+  $("taskKind").textContent = amb ? "AMBOSS questions" : "ScholarRx brick · end questions";
+  $("taskInstr").hidden = !amb;
+  $("taskInstr").textContent = amb ? `${it.questions} recommended` : "";
   if (timer.id !== it.id) {  // first time showing this item (polling re-renders must not wipe input)
     timer.running = false;
     timer.id = it.id;
@@ -347,8 +373,7 @@ function showEndCard() {
   if (!it || it.done) return;
   const n = it.est && it.est.cards;
   $("endCardSub").textContent = n
-    ? `Renames the file with "_" and unsuspends ${n} high-yield cards for Anki.`
-    : `Renames the file with "_" so it's skipped next time.`;
+    ? `Unsuspends ${n} cards.` : "";
   $("endCard").hidden = false;
   $("stage").classList.remove("idle");
 }
@@ -530,7 +555,7 @@ function renderGate() {
   const g = S.anki.gate, next = nextPending(curId);
   const nextTitle = next ? next.title : "nothing left";
   if (!g) {
-    $("gateText").innerHTML = `All new cards from <b>${gateFor || "the last video"}</b> are studied. Nice.`;
+    $("gateText").innerHTML = `All new cards from <b>${gateFor || "the last video"}</b> done.`;
     $("gateBar").style.width = "100%";
     $("gateSub").textContent = "";
     $("gateNext").hidden = !next;
@@ -541,19 +566,19 @@ function renderGate() {
   $("gateSkip").hidden = false;
   $("gateNext").hidden = true;
   if (g.needsAnki) {
-    $("gateText").innerHTML = `Open Anki and the high-yield cards for <b>${g.title}</b> will be unsuspended and put in the <b>${S.anki.deck}</b> deck.`;
+    $("gateText").innerHTML = `Waiting for Anki to unsuspend <b>${g.title}</b>'s cards.`;
     $("gateBar").style.width = "0%";
     $("gateSub").textContent = "Waiting for Anki…";
     return;
   }
   const done = g.total - g.newLeft;
-  $("gateText").innerHTML = `<b>${g.newLeft}</b> of ${g.total} new cards from <b>${g.title}</b> left in the <b>${S.anki.deck}</b> deck.`;
+  $("gateText").innerHTML = `<b>${g.newLeft}</b> of ${g.total} new cards left · ${g.title}`;
   $("gateBar").style.width = (g.total ? (done / g.total) * 100 : 100) + "%";
   $("gateSub").textContent = [
-    g.learning ? `${g.learning} still in learning steps (fine to move on)` : "",
+    g.learning ? `${g.learning} in learning` : "",
     g.openBatches > 1 ? `${g.openBatches} videos' cards are still open` : "",
     g.deckError ? `Couldn't build the filtered deck (${g.deckError}). Restart Anki once so the VidAnki bridge add-on loads; until then study them in your normal deck.` : "",
-    `Next up: ${nextTitle}`,
+    `Next: ${nextTitle}`,
   ].filter(Boolean).join(" · ");
 }
 
@@ -582,8 +607,8 @@ function renderAnkiPanel() {
     rows.map(([k, n, sec]) => `<tr><td>${k}</td><td>${n}</td><td>${Math.round(sec)} s</td><td>${mins(n * sec)}</td></tr>`).join("") +
     `</tbody><tfoot><tr><td>Total</td><td>${a.due + a.new}</td><td></td><td>${mins(a.sec)}</td></tr></tfoot>`;
   $("ankiSub").innerHTML = [
-    g ? `<b>${g.newLeft}</b> new cards from <b>${g.title}</b> must be done before the next video.` : "",
-    "Reviews and new cards are all in one deck. Anki brings back learning cards later in the day; small leftovers don't show in the queue.",
+    g ? `<b>${g.newLeft}</b> new from <b>${g.title}</b> left before the next video.` : "",
+    "Learning cards return later today; small leftovers hide from the queue.",
   ].filter(Boolean).map((t) => `<p>${t}</p>`).join("");
 }
 $("ankiOpen").onclick = () => api("/api/open-anki", {}).catch((e) => toast(e.message, true));
@@ -629,7 +654,7 @@ function step(dir) {
   const order = queueOrder();
   const at = order.indexOf(view === "anki" ? "__anki" : curId);
   const id = order[at + dir];
-  if (id === undefined) { toast(dir > 0 ? "That's the end of the queue" : "That's the top of the queue"); return; }
+  if (id === undefined) return;  // already at the end; the button is disabled there
   if (id === "__anki") { showAnki(); return; }
   const it = flat.find((x) => x.id === id);
   if (dir > 0 && S.anki.gate && it.type === "video" && !it.done) {
