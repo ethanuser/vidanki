@@ -384,18 +384,35 @@ def rebuild_filtered_deck():
     """VidAnki deck = new cards from finished videos + (optionally) reviews due today
     in your AnKing deck, so everything can be studied from one place. Reviews done
     here count as normal reviews (the deck reschedules)."""
-    parts = []
+    # Gathered in two passes so the deck studies in a sensible order:
+    # 1) cards already studied (reviews, learning) by due date, most overdue first;
+    # 2) new cards from finished videos in deck order, which follows B&B order.
     open_cids = sorted({c for b in state["batches"] if not b.get("closed") for c in b.get("cids", [])})
-    if open_cids:
-        parts.append(f'(cid:{",".join(map(str, open_cids))} (is:new OR is:learn))')
+    seen = []
     if state["settings"].get("reviewsInDeck", True):
-        parts.append(f'("deck:{REVIEW_DECK}" is:due -is:new -is:suspended)')
+        seen.append(f'("deck:{REVIEW_DECK}" is:due -is:new -is:suspended)')
+    if open_cids:
+        seen.append(f'(cid:{",".join(map(str, open_cids))} is:learn)')
+    terms = []
+    if seen:
+        terms.append({"search": " OR ".join(seen), "order": "DUE"})
+    if open_cids:
+        terms.append({"search": f'cid:{",".join(map(str, open_cids))} is:new', "order": "DUE"})
     state["deckBuiltDay"] = study_day()
-    if not parts:
+    if not terms:
         anki("vidankiEmptyFilteredDeck", name=FILTERED_DECK)
         return 0
     try:
-        res = anki("vidankiFilteredDeck", name=FILTERED_DECK, search=" OR ".join(parts))
+        try:
+            res = anki("vidankiFilteredDeck", name=FILTERED_DECK, terms=terms)
+            state["deckFallback"] = False
+        except AnkiError as e:
+            if "terms" not in str(e):
+                raise
+            # bridge add-on not reloaded yet (Anki needs a restart): one combined search;
+            # the worker rebuilds properly once Anki comes back after a restart
+            res = anki("vidankiFilteredDeck", name=FILTERED_DECK, search=" OR ".join(f"({t['search']})" for t in terms))
+            state["deckFallback"] = True
     except AnkiError as e:
         if "no cards" in str(e).lower() or "matched" in str(e).lower():  # nothing to study yet
             anki("vidankiEmptyFilteredDeck", name=FILTERED_DECK)
@@ -680,6 +697,7 @@ anki_status = {"ok": False, "error": None}
 def anki_worker():
     """Talk to Anki in the background so page loads never wait on it."""
     slow_at = 0
+    was_ok = True
     while True:
         try:
             ok = anki_reachable()
@@ -694,6 +712,8 @@ def anki_worker():
                     for block in BLOCKS.values():
                         if block["id"] not in cache["cardCounts"]:
                             refresh_card_counts_from_anki(block)
+                    if not was_ok and state.get("deckFallback"):  # Anki restarted: rebuild in proper order
+                        state["deckBuiltDay"] = None
                     if state.get("deckBuiltDay") != study_day():  # new day: pull in today's reviews
                         with lock:
                             rebuild_filtered_deck()
@@ -708,6 +728,7 @@ def anki_worker():
                 except AnkiError as e:
                     error = str(e)
             anki_status.update(ok=_anki_ok["ok"], error=error)
+            was_ok = _anki_ok["ok"]
         except Exception as e:  # keep the worker alive no matter what
             anki_status.update(error=f"{e.__class__.__name__}: {e}")
         time.sleep(6)

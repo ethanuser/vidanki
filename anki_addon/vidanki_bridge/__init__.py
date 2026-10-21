@@ -18,10 +18,12 @@ def _api(func):
 
 
 @_api
-def vidankiFilteredDeck(self, name, search, limit=9999):
-    """Create (or update) a filtered deck `name` from `search` and rebuild it.
+def vidankiFilteredDeck(self, name, search=None, limit=9999, terms=None):
+    """Create (or update) a filtered deck `name` and rebuild it.
 
-    Cards come in due order, so new cards keep the deck's intended order.
+    Either one `search` (due order), or `terms`: a list of
+    {"search", "limit", "order"} applied in sequence, where order is a
+    FilteredDeckConfig.SearchTerm.Order name such as "DUE" or "ADDED".
     Returns the number of cards pulled into the deck.
     """
     from anki.decks import DeckId, FilteredDeckConfig
@@ -34,13 +36,15 @@ def vidankiFilteredDeck(self, name, search, limit=9999):
     cfg = deck.config
     cfg.reschedule = True
     del cfg.search_terms[:]
-    cfg.search_terms.append(
-        FilteredDeckConfig.SearchTerm(
-            search=search,
-            limit=limit,
-            order=FilteredDeckConfig.SearchTerm.Order.DUE,
+    Order = FilteredDeckConfig.SearchTerm.Order
+    for t in terms or [{"search": search, "limit": limit, "order": "DUE"}]:
+        cfg.search_terms.append(
+            FilteredDeckConfig.SearchTerm(
+                search=t["search"],
+                limit=t.get("limit", 9999),
+                order=Order.Value(t.get("order", "DUE")),
+            )
         )
-    )
     col.sched.add_or_update_filtered_deck(deck)
     mw.reset()
     new = col.decks.by_name(name)
