@@ -10,13 +10,13 @@
 <body>
 <header id="top">
   <div class="brand">
-    <span class="logo">▶</span>
+    <span class="logo"></span>
     <div class="dd" id="blockDD"></div>
   </div>
   <div id="stats" class="stats"></div>
   <div class="head-tools">
     <button id="settingsBtn" class="ghost" title="Goal date and time estimates (,)">Settings</button>
-    <button id="paletteBtn" class="ghost" title="Search commands (⌘K)">⌘K</button>
+    <button id="paletteBtn" class="ghost" title="Search commands (Cmd+K)">Cmd+K</button>
     <button id="helpBtn" class="ghost" title="Keyboard shortcuts (?)">?</button>
     <div id="ankiDot" class="anki-dot" title=""></div>
   </div>
@@ -26,7 +26,7 @@
   <section id="center">
     <div id="itemHead">
       <div class="crumbs" id="crumbs"></div>
-      <h1 id="itemTitle">Loading…</h1>
+      <h1 id="itemTitle">Loading...</h1>
       <div id="itemNote" class="note" hidden></div>
     </div>
 
@@ -46,15 +46,15 @@
         <div id="controls">
           <input type="range" id="seek" min="0" max="1000" value="0" aria-label="Seek">
           <div class="ctl-row">
-            <button id="playBtn" title="Play/pause (space)">▶</button>
-            <button id="back10" title="Back 10s (j)">−10</button>
+            <button id="playBtn" title="Play/pause (space)">Play</button>
+            <button id="back10" title="Back 10s (j)">-10</button>
             <button id="fwd10" title="Forward 10s (l)">+10</button>
             <span id="time" class="time">0:00 / 0:00</span>
             <span class="spacer"></span>
             <div class="dd up" id="rateDD" title="Speed ([ and ])"></div>
             <div class="dd up" id="darkDD" title="Picture mode"></div>
             <input type="range" id="vol" min="0" max="1" step="0.05" value="1" aria-label="Volume" title="Volume (m mutes)">
-            <button id="fsBtn" title="Fullscreen (f)">⛶</button>
+            <button id="fsBtn" title="Fullscreen (f)">Full</button>
           </div>
         </div>
       </div>
@@ -64,12 +64,12 @@
     <div id="task" class="panel" hidden>
       <p id="taskInstr"></p>
       <div class="row" id="brickRow" hidden>
-        <a id="brickLink" class="btn primary" target="_blank" rel="noopener">Open brick ↗</a>
+        <a id="brickLink" class="btn primary" target="_blank" rel="noopener">Open brick</a>
       </div>
       <div id="ambossFields" class="fields" hidden>
         <label>Questions done <input type="number" id="ambN" min="0" inputmode="numeric"></label>
         <label>Correct <input type="number" id="ambC" min="0" inputmode="numeric"></label>
-        <a id="ambLink" class="btn" href="https://next.amboss.com/us/questions" target="_blank" rel="noopener">Open AMBOSS ↗</a>
+        <a id="ambLink" class="btn" href="https://next.amboss.com/us/questions" target="_blank" rel="noopener">Open AMBOSS</a>
       </div>
       <div class="timer">
         <span id="timerVal" title="Click to edit">0:00</span>
@@ -105,10 +105,10 @@
     </div>
 
     <div id="actions" class="row actions">
-      <button id="prevBtn" title="Previous item (p)">◂ Prev</button>
+      <button id="prevBtn" title="Previous item (p)">&lt; Prev</button>
       <button class="primary" id="doneBtn">Mark done</button>
       <button id="undoneBtn" hidden>Mark not done</button>
-      <button id="nextBtn" title="Next item (n)">Next ▸</button>
+      <button id="nextBtn" title="Next item (n)">Next &gt;</button>
       <span id="toast" class="toast"></span>
     </div>
   </section>
@@ -129,7 +129,7 @@
 <!-- keyboard shortcuts -->
 <div id="helpModal" class="modal" hidden>
   <div class="modal-box">
-    <div class="modal-head"><span>Keyboard shortcuts</span><button class="ghost" data-close>✕</button></div>
+    <div class="modal-head"><span>Keyboard shortcuts</span><button class="ghost" data-close>x</button></div>
     <table class="keys" id="keysTable"></table>
   </div>
 </div>
@@ -137,18 +137,18 @@
 <!-- settings -->
 <div id="settingsModal" class="modal" hidden>
   <div class="modal-box settings-box">
-    <div class="modal-head"><span>Settings · <span id="setBlockName"></span></span><button class="ghost" data-close>✕</button></div>
+    <div class="modal-head"><span>Settings: <span id="setBlockName"></span></span><button class="ghost" data-close>x</button></div>
     <div class="set-body">
       <div class="set-section">Goal</div>
       <div class="set-row">
         <label for="setGoal">Finish by</label>
         <div class="row">
-          <button class="ghost" id="goalMinus" title="One day earlier">−1 d</button>
+          <button class="ghost" id="goalMinus" title="One day earlier">-1 d</button>
           <input type="date" id="setGoal">
           <button class="ghost" id="goalPlus" title="One day later">+1 d</button>
         </div>
       </div>
-      <div class="set-section">Time estimates <span class="muted small">— blank uses the learned value shown in grey</span></div>
+      <div class="set-section">Time estimates <span class="muted small">(blank uses the learned value shown in grey)</span></div>
       <div id="setPins"></div>
       <div class="set-section">Anki</div>
       <div class="tiers" id="setTiers"></div>
@@ -160,7 +160,7 @@
 <!-- command palette -->
 <div id="palette" class="modal top" hidden>
   <div class="modal-box palette-box">
-    <input id="palInput" placeholder="Type a command or item…" autocomplete="off" spellcheck="false">
+    <input id="palInput" placeholder="Type a command or item..." autocomplete="off" spellcheck="false">
     <div id="palList" class="pal-list"></div>
   </div>
 </div>

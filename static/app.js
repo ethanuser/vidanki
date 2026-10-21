@@ -97,10 +97,10 @@ function renderStats() {
   const goal = new Date(S.block.goalDate + "T12:00");
   const goalStr = goal.toLocaleDateString(undefined, { month: "short", day: "numeric" });
   const w = st.work;
-  let pace = "—", paceCls = "";
+  let pace = "-", paceCls = "";
   if (st.paceSec) {
     const p = new Date(st.projectedFinish + "T12:00");
-    pace = `${hrs(st.paceSec)}/day → ${p.toLocaleDateString(undefined, { month: "short", day: "numeric" })}`;
+    pace = `${hrs(st.paceSec)}/day -> ${p.toLocaleDateString(undefined, { month: "short", day: "numeric" })}`;
     paceCls = p > goal ? "bad" : "good";
   }
   $("stats").innerHTML = [
@@ -108,11 +108,11 @@ function renderStats() {
       `${st.bnb.done} of ${st.bnb.count} B&B videos`),
     stat("Items", `${st.items.done} / ${st.items.count}`, "", st.items.done / st.items.count,
       `${st.items.videosDone}/${st.items.videos} videos incl. Sketchy`),
-    stat("Work left", "≈ " + hrs(st.remainingSec), "", null,
-      `Videos ${hrs(w.video)} · New cards ${hrs(w.newCards)} · Reviews ${hrs(w.reviews)} · Bricks ${hrs(w.bricks)} · AMBOSS ${hrs(w.amboss)}`),
-    stat(`Goal ${goalStr}`, `${st.daysLeft} d · ${hrs(st.perDaySec)}/day`),
+    stat("Work left", "~" + hrs(st.remainingSec), "", null,
+      `Videos ${hrs(w.video)} | New cards ${hrs(w.newCards)} | Reviews ${hrs(w.reviews)} | Bricks ${hrs(w.bricks)} | AMBOSS ${hrs(w.amboss)}`),
+    stat(`Goal ${goalStr}`, `${st.daysLeft} d, ${hrs(st.perDaySec)}/day`),
     stat("Today", `${hrs(st.todaySec)} / ${hrs(st.todayNeededSec)}`, "", st.todaySec / st.todayNeededSec),
-    stat("Recent pace", pace, paceCls, null, "Average of the last 3 days you studied → projected finish"),
+    stat("Recent pace", pace, paceCls, null, "Average of the last 3 days you studied -> projected finish"),
   ].join("");
   const goalStat = $("stats").children[3];
   goalStat.classList.add("clickable");
@@ -146,14 +146,14 @@ function renderQueue() {
     const parts = [a.due && `${a.due} review${a.due === 1 ? "" : "s"}`, a.new && `${a.new} new`].filter(Boolean);
     html += `<div class="cluster today-anki"><div class="cluster-title"><span>Anki</span><span>${mins(a.sec)}</span></div>
       <div class="qi today ${view === "anki" ? "current" : ""}" data-id="__anki" title="VidAnki deck: due reviews and new cards">
-        <span class="chk"></span><span class="qt"><span class="tag anki">ANKI</span>${parts.join(" · ") || "Cards waiting"}</span>
+        <span class="chk"></span><span class="qt"><span class="tag anki">ANKI</span>${parts.join(", ") || "Cards waiting"}</span>
         <span class="qm">${mins(a.sec)}</span></div></div>`;
   }
   for (const c of S.clusters) {
     const items = c.items.filter((i) => !hide || !i.done || i.id === curId);
     if (!items.length) continue;
     const left = c.items.filter((i) => !i.done).reduce((a, i) => a + estTotal(i), 0);
-    html += `<div class="cluster"><div class="cluster-title"><span>${c.title}</span><span>${left ? mins(left) : "✓"}</span></div>`;
+    html += `<div class="cluster"><div class="cluster-title"><span>${c.title}</span><span>${left ? mins(left) : "done"}</span></div>`;
     for (const i of items) {
       const tag = i.type === "video" ? (i.source === "bnb" ? "B&B" : "SK") : i.type === "brick" ? "BRX" : "AMB";
       const cls = i.type === "video" ? i.source : i.type;
@@ -164,7 +164,7 @@ function renderQueue() {
         if (i.missing) meta = "missing";
       }
       html += `<div class="qi ${i.done ? "done" : ""} ${i.id === curId && view !== "anki" ? "current" : ""} ${today.has(i.id) ? "today" : ""}" data-id="${i.id}" title="${title}">
-        <span class="chk">${i.done ? "✓" : ""}</span>
+        <span class="chk"></span>
         <span class="qt"><span class="tag ${cls}">${tag}</span>${i.title.replace(/^Sketchy (Micro|Pharm): /, "")}</span>
         <span class="qm">${meta}</span></div>`;
     }
@@ -180,21 +180,21 @@ function renderEstimates() {
   const aq = flat.filter((i) => i.type === "amboss" && !i.done).reduce((a, i) => a + (i.questions || 0), 0);
   const row = (k, v, sub = "") => `<tr><td>${k}${sub ? `<div class="small">${sub}</div>` : ""}</td><td>${v}</td></tr>`;
   $("estBody").innerHTML = `<table>
-    ${row("Videos", hrs(w.video), `B&B ${r.videoFactor.bnb.toFixed(2)}×, Sketchy ${r.videoFactor.sketchy.toFixed(2)}× video length (starts at 1.5× / 2×, adjusts as you watch here)`)}
-    ${row("New cards", hrs(w.newCards), `${c.newLeft} cards × ${Math.round(r.cardSec)} s` +
+    ${row("Videos", hrs(w.video), `B&B ${r.videoFactor.bnb.toFixed(2)}x, Sketchy ${r.videoFactor.sketchy.toFixed(2)}x video length (starts at 1.5x / 2x, adjusts as you watch here)`)}
+    ${row("New cards", hrs(w.newCards), `${c.newLeft} cards x ${Math.round(r.cardSec)} s` +
       (c.waitingNew ? `, incl. ${c.waitingNew} already unsuspended in your decks` : ""))}
-    ${row("Reviews until goal", hrs(w.reviews), `${c.dueToday} due today, ${c.existingReviews} scheduled before the goal + ~${Math.round(c.freshReviews)} from new cards, × ${r.reviewSec} s`)}
+    ${row("Reviews until goal", hrs(w.reviews), `${c.dueToday} due today, ${c.existingReviews} scheduled before the goal + ~${Math.round(c.freshReviews)} from new cards, x ${r.reviewSec} s`)}
     ${row("Bricks", hrs(w.bricks), `${mins(r.brickSec)} each`)}
-    ${row("AMBOSS", hrs(w.amboss), `${aq} questions × ${(r.ambossSecPerQ / 60).toFixed(1)} min incl. explanations`)}
+    ${row("AMBOSS", hrs(w.amboss), `${aq} questions x ${(r.ambossSecPerQ / 60).toFixed(1)} min incl. explanations`)}
     <tr class="total"><td>Total</td><td>${hrs(total)}</td></tr>
   </table>
   <div class="tiers"><div class="small">Unsuspend these tiers when a video is done</div>
     ${Object.entries(TIER_LABELS).map(([t, label]) =>
       `<label class="check"><input type="checkbox" data-tier="${t}" ${c.tiers.includes(t) ? "checked" : ""}><span></span>${label}</label>`).join("")}
   </div>
-  <p class="small">Card time is Anki's logged time × ${r.revlogOverhead.toFixed(1)} (your log shows ~27 s per new card; you spend ~70 s reading and re-reviewing).
-  It moves toward your real numbers as you study. Card counts come from ${st.cardCountsSource || "—"}; cards shared between videos are counted once.
-  ■ marks what fits in today's target, after today's Anki (${mins(st.todayAnkiSec)}: due reviews and unlocked new cards).</p>`;
+  <p class="small">Card time is Anki's logged time x ${r.revlogOverhead.toFixed(1)} (your log shows ~27 s per new card; you spend ~70 s reading and re-reviewing).
+  It moves toward your real numbers as you study. Card counts come from ${st.cardCountsSource || "-"}; cards shared between videos are counted once.
+  The small square marks what fits in today's target, after today's Anki (${mins(st.todayAnkiSec)}: due reviews and unlocked new cards).</p>`;
   $("estBody").querySelectorAll("[data-tier]").forEach((el) => (el.onchange = setTiers));
 }
 async function setTiers() {
@@ -212,14 +212,14 @@ function showItem(id) {
   view = "item";
   $("gate").hidden = true;
   $("ankiPanel").hidden = true;
-  $("crumbs").textContent = `${S.block.name} · ${it.cluster}`;
+  $("crumbs").textContent = `${S.block.name} / ${it.cluster}`;
   $("itemTitle").textContent = it.title;
   $("itemNote").hidden = !it.note;
   $("itemNote").textContent = it.note || "";
   $("doneBtn").hidden = it.done;
   $("undoneBtn").hidden = !it.done;
   $("doneBtn").textContent = it.type === "video" && it.est && it.est.cards
-    ? `Mark done · unsuspend ${it.est.cards} cards` : "Mark done";
+    ? `Mark done, unsuspend ${it.est.cards} cards` : "Mark done";
   const isVideo = it.type === "video";
   $("player").hidden = !isVideo;
   $("task").hidden = isVideo;
@@ -258,7 +258,7 @@ const DARK_MODES = [
   { value: "off", label: "Original", short: "Original" },
 ];
 const rateDD = new Dropdown($("rateDD"), {
-  options: RATES.map((r) => ({ value: String(r), label: r + "×" })),
+  options: RATES.map((r) => ({ value: String(r), label: r + "x" })),
   value: "1",
   onChange: (v) => setRate(parseFloat(v)),
 });
@@ -328,12 +328,12 @@ $("seek").oninput = (e) => { if (video.duration) video.currentTime = (e.target.v
 $("stage").addEventListener("click", (e) => {
   if (e.target === video || e.target === $("stage") || e.target === $("glcanvas")) togglePlay();
 });
-video.addEventListener("play", () => ($("playBtn").textContent = "❚❚"));
-video.addEventListener("pause", () => ($("playBtn").textContent = "▶"));
+video.addEventListener("play", () => ($("playBtn").textContent = "Pause"));
+video.addEventListener("pause", () => ($("playBtn").textContent = "Play"));
 video.addEventListener("timeupdate", () => {
   const d = video.duration || 0;
   $("time").textContent = `${clock(video.currentTime)} / ${clock(d)}` +
-    (video.playbackRate !== 1 ? ` · ${clock((d - video.currentTime) / video.playbackRate)} left` : "");
+    (video.playbackRate !== 1 ? `, ${clock((d - video.currentTime) / video.playbackRate)} left` : "");
   if (document.activeElement !== $("seek")) $("seek").value = d ? (video.currentTime / d) * 1000 : 0;
   if (d && !endShown && video.currentTime >= d - 12) showEndCard();
 });
@@ -489,12 +489,12 @@ async function markDone() {
     const r = await api("/api/done", body);
     pauseVideo();
     const parts = [];
-    if (r.renamed) parts.push(`Renamed → ${r.renamed}`);
+    if (r.renamed) parts.push(`Renamed to ${r.renamed}`);
     if (r.batch) {
       if (r.batch.needsAnki) parts.push("Anki isn't open: cards will be unsuspended once it is");
-      else parts.push(`Unsuspended ${r.batch.unsuspended} · ${r.batch.newCards} new cards in “${S.anki.deck}”`);
+      else parts.push(`Unsuspended ${r.batch.unsuspended}, ${r.batch.newCards} new cards in "${S.anki.deck}"`);
     }
-    toast(parts.join(" · ") || "Done");
+    toast(parts.join(". ") || "Done");
     await load();
     if (S.anki.gate) { gateFor = S.anki.gate.title; view = "gate"; renderGate(); }
     else goNext();
@@ -507,7 +507,7 @@ async function markDone() {
 
 function goNext() {
   const n = nextPending(curId);
-  if (!n) { toast("Everything in this block is done 🎉"); return; }
+  if (!n) { toast("Everything in this block is done!"); return; }
   if (S.anki.gate && n.type === "video") { gateFor = S.anki.gate.title; view = "gate"; renderGate(); return; }
   showItem(n.id);
   renderQueue();
@@ -532,7 +532,7 @@ function renderGate() {
     $("gateBar").style.width = "100%";
     $("gateSub").textContent = "";
     $("gateNext").hidden = !next;
-    $("gateNext").textContent = `Continue: ${nextTitle} ▸`;
+    $("gateNext").textContent = `Continue: ${nextTitle} >`;
     $("gateSkip").hidden = true;
     return;
   }
@@ -541,7 +541,7 @@ function renderGate() {
   if (g.needsAnki) {
     $("gateText").innerHTML = `Open Anki and the high-yield cards for <b>${g.title}</b> will be unsuspended and put in the <b>${S.anki.deck}</b> deck.`;
     $("gateBar").style.width = "0%";
-    $("gateSub").textContent = "Waiting for Anki…";
+    $("gateSub").textContent = "Waiting for Anki...";
     return;
   }
   const done = g.total - g.newLeft;
@@ -552,7 +552,7 @@ function renderGate() {
     g.openBatches > 1 ? `${g.openBatches} videos' cards are still open` : "",
     g.deckError ? `Couldn't build the filtered deck (${g.deckError}). Restart Anki once so the VidAnki bridge add-on loads; until then study them in your normal deck.` : "",
     `Next up: ${nextTitle}`,
-  ].filter(Boolean).join(" · ");
+  ].filter(Boolean).join(". ");
 }
 
 function showAnki() {
@@ -568,13 +568,13 @@ function renderAnkiPanel() {
   $("doneBtn").hidden = true;
   $("undoneBtn").hidden = true;
   $("itemNote").hidden = true;
-  $("crumbs").textContent = `${S.block.name} · Anki`;
+  $("crumbs").textContent = `${S.block.name} / Anki`;
   $("itemTitle").textContent = "Today's Anki";
   const a = S.stats.ankiNow, r = S.stats.rates, g = S.anki.gate;
   $("ankiText").innerHTML = `Everything below is in the <b>${S.anki.deck}</b> deck, so you can study it all in one place.`;
   $("ankiTable").innerHTML = `
-    <tr><td>Reviews due now</td><td>${a.due}</td><td>× ${r.reviewSec} s = ${mins(a.due * r.reviewSec)}</td></tr>
-    <tr><td>New cards from finished videos</td><td>${a.new}</td><td>× ${Math.round(r.cardSec)} s = ${mins(a.new * r.cardSec)}</td></tr>`;
+    <tr><td>Reviews due now</td><td>${a.due}</td><td>x ${r.reviewSec} s = ${mins(a.due * r.reviewSec)}</td></tr>
+    <tr><td>New cards from finished videos</td><td>${a.new}</td><td>x ${Math.round(r.cardSec)} s = ${mins(a.new * r.cardSec)}</td></tr>`;
   $("ankiSub").textContent = [
     g ? `${g.newLeft} new cards from ${g.title} must be done before the next video.` : "",
     "Anki brings back learning cards later in the day; small leftovers don't show in the queue.",
@@ -625,8 +625,8 @@ $("hideDone").onchange = renderQueue;
 
 // ---------- settings ----------
 const PIN_FIELDS = [
-  { key: "bnbFactor", label: "B&B video time", unit: "× length", get: (r) => r.videoFactor.bnb, scale: 1, dp: 2 },
-  { key: "sketchyFactor", label: "Sketchy video time", unit: "× length", get: (r) => r.videoFactor.sketchy, scale: 1, dp: 2 },
+  { key: "bnbFactor", label: "B&B video time", unit: "x length", get: (r) => r.videoFactor.bnb, scale: 1, dp: 2 },
+  { key: "sketchyFactor", label: "Sketchy video time", unit: "x length", get: (r) => r.videoFactor.sketchy, scale: 1, dp: 2 },
   { key: "cardSec", label: "New card, incl. reading & re-reviewing", unit: "s", get: (r) => r.cardSec, scale: 1, dp: 0 },
   { key: "reviewSec", label: "Review card", unit: "s", get: (r) => r.reviewSec, scale: 1, dp: 0 },
   { key: "brickSec", label: "Brick end-questions", unit: "min", get: (r) => r.brickSec, scale: 60, dp: 1 },
@@ -675,8 +675,8 @@ function renderSettings() {
 }
 function renderSettingsResult() {
   const st = S.stats, w = st.work;
-  $("setResult").innerHTML = `<b>≈ ${hrs(st.remainingSec)}</b> left → <b>${hrs(st.perDaySec)}/day</b> for ${st.daysLeft} days
-    <div class="small muted">Videos ${hrs(w.video)} · New cards ${hrs(w.newCards)} · Reviews ${hrs(w.reviews)} · Bricks ${hrs(w.bricks)} · AMBOSS ${hrs(w.amboss)}</div>`;
+  $("setResult").innerHTML = `<b>~${hrs(st.remainingSec)}</b> left, <b>${hrs(st.perDaySec)}/day</b> for ${st.daysLeft} days
+    <div class="small muted">Videos ${hrs(w.video)} | New cards ${hrs(w.newCards)} | Reviews ${hrs(w.reviews)} | Bricks ${hrs(w.bricks)} | AMBOSS ${hrs(w.amboss)}</div>`;
 }
 async function savePin(f, value) {
   await api("/api/settings", { pins: { [f.key]: value } });
@@ -701,7 +701,7 @@ $("goalMinus").onclick = () => shiftGoal(-1);
 $("goalPlus").onclick = () => shiftGoal(1);
 $("settingsBtn").onclick = (e) => { e.stopPropagation(); openSettings(); };
 
-// ---------- commands (keyboard, shortcuts sheet, ⌘K palette) ----------
+// ---------- commands (keyboard, shortcuts sheet, Cmd+K palette) ----------
 const isVideo = () => { const it = cur(); return !!it && it.type === "video" && view === "item"; };
 const seek = (d) => (video.currentTime += d);
 function stepRate(dir) {
@@ -710,15 +710,15 @@ function stepRate(dir) {
 }
 const COMMANDS = [
   { group: "Video", title: "Play / pause", keys: ["Space", "K"], when: isVideo, run: togglePlay },
-  { group: "Video", title: "Back 5 seconds", keys: ["←"], when: isVideo, run: () => seek(-5) },
-  { group: "Video", title: "Forward 5 seconds", keys: ["→"], when: isVideo, run: () => seek(5) },
+  { group: "Video", title: "Back 5 seconds", keys: ["Left"], when: isVideo, run: () => seek(-5) },
+  { group: "Video", title: "Forward 5 seconds", keys: ["Right"], when: isVideo, run: () => seek(5) },
   { group: "Video", title: "Back 10 seconds", keys: ["J"], when: isVideo, run: () => seek(-10) },
   { group: "Video", title: "Forward 10 seconds", keys: ["L"], when: isVideo, run: () => seek(10) },
   { group: "Video", title: "Slower", keys: ["["], when: isVideo, run: () => stepRate(-1) },
   { group: "Video", title: "Faster", keys: ["]"], when: isVideo, run: () => stepRate(1) },
   { group: "Video", title: "Fullscreen", keys: ["F"], when: isVideo, run: toggleFullscreen },
   { group: "Video", title: "Mute / unmute", keys: ["M"], when: isVideo, run: () => (video.muted = !video.muted) },
-  ...RATES.map((r) => ({ group: "Speed", title: `Speed ${r}×`, when: isVideo, run: () => setRate(r) })),
+  ...RATES.map((r) => ({ group: "Speed", title: `Speed ${r}x`, when: isVideo, run: () => setRate(r) })),
   ...DARK_MODES.map((m) => ({ group: "Picture", title: `Picture: ${m.label}`, when: isVideo, run: () => setDark(m.value) })),
   { group: "Items", title: "Next item", keys: ["N"], run: goNext },
   { group: "Items", title: "Previous item", keys: ["P"], run: goPrev },
@@ -748,7 +748,7 @@ const COMMANDS = [
   { group: "App", title: "Goal date: one day later", run: () => shiftGoal(1) },
   { group: "App", title: "Goal date: one day earlier", run: () => shiftGoal(-1) },
   { group: "App", title: "Keyboard shortcuts", keys: ["?"], run: () => openModal("helpModal") },
-  { group: "App", title: "Search commands", keys: ["⌘K"], run: () => openPalette() },
+  { group: "App", title: "Search commands", keys: ["Cmd+K"], run: () => openPalette() },
 ];
 const KEYMAP = { " ": 0, k: 0, ArrowLeft: 1, ArrowRight: 2, j: 3, l: 4, "[": 5, "]": 6, f: 7, m: 8 };
 COMMANDS.forEach((c, i) => {
@@ -772,7 +772,7 @@ document.querySelectorAll(".modal").forEach((m) => m.addEventListener("click", (
   if (e.target === m || e.target.closest("[data-close]")) closeModals();
 }));
 
-// ⌘K palette
+// Cmd+K palette
 let palItems = [], palIdx = 0;
 function openPalette() {
   openModal("palette");

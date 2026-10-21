@@ -15,7 +15,7 @@ Watch B&B and Sketchy videos in dark mode, then do their high-yield Anki cards b
 <tr><td align="center">Original</td><td align="center">Smart dark</td></tr>
 </table>
 
-**Video → Anki → next video.** Near the end of a video VidAnki offers to mark it done. That renames the file with a leading `_`, unsuspends its high-yield AnKing cards, and puts the new ones in a filtered deck. The next video waits until you've studied them; you can always skip.
+**Video, then Anki, then the next video.** Near the end of a video VidAnki offers to mark it done. That renames the file with a leading `_`, unsuspends its high-yield AnKing cards, and puts the new ones in a filtered deck. The next video waits until you've studied them; you can always skip.
 
 <table>
 <tr><td><img src="docs/images/end-of-video.png" alt="End-of-video prompt"></td><td><img src="docs/images/anki-gate.png" alt="Anki gate showing new cards left"></td></tr>
@@ -31,7 +31,7 @@ Watch B&B and Sketchy videos in dark mode, then do their high-yield Anki cards b
 <tr><td width="34%"><img src="docs/images/time-breakdown.png" alt="Time breakdown by type of work"></td><td><img src="docs/images/settings.png" alt="Settings: goal date, estimates and card tiers"></td></tr>
 </table>
 
-**Keyboard first.** ⌘K searches every command and jumps to any item; `?` lists the shortcuts.
+**Keyboard first.** Cmd+K searches every command and jumps to any item; `?` lists the shortcuts.
 
 <table>
 <tr><td><img src="docs/images/command-palette.png" alt="Command palette"></td><td><img src="docs/images/shortcuts.png" alt="Keyboard shortcuts"></td></tr>
@@ -44,7 +44,7 @@ Watch B&B and Sketchy videos in dark mode, then do their high-yield Anki cards b
 ## Setup
 
 1. Install [Anki](https://apps.ankiweb.net) with the [AnkiConnect](https://ankiweb.net/shared/info/2055492159) add-on and the AnKing Step 1 deck. VidAnki uses the deck's `#AK_Step1_v12::#B&B`, `#SketchyMicro`, `#SketchyPharm` and `#Low/HighYield` tags.
-2. Set AnkiConnect's `webBindPort` to `8766` (Anki → Tools → Add-ons → AnkiConnect → Config), or put whatever port you use in `local.json`.
+2. Set AnkiConnect's `webBindPort` to `8766` (Anki: Tools > Add-ons > AnkiConnect > Config), or put whatever port you use in `local.json`.
 3. Link the bridge add-on into Anki so VidAnki can build filtered decks, then restart Anki:
    ```bash
    ln -s "$PWD/anki_addon/vidanki_bridge" ~/Library/Application\ Support/Anki2/addons21/vidanki_bridge
@@ -56,7 +56,7 @@ Needs macOS, Python 3.10+ (standard library only) and `ffprobe` (`brew install f
 
 ## Run
 
-Open **VidAnki** from Applications, Spotlight or Launchpad. It starts the server, opens the VidAnki tab in Chrome (or switches to it if one is already open), and adds a ▶ icon to the menu bar. The menu has Open VidAnki, Open Anki, Restart Server, Show Server Log and Open at Login. Quitting VidAnki from that menu stops the server.
+Open **VidAnki** from Applications, Spotlight or Launchpad. It starts the server, opens the VidAnki tab in Chrome (or switches to it if one is already open), and adds a play icon to the menu bar. The menu has Open VidAnki, Open Anki, Restart Server, Show Server Log and Open at Login. Quitting VidAnki from that menu stops the server.
 
 The first time, macOS asks whether VidAnki may control Google Chrome. Allow it so VidAnki can switch to the tab you already have open instead of opening a new one. After you change `macapp/VidAnki.swift`, rebuild the app with `macapp/build.sh`.
 
@@ -73,22 +73,22 @@ Then open http://localhost:8770. Keep Anki open: it's needed to unsuspend cards 
 ## What "Mark done" does (videos)
 
 1. Renames the file to start with `_` (so it's skipped next time). **Mark not done** renames it back.
-2. Unsuspends `(1-HighYield ∪ 2-RelativelyHighYield ∪ 3-HighYield-temporary) ∩ <the video's tags>`.
+2. Unsuspends the video's cards tagged with one of the yield tiers you've chosen (`1-HighYield`, `2-RelativelyHighYield`, `3-HighYield-temporary`).
 3. Puts that video's new cards into the filtered deck **VidAnki**, so your daily new-card limit doesn't apply.
 4. Shows the Anki gate. The next video unlocks once none of those cards are still new. **Skip, next item anyway** always works.
 
 If Anki is closed, steps 2 and 3 wait and run as soon as Anki is open.
 
-The VidAnki deck also pulls in the reviews due today from your AnKing deck, so you can study everything from one deck. Reviews done there count as normal reviews. The deck is rebuilt each study day (after 4 am) and whenever you mark a video done; "Rebuild VidAnki deck" in ⌘K refreshes it on demand. An **Anki** row at the top of the queue shows what's in the deck right now (e.g. "38 reviews · 36 new"). It hides when less than about 10 minutes of cards is left and no video is waiting on its cards. Turn this off in Settings, or set `reviewDeck` in `local.json` if your deck has a different name.
+The VidAnki deck also pulls in the reviews due today from your AnKing deck, so you can study everything from one deck. Reviews done there count as normal reviews. The deck is rebuilt each study day (after 4 am) and whenever you mark a video done; "Rebuild VidAnki deck" in Cmd+K refreshes it on demand. An **Anki** row at the top of the queue shows what's in the deck right now (e.g. "38 reviews, 36 new"). It hides when less than about 10 minutes of cards is left and no video is waiting on its cards. Turn this off in Settings, or set `reviewDeck` in `local.json` if your deck has a different name.
 
 ## Keyboard
 
-Press `?` in the app for the full list, or `⌘K` to search every command and jump to any item.
+Press `?` in the app for the full list, or `Cmd+K` to search every command and jump to any item.
 
 | Key | Action |
 | --- | --- |
 | space / k | play / pause |
-| ← / → | back / forward 5 s |
+| Left / Right | back / forward 5 s |
 | j / l | back / forward 10 s |
 | [ / ] | slower / faster |
 | f | fullscreen |
@@ -96,7 +96,7 @@ Press `?` in the app for the full list, or `⌘K` to search every command and ju
 | n / p | next / previous item |
 | t | start / pause the brick or AMBOSS timer |
 
-Picture mode defaults to **Auto**: Smart dark when macOS is in dark mode, the original video in light mode. Smart dark flips white to near-black and black ink to light, while keeping colors. Change it per source (B&B or Sketchy) from the control bar or the ⌘K palette.
+Picture mode defaults to **Auto**: Smart dark when macOS is in dark mode, the original video in light mode. Smart dark flips white to near-black and black ink to light, while keeping colors. Change it per source (B&B or Sketchy) from the control bar or the Cmd+K palette.
 
 Bricks link to their ScholarRx page; the links came from the course tracklist spreadsheet.
 

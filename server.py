@@ -910,6 +910,12 @@ class Handler(SimpleHTTPRequestHandler):
             return
         super().log_message(fmt, *args)
 
+    def end_headers(self):
+        # page files change while you use VidAnki; make the browser check for updates
+        if not self.path.startswith("/media/"):
+            self.send_header("Cache-Control", "no-cache")
+        super().end_headers()
+
     def send_json(self, obj, status=200):
         data = json.dumps(obj).encode()
         self.send_response(status)
