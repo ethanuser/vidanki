@@ -22,11 +22,8 @@ async function api(path, body) {
   if (!r.ok || j.error) throw new Error(j.error || r.statusText);
   return j;
 }
-const hrs = (s) => (s / 3600).toFixed(1) + " h";
-function mins(s) {
-  const m = Math.round(s / 60);
-  return m < 60 ? m + "m" : Math.floor(m / 60) + "h " + String(m % 60).padStart(2, "0") + "m";
-}
+// All durations show as hours with one decimal.
+const hrs = (s) => (s > 0 && s < 180 ? "<0.1" : (s / 3600).toFixed(1)) + " h";
 function clock(s) {
   s = Math.max(0, Math.floor(s || 0));
   const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = String(s % 60).padStart(2, "0");
@@ -157,33 +154,33 @@ function renderQueue() {
   // Anki row: only when there's a real chunk of cards (or a video is waiting on them)
   if (S.anki.ok && (a.sec >= a.minSec || S.anki.gate)) {
     const parts = [a.due && `${a.due} review${a.due === 1 ? "" : "s"}`, a.new && `${a.new} new`].filter(Boolean);
-    html += `<div class="cluster today-anki"><div class="cluster-title"><span>Anki</span><span>${mins(a.sec)}</span></div>
+    html += `<div class="cluster today-anki"><div class="cluster-title"><span>Anki</span><span>${hrs(a.sec)}</span></div>
       <div class="qi today ${view === "anki" ? "current" : ""}" data-id="__anki" title="VidAnki deck: due reviews and new cards">
         <span class="chk"></span><span class="qt"><span class="tag anki">ANKI</span>${parts.join(" · ") || "Cards waiting"}</span>
-        <span class="qm">${mins(a.sec)}</span></div></div>`;
+        <span class="qm">${hrs(a.sec)}</span></div></div>`;
   }
   for (const c of S.clusters) {
     const items = c.items.filter((i) => !hide || !i.done || i.id === curId);
     if (!items.length) continue;
     const left = c.items.filter((i) => !i.done).reduce((a, i) => a + estTotal(i), 0);
     const nDone = c.items.filter((i) => i.done).length;
-    let meta = left ? mins(left) : "✓", metaTip = "Time left";
+    let meta = left ? hrs(left) : "✓", metaTip = "Time left";
     if (!hide && nDone === c.items.length) {  // finished section: how long it took
-      meta = `✓ ${mins(c.items.reduce((a, i) => a + timeTaken(i), 0))}`;
+      meta = `✓ ${hrs(c.items.reduce((a, i) => a + timeTaken(i), 0))}`;
       metaTip = "Total time (tracked, or estimated where VidAnki didn't track it)";
     } else if (!hide) {
       const spent = c.items.filter((i) => i.done).reduce((a, i) => a + timeTaken(i), 0);
-      meta = `${nDone}/${c.items.length} · ` + (nDone ? `${mins(spent)} / ${mins(spent + left)}` : mins(left));
+      meta = `${nDone}/${c.items.length} · ` + (nDone ? `${hrs(spent)} / ${hrs(spent + left)}` : hrs(left));
       metaTip = "Items done / total · time done / total time";
     }
     html += `<div class="cluster"><div class="cluster-title"><span>${c.title}</span><span title="${metaTip}">${meta}</span></div>`;
     for (const i of items) {
       const tag = i.type === "video" ? (i.source === "bnb" ? "B&B" : "SK") : i.type === "brick" ? "BRX" : "AMB";
       const cls = i.type === "video" ? i.source : i.type;
-      let meta = mins(i.done ? timeTaken(i) : estTotal(i));
+      let meta = hrs(i.done ? timeTaken(i) : estTotal(i));
       let title = "";
       if (i.type === "video" && i.est) {
-        title = `Video ${mins(i.est.video || 0)} + Anki ${mins(i.est.anki || 0)} (${i.est.cards || 0} HY cards)`;
+        title = `Video ${hrs(i.est.video || 0)} + Anki ${hrs(i.est.anki || 0)} (${i.est.cards || 0} HY cards)`;
         if (i.missing) meta = "missing";
       }
       html += `<div class="qi ${i.done ? "done" : ""} ${i.id === curId && view !== "anki" ? "current" : ""} ${today.has(i.id) ? "today" : ""}" data-id="${i.id}" title="${title}">
@@ -210,10 +207,10 @@ function renderEstimates() {
   $("estBody").innerHTML = `<table class="est-table">
     <thead><tr><th></th><th>Left</th><th>Each</th><th>Time</th></tr></thead>
     <tbody>
-    ${row("Videos", mins(vidLeft), `${r.videoFactor.bnb.toFixed(1)}× / ${r.videoFactor.sketchy.toFixed(1)}×`, w.video, "B&B / Sketchy time per minute of video")}
+    ${row("Videos", hrs(vidLeft), `${r.videoFactor.bnb.toFixed(1)}× / ${r.videoFactor.sketchy.toFixed(1)}×`, w.video, "B&B / Sketchy time per minute of video")}
     ${row("New cards", c.newLeft, `${Math.round(r.cardSec)} s`, w.newCards, c.waitingNew ? `incl. ${c.waitingNew} already unsuspended in your decks` : "")}
     ${row("Reviews", c.existingReviews + Math.round(c.freshReviews), `${r.reviewSec} s`, w.reviews, `${c.existingReviews} scheduled before the goal + ~${Math.round(c.freshReviews)} from new cards`)}
-    ${row("Bricks", bricks, mins(r.brickSec), w.bricks)}
+    ${row("Bricks", bricks, hrs(r.brickSec), w.bricks)}
     ${row("AMBOSS", `${aq} Q`, `${(r.ambossSecPerQ / 60).toFixed(1)} min`, w.amboss)}
     </tbody>
     <tfoot><tr><td>Total</td><td></td><td></td><td>${hrs(total)}</td></tr></tfoot>
@@ -627,8 +624,8 @@ function renderAnkiPanel() {
     ["New cards from finished videos", a.new, r.cardSec],
   ];
   $("ankiTable").innerHTML = `<thead><tr><th></th><th>Cards</th><th>Each</th><th>Time</th></tr></thead><tbody>` +
-    rows.map(([k, n, sec]) => `<tr><td>${k}</td><td>${n}</td><td>${Math.round(sec)} s</td><td>${mins(n * sec)}</td></tr>`).join("") +
-    `</tbody><tfoot><tr><td>Total</td><td>${a.due + a.new}</td><td></td><td>${mins(a.sec)}</td></tr></tfoot>`;
+    rows.map(([k, n, sec]) => `<tr><td>${k}</td><td>${n}</td><td>${Math.round(sec)} s</td><td>${hrs(n * sec)}</td></tr>`).join("") +
+    `</tbody><tfoot><tr><td>Total</td><td>${a.due + a.new}</td><td></td><td>${hrs(a.sec)}</td></tr></tfoot>`;
   $("ankiSub").innerHTML = [
     g ? `<b>${g.newLeft}</b> new from <b>${g.title}</b> left before the next video.` : "",
     "Learning cards return later today; small leftovers hide from the queue.",
