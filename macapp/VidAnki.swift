@@ -12,7 +12,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var stopping = false
     private var restarts = 0
     private var startedAt = Date()
-    private let statusLine = NSMenuItem(title: "Starting...", action: nil, keyEquivalent: "")
+    private let statusLine = NSMenuItem(title: "Starting…", action: nil, keyEquivalent: "")
     private let loginItem = NSMenuItem(title: "Open at Login", action: #selector(toggleLogin), keyEquivalent: "")
 
     private var projectDir: URL {
@@ -52,7 +52,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     func menuWillOpen(_ menu: NSMenu) {
         if let s = server, s.isRunning {
-            statusLine.title = "Server running on port \(port)"
+            statusLine.title = "Server running · port \(port)"
         } else if server == nil {
             statusLine.title = isUp() ? "Server running (started elsewhere)" : "Server stopped"
         } else {

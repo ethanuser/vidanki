@@ -5,7 +5,7 @@ window.Dropdown = class Dropdown {
   constructor(el, { options = [], value = null, onChange = () => {} } = {}) {
     this.el = el;
     this.onChange = onChange;
-    el.innerHTML = `<button type="button" class="dd-btn"><span class="dd-label"></span><span class="dd-caret"></span></button><div class="dd-menu" hidden></div>`;
+    el.innerHTML = `<button type="button" class="dd-btn"><span class="dd-label"></span><span class="dd-caret">▾</span></button><div class="dd-menu" hidden></div>`;
     this.btn = el.querySelector(".dd-btn");
     this.menu = el.querySelector(".dd-menu");
     this.btn.addEventListener("click", (e) => { e.stopPropagation(); this.menu.hidden ? this.open() : this.close(); });
