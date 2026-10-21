@@ -172,8 +172,9 @@ function renderQueue() {
       meta = `✓ ${mins(c.items.reduce((a, i) => a + timeTaken(i), 0))}`;
       metaTip = "Total time (tracked, or estimated where VidAnki didn't track it)";
     } else if (!hide) {
-      meta = `${nDone}/${c.items.length} · ${mins(left)} left`;
-      metaTip = "Items done / total · time left";
+      const spent = c.items.filter((i) => i.done).reduce((a, i) => a + timeTaken(i), 0);
+      meta = `${nDone}/${c.items.length} · ` + (nDone ? `${mins(spent)} / ${mins(spent + left)}` : mins(left));
+      metaTip = "Items done / total · time done / total time";
     }
     html += `<div class="cluster"><div class="cluster-title"><span>${c.title}</span><span title="${metaTip}">${meta}</span></div>`;
     for (const i of items) {

@@ -302,3 +302,7 @@ button.t-pause:hover { background: var(--pause-bg2); border-color: var(--pause-b
 .est-notes { margin-top: 12px; display: grid; gap: 3px; }
 .today-dot { display: inline-block; width: 6px; height: 6px; background: var(--warn); margin-right: 5px; vertical-align: 1px; }
 #taskInstr { color: var(--muted); }
+
+.cluster-title { gap: 12px; }
+.cluster-title span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cluster-title span:last-child { flex: none; white-space: nowrap; }
