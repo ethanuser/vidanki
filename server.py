@@ -93,6 +93,8 @@ cache.setdefault("cardCounts", {})
 if any(isinstance(v, int) for c in cache["cardCounts"].values() for v in c.values()):
     cache["cardCounts"] = {}  # old format (before tiers)
 cache.setdefault("ankiByDay", {})
+if "claimed" not in cache:
+    cache["cardCounts"] = {}  # recount once so cards already in your decks aren't double-counted
 
 
 def save_state():
@@ -291,6 +293,9 @@ def _store_counts(block, item_cards, tier_of, source):
                 excl[combo] = excl.get(combo, 0) + 1
         counts[it["id"]] = {"own": own, "excl": excl}
     cache["cardCounts"][block["id"]] = counts
+    # remember which card goes with a remaining item, so cards already sitting in
+    # your decks aren't counted twice (see refresh_reviews_due)
+    cache.setdefault("claimed", {})[block["id"]] = {str(c): tier_of.get(c, "") for c in claimed}
     cache["cardCountsSource"] = source
     save_cache()
 
@@ -347,10 +352,18 @@ def refresh_card_counts_from_sqlite(block):
 
 
 def refresh_reviews_due(block):
-    """Reviews already scheduled between now and the goal date (existing deck)."""
+    """What's already waiting in Anki (your whole collection, not just VidAnki's deck):
+    reviews scheduled before the goal date, reviews due today, and new cards that
+    are unsuspended but not tied to a remaining item (e.g. ones you unsuspended yourself)."""
     days = max((dt.date.fromisoformat(goal_date(block)) - dt.date.fromisoformat(study_day())).days, 0)
     n = len(anki("findCards", query=f"-is:new -is:suspended prop:due<={days}"))
-    cache.setdefault("reviewsDue", {})[block["id"]] = {"n": n, "through": goal_date(block), "at": time.time()}
+    due_today = len(anki("findCards", query="is:due -is:suspended"))
+    claimed = cache.get("claimed", {}).get(block["id"], {})
+    tiers = selected_tiers()
+    waiting = [c for c in anki("findCards", query=f'is:new -is:suspended -"deck:{FILTERED_DECK}"')
+               if not any(t in claimed.get(str(c), "") for t in tiers)]
+    cache.setdefault("reviewsDue", {})[block["id"]] = {
+        "n": n, "dueToday": due_today, "waitingNew": len(waiting), "through": goal_date(block), "at": time.time()}
 
 
 def rebuild_filtered_deck():
@@ -526,9 +539,23 @@ def estimates(block):
     # its first 10 days, so on average it's around for half the time left).
     due = cache.get("reviewsDue", {}).get(block["id"], {})
     existing_reviews = due.get("n", 0)
+    due_today = due.get("dueToday", 0)
+    waiting_new = due.get("waitingNew", 0)
+    new_cards_left += waiting_new
+    work["newCards"] += waiting_new * rates["cardSec"]
     fresh_reviews = new_cards_left * FRESH_REVIEWS_PER_CARD_10D * min(1, (days_left / 2) / 10)
     work["reviews"] = (existing_reviews + fresh_reviews) * rates["reviewSec"]
     remaining = sum(work.values())
+    # Anki work that belongs to today: reviews actually due now, today's share of
+    # reviews new cards will create, the VidAnki deck's new cards (they gate the next
+    # video), and an even share of other new cards already unsuspended in your decks.
+    today_anki = (due_today + fresh_reviews / days_left) * rates["reviewSec"] \
+        + (open_new + waiting_new / days_left) * rates["cardSec"]
+    # Everything else can be spread evenly: videos, bricks, AMBOSS and the new
+    # cards future videos will unlock. Reviews due on later days belong to those days.
+    future_new = work["newCards"] - (open_new + waiting_new) * rates["cardSec"]
+    spreadable = work["video"] + work["bricks"] + work["amboss"] + future_new
+    today_need = today_anki + spreadable / days_left
 
     day_totals = day_breakdown(block)
     today_sec = sum(day_totals.get(today.isoformat(), {}).values())
@@ -545,7 +572,9 @@ def estimates(block):
         "remainingSec": remaining,
         "work": work,
         "cards": {"newLeft": new_cards_left, "existingReviews": existing_reviews,
-                  "freshReviews": fresh_reviews, "tiers": tiers},
+                  "freshReviews": fresh_reviews, "tiers": tiers,
+                  "dueToday": due_today, "waitingNew": waiting_new},
+        "todayAnkiSec": today_anki,
         "openBatchNew": open_new,
         "bnb": {"doneSec": bnb_done, "totalSec": bnb_total,
                 "done": sum(1 for it in bnb if is_done(block, it)), "count": len(bnb)},
@@ -554,7 +583,7 @@ def estimates(block):
         "daysLeft": days_left,
         "perDaySec": remaining / days_left,
         "todaySec": today_sec,
-        "todayNeededSec": remaining / days_left + today_sec,
+        "todayNeededSec": today_need + today_sec,
         "paceSec": pace,
         "projectedFinish": projected,
         "today": today.isoformat(),

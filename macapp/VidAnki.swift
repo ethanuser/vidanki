@@ -11,6 +11,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private var server: Process?          // nil when someone else runs the server
     private var stopping = false
     private var restarts = 0
+    private var startedAt = Date()
     private let statusLine = NSMenuItem(title: "Starting…", action: nil, keyEquivalent: "")
     private let loginItem = NSMenuItem(title: "Open at Login", action: #selector(toggleLogin), keyEquivalent: "")
 
@@ -125,6 +126,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         }
         do {
             try p.run()
+            startedAt = Date()
             server = p
             stopping = false
         } catch {
@@ -135,7 +137,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private func serverExited(_ proc: Process) {
         guard proc === server, !stopping else { return }
         setIcon(ok: false)
-        // restart after a crash, but don't loop forever
+        // restart after a crash, but don't loop forever on one that fails at startup
+        if Date().timeIntervalSince(startedAt) > 60 { restarts = 0 }
         if restarts < 3 {
             restarts += 1
             ensureServer { _ in }

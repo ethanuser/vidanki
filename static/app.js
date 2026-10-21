@@ -125,7 +125,7 @@ function todaySet() {
   const left = S.stats.todayNeededSec - S.stats.todaySec;
   const out = new Set();
   // today's share of reviews comes first, then open-batch new cards, then items in order
-  let acc = S.stats.work.reviews / S.stats.daysLeft + S.stats.openBatchNew * S.stats.rates.cardSec;
+  let acc = S.stats.todayAnkiSec;
   for (const it of flat) {
     if (it.done) continue;
     if (acc >= left) break;
@@ -171,8 +171,9 @@ function renderEstimates() {
   const row = (k, v, sub = "") => `<tr><td>${k}${sub ? `<div class="small">${sub}</div>` : ""}</td><td>${v}</td></tr>`;
   $("estBody").innerHTML = `<table>
     ${row("Videos", hrs(w.video), `B&B ${r.videoFactor.bnb.toFixed(2)}×, Sketchy ${r.videoFactor.sketchy.toFixed(2)}× video length (starts at 1.5× / 2×, adjusts as you watch here)`)}
-    ${row("New cards", hrs(w.newCards), `${c.newLeft} cards × ${Math.round(r.cardSec)} s`)}
-    ${row("Reviews until goal", hrs(w.reviews), `${c.existingReviews} already due + ~${Math.round(c.freshReviews)} from new cards, × ${r.reviewSec} s`)}
+    ${row("New cards", hrs(w.newCards), `${c.newLeft} cards × ${Math.round(r.cardSec)} s` +
+      (c.waitingNew ? `, incl. ${c.waitingNew} already unsuspended in your decks` : ""))}
+    ${row("Reviews until goal", hrs(w.reviews), `${c.dueToday} due today, ${c.existingReviews} scheduled before the goal + ~${Math.round(c.freshReviews)} from new cards, × ${r.reviewSec} s`)}
     ${row("Bricks", hrs(w.bricks), `${mins(r.brickSec)} each`)}
     ${row("AMBOSS", hrs(w.amboss), `${aq} questions × ${(r.ambossSecPerQ / 60).toFixed(1)} min incl. explanations`)}
     <tr class="total"><td>Total</td><td>${hrs(total)}</td></tr>
@@ -183,7 +184,7 @@ function renderEstimates() {
   </div>
   <p class="small">Card time is Anki's logged time × ${r.revlogOverhead.toFixed(1)} (your log shows ~27 s per new card; you spend ~70 s reading and re-reviewing).
   It moves toward your real numbers as you study. Card counts come from ${st.cardCountsSource || "—"}; cards shared between videos are counted once.
-  ■ marks what fits in today's target.</p>`;
+  ■ marks what fits in today's target, after today's Anki (${mins(st.todayAnkiSec)}: due reviews and unlocked new cards).</p>`;
   $("estBody").querySelectorAll("[data-tier]").forEach((el) => (el.onchange = setTiers));
 }
 async function setTiers() {
