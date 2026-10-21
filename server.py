@@ -373,12 +373,20 @@ ANKI_ROW_MIN_SEC = 10 * 60  # below this, the queue's Anki row hides (stragglers
 def refresh_deck_now():
     """What's studyable in the VidAnki deck right now."""
     deck = f'"deck:{FILTERED_DECK}"'
-    # same three numbers Anki shows next to the deck (suspended/buried cards don't count)
+    # The numbers Anki's Study Now screen shows. Suspended/buried cards don't count,
+    # and because siblings are buried, Anki shows at most one card per note a day:
+    # a new card waits if its note already has a card due today.
     avail = "-is:suspended -is:buried"
+    due = anki("cardsInfo", cards=anki("findCards", query=f"{deck} is:due -is:new {avail}"))
+    new = anki("cardsInfo", cards=anki("findCards", query=f"{deck} is:new {avail}"))
+    due_notes = {c["note"] for c in due}
+    new_today = len({c["note"] for c in new} - due_notes)
     cache["deckNow"] = {
-        "review": len(anki("findCards", query=f"{deck} is:review is:due -is:learn {avail}")),
-        "learn": len(anki("findCards", query=f"{deck} is:learn is:due {avail}")),
-        "new": len(anki("findCards", query=f"{deck} is:new {avail}")),
+        "review": sum(1 for c in due if c["type"] == 2 and c["queue"] == 2),
+        "learn": sum(1 for c in due if c["queue"] in (1, 3)),
+        "new": new_today,
+        "newLater": len(new) - new_today,
+        "dueNotes": sorted(due_notes),
         "at": time.time(),
     }
 
@@ -463,6 +471,9 @@ def refresh_batches():
         cids = b["cids"]
         info = [c for c in anki("cardsInfo", cards=cids) if c["queue"] != -1]  # suspended cards don't block
         b["newLeft"] = sum(1 for c in info if c["type"] == 0)
+        # new cards Anki will actually show today (one per note; buried siblings wait)
+        due_notes = set(cache.get("deckNow", {}).get("dueNotes", []))
+        b["newToday"] = len({c["note"] for c in info if c["type"] == 0 and c["queue"] == 0} - due_notes)
         b["learning"] = sum(1 for c in info if c["type"] in (1, 3))
         reviews = anki("getReviewsOfCards", cards=[str(c) for c in cids])
         since_ms = b["createdAt"] * 1000
@@ -645,8 +656,9 @@ def estimates(block):
 def anki_now(rates):
     d = cache.get("deckNow", {})
     review, learn, new = d.get("review", 0), d.get("learn", 0), d.get("new", 0)
+    later = d.get("newLater", 0)
     sec = (review + learn) * rates["reviewSec"] + new * rates["cardSec"]
-    return {"review": review, "learn": learn, "new": new, "sec": sec, "minSec": ANKI_ROW_MIN_SEC}
+    return {"review": review, "learn": learn, "new": new, "newLater": later, "sec": sec, "minSec": ANKI_ROW_MIN_SEC}
 
 
 def day_breakdown(block):
@@ -680,8 +692,11 @@ def refresh_anki_today():
 # ---------- API ----------
 
 def current_gate(block):
+    # a video's cards only block the next one while some can be studied today;
+    # siblings Anki holds back until tomorrow don't
     open_b = [b for b in state["batches"]
-              if b["block"] == block["id"] and not b.get("closed") and not b.get("skipped")]
+              if b["block"] == block["id"] and not b.get("closed") and not b.get("skipped")
+              and b.get("newToday", b.get("newLeft", 1)) > 0]
     if not open_b:
         return None
     b = open_b[-1]
@@ -689,7 +704,9 @@ def current_gate(block):
     return {
         "itemId": b["itemId"], "title": item["title"],
         "needsAnki": b.get("needsAnki", False),
-        "total": len(b.get("cids", [])), "newLeft": b.get("newLeft", len(b.get("cids", []))),
+        "total": len(b.get("cids", [])),
+        "newLeft": b.get("newToday", b.get("newLeft", len(b.get("cids", [])))),
+        "newLater": b.get("newLeft", 0) - b.get("newToday", b.get("newLeft", 0)),
         "learning": b.get("learning", 0), "unsuspended": b.get("unsuspended", 0),
         "deckError": b.get("deckError"), "openBatches": len(open_b),
     }

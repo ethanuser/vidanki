@@ -597,6 +597,7 @@ function renderGate() {
   $("gateBar").style.width = (g.total ? (done / g.total) * 100 : 100) + "%";
   $("gateSub").textContent = [
     g.learning ? `${g.learning} in learning` : "",
+    g.newLater ? `${g.newLater} more tomorrow (siblings)` : "",
     g.openBatches > 1 ? `${g.openBatches} videos' cards are still open` : "",
     g.deckError ? `Couldn't build the filtered deck (${g.deckError}). Restart Anki once so the VidAnki bridge add-on loads; until then study them in your normal deck.` : "",
     `Next: ${nextTitle}`,
@@ -630,6 +631,7 @@ function renderAnkiPanel() {
     `</tbody><tfoot><tr><td>Total</td><td>${a.new + a.learn + a.review}</td><td></td><td>${hrs(a.sec)}</td></tr></tfoot>`;
   $("ankiSub").innerHTML = [
     g ? `<b>${g.newLeft}</b> new from <b>${g.title}</b> left before the next video.` : "",
+    a.newLater ? `${a.newLater} more new card${a.newLater === 1 ? "" : "s"} wait until tomorrow (Anki shows one card per note a day).` : "",
     "Learning cards return later today; small leftovers hide from the queue.",
   ].filter(Boolean).map((t) => `<p>${t}</p>`).join("");
 }
