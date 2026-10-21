@@ -103,21 +103,23 @@ function renderStats() {
     pace = `${hrs(st.paceSec)}/day → ${p.toLocaleDateString(undefined, { month: "short", day: "numeric" })}`;
     paceCls = p > goal ? "bad" : "good";
   }
+  // three groups: overall progress | the goal and what it takes | today
+  const group = (cls, ...stats) => `<div class="stat-group ${cls}">${stats.join("")}</div>`;
   $("stats").innerHTML = [
-    stat("B&B watched", `${hrs(st.bnb.doneSec)} / ${hrs(st.bnb.totalSec)}`, "", st.bnb.doneSec / st.bnb.totalSec,
-      `${st.bnb.done} of ${st.bnb.count} B&B videos`),
-    stat("Items", `${st.items.done} / ${st.items.count}`, "", st.items.done / st.items.count,
-      `${st.items.videosDone}/${st.items.videos} videos incl. Sketchy`),
-    stat("Work left", "≈ " + hrs(st.remainingSec), "", null,
-      `Videos ${hrs(w.video)} · New cards ${hrs(w.newCards)} · Reviews ${hrs(w.reviews)} · Bricks ${hrs(w.bricks)} · AMBOSS ${hrs(w.amboss)}`),
-    stat(`Goal ${goalStr}`, `${st.daysLeft} d · ${hrs(st.perDaySec)}/day`),
-    stat("Today", `${hrs(st.todaySec)} / ${hrs(st.todayNeededSec)}`, "", st.todaySec / st.todayNeededSec),
-    stat("Recent pace", pace, paceCls, null, "Average of the last 3 days you studied → projected finish"),
+    group("", stat("Done", `${st.items.done} / ${st.items.count}`, "", st.items.done / st.items.count,
+      `${st.items.videosDone}/${st.items.videos} videos`)),
+    group("goal clickable",
+      stat("Goal", `${goalStr} · ${st.daysLeft} d`),
+      stat("Work left", "≈ " + hrs(st.remainingSec), "", null,
+        `Videos ${hrs(w.video)} · New cards ${hrs(w.newCards)} · Reviews ${hrs(w.reviews)} · Bricks ${hrs(w.bricks)} · AMBOSS ${hrs(w.amboss)}`),
+      stat("Needed", `${hrs(st.perDaySec)}/day`)),
+    group("",
+      stat("Today", `${hrs(st.todaySec)} / ${hrs(st.todayNeededSec)}`, "", st.todaySec / st.todayNeededSec),
+      stat("Pace", pace, paceCls, null, "Average of the last 3 days you studied → projected finish")),
   ].join("");
-  const goalStat = $("stats").children[3];
-  goalStat.classList.add("clickable");
-  goalStat.title = "Change goal date and estimates";
-  goalStat.onclick = openSettings;
+  const goalGroup = $("stats").querySelector(".goal");
+  goalGroup.title = "Change goal date and estimates";
+  goalGroup.onclick = openSettings;
   if (!$("settingsModal").hidden) renderSettingsResult();
 }
 
@@ -134,6 +136,17 @@ function todaySet() {
     acc += estTotal(it);
   }
   return out;
+}
+
+// Time an item took: what VidAnki tracked, or the estimate if it wasn't tracked here.
+function timeTaken(i) {
+  const r = S.stats.rates, act = i.activeSec || 0;
+  if (i.type === "video") {
+    const d = i.duration || 0;
+    return act >= 0.2 * d && act > 0 ? act : d * (r.videoFactor[i.source] || 1);
+  }
+  if (act >= 60) return act;  // a few stray seconds isn't a real measurement
+  return i.type === "brick" ? r.brickSec : (i.questions || 0) * r.ambossSecPerQ;
 }
 
 function renderQueue() {
@@ -153,11 +166,20 @@ function renderQueue() {
     const items = c.items.filter((i) => !hide || !i.done || i.id === curId);
     if (!items.length) continue;
     const left = c.items.filter((i) => !i.done).reduce((a, i) => a + estTotal(i), 0);
-    html += `<div class="cluster"><div class="cluster-title"><span>${c.title}</span><span>${left ? mins(left) : "✓"}</span></div>`;
+    const nDone = c.items.filter((i) => i.done).length;
+    let meta = left ? mins(left) : "✓", metaTip = "Time left";
+    if (!hide && nDone === c.items.length) {  // finished section: how long it took
+      meta = `✓ ${mins(c.items.reduce((a, i) => a + timeTaken(i), 0))}`;
+      metaTip = "Total time (tracked, or estimated where VidAnki didn't track it)";
+    } else if (!hide) {
+      meta = `${nDone}/${c.items.length} · ${mins(left)} left`;
+      metaTip = "Items done / total · time left";
+    }
+    html += `<div class="cluster"><div class="cluster-title"><span>${c.title}</span><span title="${metaTip}">${meta}</span></div>`;
     for (const i of items) {
       const tag = i.type === "video" ? (i.source === "bnb" ? "B&B" : "SK") : i.type === "brick" ? "BRX" : "AMB";
       const cls = i.type === "video" ? i.source : i.type;
-      let meta = i.done ? (i.duration ? mins(i.duration) : "") : mins(estTotal(i));
+      let meta = mins(i.done ? timeTaken(i) : estTotal(i));
       let title = "";
       if (i.type === "video" && i.est) {
         title = `Video ${mins(i.est.video || 0)} + Anki ${mins(i.est.anki || 0)} (${i.est.cards || 0} HY cards)`;

@@ -117,9 +117,10 @@ input[type=range]::-moz-range-thumb { width: 10px; height: 14px; background: #ff
 /* header */
 header { display: flex; align-items: center; gap: 16px; padding: 10px 16px; border-bottom: 1px solid var(--line); background: var(--panel); position: sticky; top: 0; z-index: 5; }
 .brand { display: flex; align-items: center; gap: 8px; }
-.logo { color: var(--accent); }
-.stats { display: flex; gap: 18px; flex: 1; flex-wrap: wrap; align-items: center; }
-.stat { display: flex; flex-direction: column; min-width: 110px; }
+.stats { display: flex; flex: 1; flex-wrap: wrap; align-items: center; row-gap: 8px; }
+.stat-group { display: flex; gap: 18px; padding: 0 20px; border-left: 1px solid var(--line); }
+.stat-group:first-child { border-left: 0; padding-left: 4px; }
+.stat { display: flex; flex-direction: column; min-width: 96px; }
 .stat .k { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
 .stat .v { font-variant-numeric: tabular-nums; font-weight: 600; }
 .stat .v.bad { color: var(--bad); } .stat .v.good { color: var(--good); }
@@ -222,6 +223,7 @@ kbd { font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; border: 1px sol
   #center { padding: 12px 16px; }
   header { flex-wrap: wrap; gap: 8px; padding: 8px 16px; position: static; }
   .stats { gap: 12px; order: 3; flex-basis: 100%; }
+  .stat-group { border-left: 0; padding: 0 16px 0 0; }
   .stat { min-width: 92px; }
   .head-tools { margin-left: auto; }
   #vol { display: none; }
@@ -252,8 +254,8 @@ input[type=date]::-webkit-calendar-picker-indicator { filter: var(--cal-filter, 
 @media (prefers-color-scheme: light) { input[type=date]::-webkit-calendar-picker-indicator { filter: none; } }
 .set-result { margin-top: 16px; padding-top: 12px; border-top: 1px solid var(--line); font-variant-numeric: tabular-nums; }
 .set-result b { font-size: 16px; }
-.stat.clickable { cursor: pointer; }
-.stat.clickable:hover .k { color: var(--accent); }
+.stat-group.clickable { cursor: pointer; }
+.stat-group.clickable:hover .k { color: var(--accent); }
 
 #timerVal { cursor: text; min-width: 90px; }
 #timerVal:hover { color: var(--accent); }
