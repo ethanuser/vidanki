@@ -19,6 +19,10 @@
   --brick: #e8b04d;
   --amboss: #5fc48a;
   --anki: #ef8fb1;
+  --go-bg: #2c7a4b;
+  --go-bg2: #33895a;
+  --pause-bg: #a8701c;
+  --pause-bg2: #b97d22;
   --ctl-bg: #16181b;
   --thumb: #3b4047;
   color-scheme: dark;
@@ -45,6 +49,10 @@
     --brick: #b7780d;
     --amboss: #23894f;
     --anki: #c2416f;
+    --go-bg: #23894f;
+    --go-bg2: #1c7643;
+    --pause-bg: #b7780d;
+    --pause-bg2: #a06808;
     --thumb: #c3c8ce;
     color-scheme: light;
   }
@@ -250,14 +258,25 @@ input[type=date]::-webkit-calendar-picker-indicator { filter: var(--cal-filter, 
 #timerVal { cursor: text; min-width: 90px; }
 #timerVal:hover { color: var(--accent); }
 #timerEdit { background: var(--panel2); border: 1px solid var(--accent); padding: 4px 8px; width: 130px; font: 600 22px/1.2 inherit; font-variant-numeric: tabular-nums; color: var(--text); outline: none; }
-#timerReset.confirm { color: var(--bad); border-color: var(--bad); }
+/* timer buttons say what they do: start = green, pause = amber, reset = red */
+button.t-start { background: var(--go-bg); border-color: var(--go-bg); color: #fff; }
+button.t-start:hover { background: var(--go-bg2); border-color: var(--go-bg2); }
+button.t-pause { background: var(--pause-bg); border-color: var(--pause-bg); color: #fff; }
+button.t-pause:hover { background: var(--pause-bg2); border-color: var(--pause-bg2); }
+#timerReset { color: var(--bad); border-color: var(--bad); background: transparent; }
+#timerReset:hover, #timerReset.confirm { background: var(--bad); color: #fff; }
 
 .tag.anki { color: var(--anki); }
 .cluster.today-anki .cluster-title { color: var(--anki); }
-.anki-table { border-collapse: collapse; margin: 6px 0 10px; font-variant-numeric: tabular-nums; }
-.anki-table td { padding: 4px 18px 4px 0; }
-.anki-table td:nth-child(2) { text-align: right; font-weight: 600; }
+.anki-table { border-collapse: collapse; width: 100%; margin: 2px 0 16px; font-variant-numeric: tabular-nums; }
+.anki-table th { font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: var(--muted); font-weight: 600; text-align: right; padding: 0 0 6px 16px; }
+.anki-table td { padding: 7px 0 7px 16px; border-top: 1px solid var(--line); text-align: right; }
+.anki-table td:first-child, .anki-table th:first-child { text-align: left; padding-left: 0; }
 .anki-table td:nth-child(3) { color: var(--muted); }
+.anki-table tfoot td { font-weight: 600; border-top: 1px solid var(--line2); }
+.anki-notes { color: var(--muted); font-size: 13px; }
+.anki-notes p { margin: 0; }
+.anki-notes p + p { margin-top: 6px; }
 
 /* brick / AMBOSS panel: what to do on top, time spent below */
 .panel.task { padding: 0; max-width: 560px; }

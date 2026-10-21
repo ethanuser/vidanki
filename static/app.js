@@ -377,6 +377,7 @@ const timer = { id: null, running: false, shown: 0 };
 function updateTimer() {
   $("timerVal").textContent = clock(timer.shown);
   $("timerBtn").textContent = timer.running ? "Pause timer" : (timer.shown ? "Resume timer" : "Start timer");
+  $("timerBtn").className = timer.running ? "t-pause" : "t-start";
 }
 $("timerBtn").onclick = () => { timer.running = !timer.running; updateTimer(); };
 // Edit / reset. Typed values: "1:05:00", "12:30", or a plain number of minutes.
@@ -572,14 +573,18 @@ function renderAnkiPanel() {
   $("crumbs").textContent = `${S.block.name} · Anki`;
   $("itemTitle").textContent = "Today's Anki";
   const a = S.stats.ankiNow, r = S.stats.rates, g = S.anki.gate;
-  $("ankiText").innerHTML = `Everything below is in the <b>${S.anki.deck}</b> deck, so you can study it all in one place.`;
-  $("ankiTable").innerHTML = `
-    <tr><td>Reviews due now</td><td>${a.due}</td><td>× ${r.reviewSec} s = ${mins(a.due * r.reviewSec)}</td></tr>
-    <tr><td>New cards from finished videos</td><td>${a.new}</td><td>× ${Math.round(r.cardSec)} s = ${mins(a.new * r.cardSec)}</td></tr>`;
-  $("ankiSub").textContent = [
-    g ? `${g.newLeft} new cards from ${g.title} must be done before the next video.` : "",
-    "Anki brings back learning cards later in the day; small leftovers don't show in the queue.",
-  ].filter(Boolean).join(" ");
+  $("ankiLabel").textContent = `In the ${S.anki.deck} deck`;
+  const rows = [
+    ["Reviews due now", a.due, r.reviewSec],
+    ["New cards from finished videos", a.new, r.cardSec],
+  ];
+  $("ankiTable").innerHTML = `<thead><tr><th></th><th>Cards</th><th>Each</th><th>Time</th></tr></thead><tbody>` +
+    rows.map(([k, n, sec]) => `<tr><td>${k}</td><td>${n}</td><td>${Math.round(sec)} s</td><td>${mins(n * sec)}</td></tr>`).join("") +
+    `</tbody><tfoot><tr><td>Total</td><td>${a.due + a.new}</td><td></td><td>${mins(a.sec)}</td></tr></tfoot>`;
+  $("ankiSub").innerHTML = [
+    g ? `<b>${g.newLeft}</b> new cards from <b>${g.title}</b> must be done before the next video.` : "",
+    "Reviews and new cards are all in one deck. Anki brings back learning cards later in the day; small leftovers don't show in the queue.",
+  ].filter(Boolean).map((t) => `<p>${t}</p>`).join("");
 }
 $("ankiOpen").onclick = () => api("/api/open-anki", {}).catch((e) => toast(e.message, true));
 $("ankiRebuild").onclick = async () => {
@@ -766,7 +771,7 @@ const COMMANDS = [
     try { const r = await api("/api/rebuild-deck", {}); toast(`VidAnki deck: ${r.cards} cards`); } catch (e) { toast(e.message, true); }
   } },
   { group: "Anki", title: "Refresh card counts", run: async () => { await api("/api/refresh-counts", { block: blockId }); await load(); toast("Card counts refreshed"); } },
-  { group: "App", title: "Toggle hide done", run: () => { $("hideDone").checked = !$("hideDone").checked; renderQueue(); } },
+  { group: "Items", title: "Hide / show done items", keys: ["H"], run: () => { $("hideDone").checked = !$("hideDone").checked; renderQueue(); } },
   { group: "App", title: "Settings: goal date & estimates", keys: [","], run: openSettings },
   { group: "App", title: "Goal date: one day later", run: () => shiftGoal(1) },
   { group: "App", title: "Goal date: one day earlier", run: () => shiftGoal(-1) },
@@ -775,7 +780,7 @@ const COMMANDS = [
 ];
 const KEYMAP = { " ": 0, k: 0, ArrowLeft: 1, ArrowRight: 2, j: 3, l: 4, "[": 5, "]": 6, f: 7, m: 8 };
 COMMANDS.forEach((c, i) => {
-  const extra = { n: "Next item", p: "Previous item", t: "Start / pause timer", ",": "Settings: goal date & estimates", "?": "Keyboard shortcuts" };
+  const extra = { n: "Next item", p: "Previous item", t: "Start / pause timer", h: "Hide / show done items", ",": "Settings: goal date & estimates", "?": "Keyboard shortcuts" };
   for (const [k, title] of Object.entries(extra)) if (c.title === title) KEYMAP[k] = i;
 });
 
