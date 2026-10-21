@@ -360,8 +360,11 @@ def refresh_reviews_due(block):
     due_today = len(anki("findCards", query="is:due -is:suspended"))
     claimed = cache.get("claimed", {}).get(block["id"], {})
     tiers = selected_tiers()
-    waiting = [c for c in anki("findCards", query=f'is:new -is:suspended -"deck:{FILTERED_DECK}"')
-               if not any(t in claimed.get(str(c), "") for t in tiers)]
+    # new cards already unsuspended that no remaining video or open batch accounts
+    # for (wherever they sit, AnKing or the VidAnki deck)
+    batch_cids = {c for b in state["batches"] if not b.get("closed") for c in b.get("cids", [])}
+    waiting = [c for c in anki("findCards", query="is:new -is:suspended")
+               if c not in batch_cids and not any(t in claimed.get(str(c), "") for t in tiers)]
     cache.setdefault("reviewsDue", {})[block["id"]] = {
         "n": n, "dueToday": due_today, "waitingNew": len(waiting), "through": goal_date(block), "at": time.time()}
 
@@ -397,7 +400,9 @@ def rebuild_filtered_deck():
     here count as normal reviews (the deck reschedules)."""
     # Gathered in two passes so the deck studies in a sensible order:
     # 1) cards already studied (reviews, learning) by due date, most overdue first;
-    # 2) new cards from finished videos in deck order, which follows B&B order.
+    # 2) new cards: from finished videos, plus (with "one deck" on) any other
+    #    unsuspended high-yield new cards in your AnKing deck, in deck order.
+    #    Anki allows only two search terms, so both kinds of new card share this one.
     open_cids = sorted({c for b in state["batches"] if not b.get("closed") for c in b.get("cids", [])})
     seen = []
     if state["settings"].get("reviewsInDeck", True):
@@ -407,8 +412,13 @@ def rebuild_filtered_deck():
     terms = []
     if seen:
         terms.append({"search": " OR ".join(seen), "order": "DUE"})
+    new_parts = []
     if open_cids:
-        terms.append({"search": f'cid:{",".join(map(str, open_cids))} is:new', "order": "DUE"})
+        new_parts.append(f'(cid:{",".join(map(str, open_cids))} is:new)')
+    if state["settings"].get("reviewsInDeck", True):
+        new_parts.append(f'("deck:{REVIEW_DECK}" is:new -is:suspended {hy_query()})')
+    if new_parts:
+        terms.append({"search": " OR ".join(new_parts), "order": "DUE"})
     state["deckBuiltDay"] = study_day()
     if not terms:
         anki("vidankiEmptyFilteredDeck", name=FILTERED_DECK)

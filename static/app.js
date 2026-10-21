@@ -736,7 +736,7 @@ function renderSettings() {
     `<label class="check"><input type="checkbox" data-tier="${t}" ${S.stats.cards.tiers.includes(t) ? "checked" : ""}><span></span>Unsuspend ${label.toLowerCase()} cards</label>`).join("");
   const rev = S.settings.reviewsInDeck !== false;
   $("setTiers").insertAdjacentHTML("beforeend",
-    `<label class="check"><input type="checkbox" id="setReviewsInDeck" ${rev ? "checked" : ""}><span></span>Also put today's due AnKing reviews in the VidAnki deck</label>`);
+    `<label class="check"><input type="checkbox" id="setReviewsInDeck" ${rev ? "checked" : ""}><span></span>One deck: also put today's due AnKing reviews and unsuspended high-yield new cards in the VidAnki deck</label>`);
   $("setReviewsInDeck").onchange = async (e) => {
     await api("/api/settings", { reviewsInDeck: e.target.checked });
     await api("/api/rebuild-deck", {}).catch((err) => toast(err.message, true));
