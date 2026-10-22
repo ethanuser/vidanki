@@ -222,7 +222,7 @@ function renderEstimates() {
       `<label class="check"><input type="checkbox" data-tier="${t}" ${c.tiers.includes(t) ? "checked" : ""}><span></span>${label}</label>`).join("")}
   </div>
   <div class="est-notes">
-    <div>Rates adapt as you study. Card time = Anki log × ${r.revlogOverhead.toFixed(1)}.</div>
+    <div>Rates adapt as you study. Card times come from Anki's review log.</div>
     <div><span class="today-dot"></span>= fits in today's target</div>
   </div>`;
   $("estBody").querySelectorAll("[data-tier]").forEach((el) => (el.onchange = setTiers));

@@ -43,12 +43,11 @@ DAY_ROLLOVER_HOUR = 4  # same as Anki: studying at 1am counts for the previous d
 # Your time per minute of video (pauses, rewinds, notes), by source.
 PRIOR_VIDEO_FACTOR = {"bnb": 1.5, "sketchy": 2.0}
 PRIOR_VIDEO_WEIGHT = 3 * 3600  # seconds of video the prior is "worth"; the tracker can miss long pauses
-# Anki cards. Anki's log only covers time until you press a button, so your
-# real time is higher: your log shows ~27 s per new card on its first day vs.
-# ~70 s you actually spend (reading the extra, re-reviewing).
+# Anki cards. Anki logs the time from showing a card until you answer (your
+# AnKing preset records up to 1000 s), so the log already includes reading time.
 PRIOR_NEW_CARD_SEC = 70
 PRIOR_CARD_WEIGHT = 50
-REVLOG_OVERHEAD = 70 / 27
+REVLOG_OVERHEAD = 1.0
 REVIEW_SEC = 35  # mix of ~25 s familiar and ~70 s shaky cards
 FRESH_REVIEWS_PER_CARD_10D = 1.16  # measured: reviews a new card gets in its first 10 days
 PRIOR_BRICK_SEC = 8 * 60
@@ -95,6 +94,13 @@ if any(isinstance(v, int) for c in cache["cardCounts"].values() for v in c.value
 cache.setdefault("ankiByDay", {})
 if "claimed" not in cache:
     cache["cardCounts"] = {}  # recount once so cards already in your decks aren't double-counted
+
+
+if not state.get("revlogFixed"):
+    # review times were never read before (card ids were sent as strings); recount once
+    for _b in state["batches"]:
+        _b.pop("reviewsFinal", None)
+    state["revlogFixed"] = True
 
 
 def save_state():
@@ -485,7 +491,7 @@ def refresh_batches():
         due_notes = set(cache.get("deckNow", {}).get("dueNotes", []))
         b["newToday"] = len({c["note"] for c in info if c["type"] == 0 and c["queue"] == 0} - due_notes)
         b["learning"] = sum(1 for c in info if c["type"] in (1, 3))
-        reviews = anki("getReviewsOfCards", cards=[str(c) for c in cids])
+        reviews = anki("getReviewsOfCards", cards=[int(c) for c in cids])
         since_ms = b["createdAt"] * 1000
         per_day = {}
         studied = 0
@@ -694,7 +700,7 @@ def refresh_anki_today():
     cids = anki("findCards", query="rated:1")
     total = 0
     if cids:
-        for revs in anki("getReviewsOfCards", cards=[str(c) for c in cids]).values():
+        for revs in anki("getReviewsOfCards", cards=[int(c) for c in cids]).values():
             total += sum(r["time"] for r in revs if r["id"] >= start_ms) / 1000
     cache["ankiByDay"][day] = total
 
