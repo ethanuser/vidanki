@@ -307,3 +307,5 @@ button.t-pause:hover { background: var(--pause-bg2); border-color: var(--pause-b
 .cluster-title span:first-child { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cluster-title span:last-child { flex: none; white-space: nowrap; }
 .cluster-title span:last-child { text-transform: none; }  /* keep "h" lowercase in section times */
+
+#timerBtn { width: 52px; text-align: center; padding-left: 0; padding-right: 0; }

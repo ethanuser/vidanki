@@ -422,7 +422,9 @@ video.addEventListener("pause", () => { clearTimeout(idleT); $("stage").classLis
 const timer = { id: null, running: false, shown: 0 };
 function updateTimer() {
   $("timerVal").textContent = clock(timer.shown);
-  $("timerBtn").textContent = timer.running ? "Pause timer" : (timer.shown ? "Resume timer" : "Start timer");
+  // symbol button, fixed width; the tooltip says what it does
+  $("timerBtn").textContent = timer.running ? "❚❚" : "▶";
+  $("timerBtn").title = (timer.running ? "Pause timer" : timer.shown ? "Resume timer" : "Start timer") + " (t)";
   $("timerBtn").className = timer.running ? "t-pause" : "t-start";
 }
 $("timerBtn").onclick = () => { timer.running = !timer.running; updateTimer(); };
