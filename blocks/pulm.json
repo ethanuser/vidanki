@@ -15,247 +15,1271 @@
     {
       "title": "Embryology",
       "items": [
-        {"id": "bnb-embryo", "type": "video", "source": "bnb", "file": "1.Introduction to Pulmonary Medicine/1.Pulmonary_Embryology.mp4", "title": "Pulmonary Embryology",
-         "tags": ["BNB:01_Embryology_Anatomy_and_Physiology::01_Pulmonary_Embryology"]},
-        {"id": "brick-dev", "type": "brick", "title": "Development of the Respiratory Tract", "url": "https://exchange.scholarrx.com/brick/development-of-the-respiratory-tract"}
+        {
+          "id": "bnb-embryo",
+          "type": "video",
+          "source": "bnb",
+          "file": "1.Introduction to Pulmonary Medicine/1.Pulmonary_Embryology.mp4",
+          "title": "Pulmonary Embryology",
+          "tags": [
+            "BNB:01_Embryology_Anatomy_and_Physiology::01_Pulmonary_Embryology"
+          ]
+        },
+        {
+          "id": "brick-dev",
+          "type": "brick",
+          "title": "Development of the Respiratory Tract",
+          "url": "https://exchange.scholarrx.com/brick/development-of-the-respiratory-tract"
+        }
       ]
     },
     {
       "title": "Anatomy & histology",
       "items": [
-        {"id": "bnb-anatomy", "type": "video", "source": "bnb", "file": "1.Introduction to Pulmonary Medicine/2.Pulmonary Anatomy.mp4", "title": "Pulmonary Anatomy",
-         "tags": ["BNB:01_Embryology_Anatomy_and_Physiology::02_Pulmonary_Anatomy_I", "BNB:01_Embryology_Anatomy_and_Physiology::03_Pulmonary_Anatomy_II"]},
-        {"id": "brick-histo", "type": "brick", "title": "Histology of the Respiratory Tract", "url": "https://exchange.scholarrx.com/brick/histology-of-the-respiratory-tract", "done": true},
-        {"id": "brick-olfactory", "type": "brick", "title": "The Olfactory System", "url": "https://exchange.scholarrx.com/brick/0qr5krjonm1z"},
-        {"id": "brick-upper", "type": "brick", "title": "Physiology of the Upper Respiratory Tract", "url": "https://exchange.scholarrx.com/brick/physiology-of-the-upper-respiratory-tract"}
+        {
+          "id": "bnb-anatomy",
+          "type": "video",
+          "source": "bnb",
+          "file": "1.Introduction to Pulmonary Medicine/2.Pulmonary Anatomy.mp4",
+          "title": "Pulmonary Anatomy",
+          "tags": [
+            "BNB:01_Embryology_Anatomy_and_Physiology::02_Pulmonary_Anatomy_I",
+            "BNB:01_Embryology_Anatomy_and_Physiology::03_Pulmonary_Anatomy_II"
+          ]
+        },
+        {
+          "id": "brick-histo",
+          "type": "brick",
+          "title": "Histology of the Respiratory Tract",
+          "url": "https://exchange.scholarrx.com/brick/histology-of-the-respiratory-tract",
+          "done": true
+        },
+        {
+          "id": "brick-olfactory",
+          "type": "brick",
+          "title": "The Olfactory System",
+          "url": "https://exchange.scholarrx.com/brick/0qr5krjonm1z"
+        },
+        {
+          "id": "brick-upper",
+          "type": "brick",
+          "title": "Physiology of the Upper Respiratory Tract",
+          "url": "https://exchange.scholarrx.com/brick/physiology-of-the-upper-respiratory-tract"
+        }
       ]
     },
     {
       "title": "Mechanics",
       "items": [
-        {"id": "bnb-phys", "type": "video", "source": "bnb", "file": "1.Introduction to Pulmonary Medicine/3.Pulmonary_Physiology.mp4", "title": "Pulmonary Physiology",
-         "tags": ["BNB:01_Embryology_Anatomy_and_Physiology::04_Pulmonary_Physiology_I", "BNB:01_Embryology_Anatomy_and_Physiology::05_Pulmonary_Physiology_II"]},
-        {"id": "brick-vent", "type": "brick", "title": "Physiology of Ventilation and Respiration", "url": "https://exchange.scholarrx.com/brick/physiology-of-ventilation-and-respiration"},
-        {"id": "brick-compliance", "type": "brick", "title": "Airflow and Lung Compliance", "url": "https://exchange.scholarrx.com/brick/airflow-and-lung-compliance"},
-        {"id": "amboss-mech", "type": "amboss", "title": "Anatomy, embryology & lung mechanics", "questions": 10}
+        {
+          "id": "bnb-phys",
+          "type": "video",
+          "source": "bnb",
+          "file": "1.Introduction to Pulmonary Medicine/3.Pulmonary_Physiology.mp4",
+          "title": "Pulmonary Physiology",
+          "tags": [
+            "BNB:01_Embryology_Anatomy_and_Physiology::04_Pulmonary_Physiology_I",
+            "BNB:01_Embryology_Anatomy_and_Physiology::05_Pulmonary_Physiology_II"
+          ]
+        },
+        {
+          "id": "brick-vent",
+          "type": "brick",
+          "title": "Physiology of Ventilation and Respiration",
+          "url": "https://exchange.scholarrx.com/brick/physiology-of-ventilation-and-respiration"
+        },
+        {
+          "id": "brick-compliance",
+          "type": "brick",
+          "title": "Airflow and Lung Compliance",
+          "url": "https://exchange.scholarrx.com/brick/airflow-and-lung-compliance"
+        },
+        {
+          "id": "amboss-mech",
+          "type": "amboss",
+          "title": "Anatomy, embryology & lung mechanics",
+          "questions": 10
+        }
       ]
     },
     {
       "title": "Gas transport",
       "items": [
-        {"id": "bnb-hgb", "type": "video", "source": "bnb", "file": "1.Introduction to Pulmonary Medicine/4.Hemoglobin.mp4", "title": "Hemoglobin",
-         "tags": ["BNB:01_Embryology_Anatomy_and_Physiology::06_Hemoglobin"]},
-        {"id": "brick-gasphys", "type": "brick", "title": "Gas Physics", "url": "https://exchange.scholarrx.com/brick/gas-physics"},
-        {"id": "brick-o2co2", "type": "brick", "title": "Oxygen and Carbon Dioxide Transport", "url": "https://exchange.scholarrx.com/brick/oxygen-and-carbon-dioxide-transport"},
-        {"id": "brick-ohdc", "type": "brick", "title": "Oxygen-Hemoglobin Dissociation Curve", "url": "https://exchange.scholarrx.com/brick/oxygen-hemoglobin-dissociation-curve"}
+        {
+          "id": "bnb-hgb",
+          "type": "video",
+          "source": "bnb",
+          "file": "1.Introduction to Pulmonary Medicine/4.Hemoglobin.mp4",
+          "title": "Hemoglobin",
+          "tags": [
+            "BNB:01_Embryology_Anatomy_and_Physiology::06_Hemoglobin"
+          ]
+        },
+        {
+          "id": "brick-gasphys",
+          "type": "brick",
+          "title": "Gas Physics",
+          "url": "https://exchange.scholarrx.com/brick/gas-physics"
+        },
+        {
+          "id": "brick-o2co2",
+          "type": "brick",
+          "title": "Oxygen and Carbon Dioxide Transport",
+          "url": "https://exchange.scholarrx.com/brick/oxygen-and-carbon-dioxide-transport"
+        },
+        {
+          "id": "brick-ohdc",
+          "type": "brick",
+          "title": "Oxygen-Hemoglobin Dissociation Curve",
+          "url": "https://exchange.scholarrx.com/brick/oxygen-hemoglobin-dissociation-curve"
+        }
       ]
     },
     {
       "title": "Circulation & V/Q",
       "items": [
-        {"id": "bnb-circ", "type": "video", "source": "bnb", "file": "1.Introduction to Pulmonary Medicine/5.Pulmonary_Circulation.mp4", "title": "Pulmonary Circulation",
-         "tags": ["BNB:01_Embryology_Anatomy_and_Physiology::07_Pulmonary_Circulation"]},
-        {"id": "brick-circ", "type": "brick", "title": "Pulmonary Circulation and Regulation of Pulmonary Blood Flow", "url": "https://exchange.scholarrx.com/brick/pulmonary-circulation-and-regulation-of-pulmonary-blood-flow"},
-        {"id": "bnb-hypoxia", "type": "video", "source": "bnb", "file": "1.Introduction to Pulmonary Medicine/6.Hypoxia.mp4", "title": "Hypoxia",
-         "tags": ["BNB:01_Embryology_Anatomy_and_Physiology::11_Hypoxia", "BNB:01_Embryology_Anatomy_and_Physiology::12_Hypoxemia"]},
-        {"id": "brick-alv", "type": "brick", "title": "Alveolar Gas Exchange", "url": "https://exchange.scholarrx.com/brick/alveolar-gas-exchange"},
-        {"id": "brick-hypoxemia", "type": "brick", "title": "Hypoxemia", "url": "https://exchange.scholarrx.com/brick/hypoxemia"},
-        {"id": "bnb-vq", "type": "video", "source": "bnb", "file": "1.Introduction to Pulmonary Medicine/7.Ventilation_and_Perfusion.mp4", "title": "Ventilation and Perfusion",
-         "tags": ["BNB:01_Embryology_Anatomy_and_Physiology::09_Ventilation_and_Perfusion", "BNB:01_Embryology_Anatomy_and_Physiology::10_Dead_Space_"]},
-        {"id": "brick-vq", "type": "brick", "title": "Pulmonary Ventilation and Perfusion", "url": "https://exchange.scholarrx.com/brick/pulmonary-ventilation-and-perfusion"}
+        {
+          "id": "bnb-circ",
+          "type": "video",
+          "source": "bnb",
+          "file": "1.Introduction to Pulmonary Medicine/5.Pulmonary_Circulation.mp4",
+          "title": "Pulmonary Circulation",
+          "tags": [
+            "BNB:01_Embryology_Anatomy_and_Physiology::07_Pulmonary_Circulation"
+          ]
+        },
+        {
+          "id": "brick-circ",
+          "type": "brick",
+          "title": "Pulmonary Circulation and Regulation of Pulmonary Blood Flow",
+          "url": "https://exchange.scholarrx.com/brick/pulmonary-circulation-and-regulation-of-pulmonary-blood-flow"
+        },
+        {
+          "id": "bnb-hypoxia",
+          "type": "video",
+          "source": "bnb",
+          "file": "1.Introduction to Pulmonary Medicine/6.Hypoxia.mp4",
+          "title": "Hypoxia",
+          "tags": [
+            "BNB:01_Embryology_Anatomy_and_Physiology::11_Hypoxia",
+            "BNB:01_Embryology_Anatomy_and_Physiology::12_Hypoxemia"
+          ]
+        },
+        {
+          "id": "brick-alv",
+          "type": "brick",
+          "title": "Alveolar Gas Exchange",
+          "url": "https://exchange.scholarrx.com/brick/alveolar-gas-exchange"
+        },
+        {
+          "id": "brick-hypoxemia",
+          "type": "brick",
+          "title": "Hypoxemia",
+          "url": "https://exchange.scholarrx.com/brick/hypoxemia"
+        },
+        {
+          "id": "bnb-vq",
+          "type": "video",
+          "source": "bnb",
+          "file": "1.Introduction to Pulmonary Medicine/7.Ventilation_and_Perfusion.mp4",
+          "title": "Ventilation and Perfusion",
+          "tags": [
+            "BNB:01_Embryology_Anatomy_and_Physiology::09_Ventilation_and_Perfusion",
+            "BNB:01_Embryology_Anatomy_and_Physiology::10_Dead_Space_"
+          ]
+        },
+        {
+          "id": "brick-vq",
+          "type": "brick",
+          "title": "Pulmonary Ventilation and Perfusion",
+          "url": "https://exchange.scholarrx.com/brick/pulmonary-ventilation-and-perfusion"
+        }
       ]
     },
     {
       "title": "CO2, control of breathing & exam",
       "items": [
-        {"id": "bnb-co2", "type": "video", "source": "bnb", "file": "1.Introduction to Pulmonary Medicine/8.Carbon Dioxide.mp4", "title": "Carbon Dioxide",
-         "tags": ["BNB:01_Embryology_Anatomy_and_Physiology::13_Carbon_Dioxide"]},
-        {"id": "brick-control", "type": "brick", "title": "Control of Breathing", "url": "https://exchange.scholarrx.com/brick/control-of-breathing"},
-        {"id": "brick-racid", "type": "brick", "title": "Respiratory Acidosis", "url": "https://exchange.scholarrx.com/brick/respiratory-acidosis"},
-        {"id": "brick-ralk", "type": "brick", "title": "Respiratory Alkalosis", "url": "https://exchange.scholarrx.com/brick/respiratory-alkalosis"},
-        {"id": "bnb-exam", "type": "video", "source": "bnb", "file": "1.Introduction to Pulmonary Medicine/9.Pulmonary_Physical_Exam.mp4", "title": "Pulmonary Physical Exam",
-         "tags": ["BNB:01_Embryology_Anatomy_and_Physiology::14_Lung_Physical_Exam"]},
-        {"id": "amboss-gas", "type": "amboss", "title": "Gas exchange, O2/CO2 transport, V/Q, hypoxemia", "questions": 15}
+        {
+          "id": "bnb-co2",
+          "type": "video",
+          "source": "bnb",
+          "file": "1.Introduction to Pulmonary Medicine/8.Carbon Dioxide.mp4",
+          "title": "Carbon Dioxide",
+          "tags": [
+            "BNB:01_Embryology_Anatomy_and_Physiology::13_Carbon_Dioxide"
+          ]
+        },
+        {
+          "id": "brick-control",
+          "type": "brick",
+          "title": "Control of Breathing",
+          "url": "https://exchange.scholarrx.com/brick/control-of-breathing"
+        },
+        {
+          "id": "brick-racid",
+          "type": "brick",
+          "title": "Respiratory Acidosis",
+          "url": "https://exchange.scholarrx.com/brick/respiratory-acidosis"
+        },
+        {
+          "id": "brick-ralk",
+          "type": "brick",
+          "title": "Respiratory Alkalosis",
+          "url": "https://exchange.scholarrx.com/brick/respiratory-alkalosis"
+        },
+        {
+          "id": "bnb-exam",
+          "type": "video",
+          "source": "bnb",
+          "file": "1.Introduction to Pulmonary Medicine/9.Pulmonary_Physical_Exam.mp4",
+          "title": "Pulmonary Physical Exam",
+          "tags": [
+            "BNB:01_Embryology_Anatomy_and_Physiology::14_Lung_Physical_Exam"
+          ]
+        },
+        {
+          "id": "amboss-gas",
+          "type": "amboss",
+          "title": "Gas exchange, O2/CO2 transport, V/Q, hypoxemia",
+          "questions": 15
+        }
       ]
     },
     {
       "title": "PFTs & obstructive disease",
       "items": [
-        {"id": "bnb-pft", "type": "video", "source": "bnb", "file": "2.Obstructive and Restrictive Disease/1.Pulmonary_Function_Tests.mp4", "title": "Pulmonary Function Tests",
-         "tags": ["BNB:02_Obstructive_and_Restrictive_Diseases::01_Pulmonary_Function_Tests"]},
-        {"id": "brick-pft", "type": "brick", "title": "Pulmonary Function Tests", "url": "https://exchange.scholarrx.com/brick/pulmonary-function-tests"},
-        {"id": "bnb-obstructive", "type": "video", "source": "bnb", "file": "2.Obstructive and Restrictive Disease/2.Obstructive Lung Disease.mp4", "title": "Obstructive Lung Disease",
-         "tags": ["BNB:02_Obstructive_and_Restrictive_Diseases::02_COPD", "BNB:02_Obstructive_and_Restrictive_Diseases::03_Asthma_and_Bronchiectasis_"]},
-        {"id": "brick-obsff", "type": "brick", "title": "Obstructive and Restrictive Lung Diseases: Foundations and Frameworks", "url": "https://exchange.scholarrx.com/brick/obstructive-and-restrictive-lung-diseases-foundations-and-frameworks"},
-        {"id": "brick-copd1", "type": "brick", "title": "Chronic Obstructive Pulmonary Disease Part 1: Pathophysiology", "url": "https://exchange.scholarrx.com/brick/chronic-obstructive-pulmonary-disease-part-1-pathophysiology"},
-        {"id": "brick-copd2", "type": "brick", "title": "Chronic Obstructive Pulmonary Disease Part 2: Clinical Presentation, Diagnosis, and Management", "url": "https://exchange.scholarrx.com/brick/chronic-obstructive-pulmonary-disease-part-2-clinical-presentation-diagnosis-and-management"},
-        {"id": "brick-asthma", "type": "brick", "title": "Asthma: Pathophysiology and Diagnosis", "url": "https://exchange.scholarrx.com/brick/rydnwyog521l"},
-        {"id": "brick-bronchiectasis", "type": "brick", "title": "Bronchiectasis", "url": "https://exchange.scholarrx.com/brick/bronchiectasis"},
-        {"id": "amboss-obstructive", "type": "amboss", "title": "PFTs, COPD, asthma, bronchiectasis", "questions": 10}
+        {
+          "id": "bnb-pft",
+          "type": "video",
+          "source": "bnb",
+          "file": "2.Obstructive and Restrictive Disease/1.Pulmonary_Function_Tests.mp4",
+          "title": "Pulmonary Function Tests",
+          "tags": [
+            "BNB:02_Obstructive_and_Restrictive_Diseases::01_Pulmonary_Function_Tests"
+          ]
+        },
+        {
+          "id": "brick-pft",
+          "type": "brick",
+          "title": "Pulmonary Function Tests",
+          "url": "https://exchange.scholarrx.com/brick/pulmonary-function-tests"
+        },
+        {
+          "id": "bnb-obstructive",
+          "type": "video",
+          "source": "bnb",
+          "file": "2.Obstructive and Restrictive Disease/2.Obstructive Lung Disease.mp4",
+          "title": "Obstructive Lung Disease",
+          "tags": [
+            "BNB:02_Obstructive_and_Restrictive_Diseases::02_COPD",
+            "BNB:02_Obstructive_and_Restrictive_Diseases::03_Asthma_and_Bronchiectasis_"
+          ]
+        },
+        {
+          "id": "brick-obsff",
+          "type": "brick",
+          "title": "Obstructive and Restrictive Lung Diseases: Foundations and Frameworks",
+          "url": "https://exchange.scholarrx.com/brick/obstructive-and-restrictive-lung-diseases-foundations-and-frameworks"
+        },
+        {
+          "id": "brick-copd1",
+          "type": "brick",
+          "title": "Chronic Obstructive Pulmonary Disease Part 1: Pathophysiology",
+          "url": "https://exchange.scholarrx.com/brick/chronic-obstructive-pulmonary-disease-part-1-pathophysiology"
+        },
+        {
+          "id": "brick-copd2",
+          "type": "brick",
+          "title": "Chronic Obstructive Pulmonary Disease Part 2: Clinical Presentation, Diagnosis, and Management",
+          "url": "https://exchange.scholarrx.com/brick/chronic-obstructive-pulmonary-disease-part-2-clinical-presentation-diagnosis-and-management"
+        },
+        {
+          "id": "brick-asthma",
+          "type": "brick",
+          "title": "Asthma: Pathophysiology and Diagnosis",
+          "url": "https://exchange.scholarrx.com/brick/rydnwyog521l"
+        },
+        {
+          "id": "brick-bronchiectasis",
+          "type": "brick",
+          "title": "Bronchiectasis",
+          "url": "https://exchange.scholarrx.com/brick/bronchiectasis"
+        },
+        {
+          "id": "amboss-obstructive",
+          "type": "amboss",
+          "title": "PFTs, COPD, asthma, bronchiectasis",
+          "questions": 10
+        }
       ]
     },
     {
       "title": "Restrictive disease",
       "items": [
-        {"id": "bnb-restrictive", "type": "video", "source": "bnb", "file": "2.Obstructive and Restrictive Disease/3.Restrictive_Lung_Disease.mp4", "title": "Restrictive Lung Disease",
-         "tags": ["BNB:02_Obstructive_and_Restrictive_Diseases::04_Restrictive_Lung_Disease"]},
-        {"id": "brick-ild", "type": "brick", "title": "Interstitial Lung Disease: Foundations and Frameworks", "url": "https://brick-management.scholarrx.com/annotation/interstitial-lung-disease-foundations-and-frameworks?edition=edition-2"},
-        {"id": "brick-hp", "type": "brick", "title": "Hypersensitivity Pneumonitis", "url": "https://brick-management.scholarrx.com/annotation/hypersensitivity-pneumonitis?edition=edition-2"},
-        {"id": "brick-ipf", "type": "brick", "title": "Idiopathic Pulmonary Fibrosis", "url": "https://brick-management.scholarrx.com/annotation/idiopathic-pulmonary-fibrosis?edition=edition-2"},
-        {"id": "brick-pneumoconioses", "type": "brick", "title": "Pneumoconioses", "url": "https://brick-management.scholarrx.com/annotation/pneumoconioses?edition=edition-2"},
-        {"id": "amboss-restrictive", "type": "amboss", "title": "Restrictive & interstitial lung disease", "questions": 10}
+        {
+          "id": "bnb-restrictive",
+          "type": "video",
+          "source": "bnb",
+          "file": "2.Obstructive and Restrictive Disease/3.Restrictive_Lung_Disease.mp4",
+          "title": "Restrictive Lung Disease",
+          "tags": [
+            "BNB:02_Obstructive_and_Restrictive_Diseases::04_Restrictive_Lung_Disease"
+          ]
+        },
+        {
+          "id": "brick-ild",
+          "type": "brick",
+          "title": "Interstitial Lung Disease: Foundations and Frameworks",
+          "url": "https://brick-management.scholarrx.com/annotation/interstitial-lung-disease-foundations-and-frameworks?edition=edition-2"
+        },
+        {
+          "id": "brick-hp",
+          "type": "brick",
+          "title": "Hypersensitivity Pneumonitis",
+          "url": "https://brick-management.scholarrx.com/annotation/hypersensitivity-pneumonitis?edition=edition-2"
+        },
+        {
+          "id": "brick-ipf",
+          "type": "brick",
+          "title": "Idiopathic Pulmonary Fibrosis",
+          "url": "https://brick-management.scholarrx.com/annotation/idiopathic-pulmonary-fibrosis?edition=edition-2"
+        },
+        {
+          "id": "brick-pneumoconioses",
+          "type": "brick",
+          "title": "Pneumoconioses",
+          "url": "https://brick-management.scholarrx.com/annotation/pneumoconioses?edition=edition-2"
+        },
+        {
+          "id": "amboss-restrictive",
+          "type": "amboss",
+          "title": "Restrictive & interstitial lung disease",
+          "questions": 10
+        }
       ]
     },
     {
-      "title": "Asthma & COPD pharmacology",
+      "title": "Asthma, COPD, cough & cold pharmacology",
       "items": [
-        {"id": "bnb-copdtx", "type": "video", "source": "bnb", "file": "2.Obstructive and Restrictive Disease/4.Treatment_of_COPD_and_Asthma.mp4", "title": "Treatment of COPD and Asthma",
-         "tags": ["BNB:02_Obstructive_and_Restrictive_Diseases::05_Treatment_of_COPD_and_Asthma"]},
-        {"id": "sp-asthma", "type": "video", "source": "sketchy", "file": "pharmacology/Smooth Muscle drugs/2.2 - Asthma therapy.mp4", "title": "Sketchy Pharm: Asthma therapy",
-         "tags": ["SP:04_Smooth_Muscle::02_Allergy_&_Pulmonary::02_Asthma_Therapy"]},
-        {"id": "sp-antihistamines", "type": "video", "source": "sketchy", "file": "pharmacology/Smooth Muscle drugs/2.1 - Antihistamines.mp4", "title": "Sketchy Pharm: Antihistamines",
-         "tags": ["SP:04_Smooth_Muscle::02_Allergy_&_Pulmonary::01_Antihistamines"]},
-        {"id": "amboss-pharm", "type": "amboss", "title": "Asthma/COPD drugs & antihistamines", "questions": 8}
+        {
+          "id": "bnb-copdtx",
+          "type": "video",
+          "source": "bnb",
+          "file": "2.Obstructive and Restrictive Disease/4.Treatment_of_COPD_and_Asthma.mp4",
+          "title": "Treatment of COPD and Asthma",
+          "tags": [
+            "BNB:02_Obstructive_and_Restrictive_Diseases::05_Treatment_of_COPD_and_Asthma"
+          ]
+        },
+        {
+          "id": "sp-asthma",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Smooth Muscle drugs/2.2 - Asthma therapy.mp4",
+          "title": "Sketchy Pharm: Asthma therapy",
+          "tags": [
+            "SP:04_Smooth_Muscle::02_Allergy_&_Pulmonary::02_Asthma_Therapy"
+          ]
+        },
+        {
+          "id": "sp-antihistamines",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Smooth Muscle drugs/2.1 - Antihistamines.mp4",
+          "title": "Sketchy Pharm: Antihistamines",
+          "tags": [
+            "SP:04_Smooth_Muscle::02_Allergy_&_Pulmonary::01_Antihistamines"
+          ]
+        },
+        {
+          "id": "sp-sympathomimetics",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/ANS drugs/2.1 - Sympathomimetics.mp4",
+          "title": "Sketchy Pharm: Sympathomimetics",
+          "tags": [
+            "SP:01_Autonomic_Drugs::02_Sympathetic::01_Sympathomimetics"
+          ]
+        },
+        {
+          "id": "sp-indirect-symp",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/ANS drugs/2.2 - Indirect sympathomimetics.mp4",
+          "title": "Sketchy Pharm: Indirect sympathomimetics",
+          "tags": [
+            "SP:01_Autonomic_Drugs::02_Sympathetic::02_Indirect_Sympathomimetics"
+          ]
+        },
+        {
+          "id": "sp-muscarinic",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/ANS drugs/1.3 - Muscarinic antagonists.mp4",
+          "title": "Sketchy Pharm: Muscarinic antagonists",
+          "tags": [
+            "SP:01_Autonomic_Drugs::01_Parasympathetic::03_Muscarinic_antagonists"
+          ]
+        },
+        {
+          "id": "sp-glucocorticoids",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Endocrine drugs/3.4 - Glucocorticoids.mp4",
+          "title": "Sketchy Pharm: Glucocorticoids",
+          "tags": [
+            "SP:05_GI_&_Endocrine::03_Thyroid,_Parathyroid,_Adrenal::04_Glucocorticoids"
+          ]
+        },
+        {
+          "id": "sp-opiates",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/CNS drugs/2.3 - Opiates, naloxone, naltrexone.mp4",
+          "title": "Sketchy Pharm: Opiates (codeine, dextromethorphan)",
+          "tags": [
+            "SP:06_Neuro_&_Psych::01_Anesthetics_&_Analgesics::03_Opiates,_Naloxone,_Naltrexone"
+          ]
+        },
+        {
+          "id": "sp-bupropion",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/CNS drugs/3.4 - Bupropion, mirtazapine, trazodone.mp4",
+          "title": "Sketchy Pharm: Bupropion, mirtazapine, trazodone",
+          "tags": [
+            "SP:06_Neuro_&_Psych::02_Antidepressants_&_Anxiolytics::04_Bupropion,_Mirtazapine,_Trazodone"
+          ]
+        },
+        {
+          "id": "amboss-pharm",
+          "type": "amboss",
+          "title": "Asthma/COPD drugs & antihistamines",
+          "questions": 8
+        }
       ]
     },
     {
       "title": "Pneumonia: bacteria",
       "items": [
-        {"id": "bnb-pna", "type": "video", "source": "bnb", "file": "3.Other Pulmonary Topics/1.Pneumonia.mp4", "title": "Pneumonia",
-         "tags": ["BNB:03_Other_Pulmonary_Topics::01_Pneumonia_I", "BNB:03_Other_Pulmonary_Topics::02_Pneumonia_II"]},
-        {"id": "sm-spneumo", "type": "video", "source": "sketchy", "file": "Microbiology/Bacteria/01 - Gram Positive Cocci/1.5 - Strep. pneumoniae  Strep viridans.m4v", "title": "Sketchy Micro: Strep pneumoniae & viridans",
-         "tags": ["SM:01_Bacteria::01_Gram_(+)_Cocci::05_Strep_pneumoniae_&_viridans"]},
-        {"id": "sm-saureus", "type": "video", "source": "sketchy", "file": "Microbiology/Bacteria/01 - Gram Positive Cocci/1.1 - Staph Aureus.m4v", "title": "Sketchy Micro: Staph aureus",
-         "tags": ["SM:01_Bacteria::01_Gram_(+)_Cocci::01_Staph_aureus"]},
-        {"id": "sm-hflu", "type": "video", "source": "sketchy", "file": "Microbiology/Bacteria/06 - Gram-Negative Bacilli - Respiratory tract/6.2 - Haemophilus influenzae.m4v", "title": "Sketchy Micro: Haemophilus influenzae",
-         "tags": ["SM:01_Bacteria::06_Gram_(-)_Bacilli_-_Respiratory_Tract::02_Haemophilus_influenzae"]},
-        {"id": "sm-bordetella", "type": "video", "source": "sketchy", "file": "Microbiology/Bacteria/06 - Gram-Negative Bacilli - Respiratory tract/6.1 - Bordatella pertussis.m4v", "title": "Sketchy Micro: Bordetella pertussis",
-         "tags": ["SM:01_Bacteria::06_Gram_(-)_Bacilli_-_Respiratory_Tract::01_Bordetella_pertussis"]},
-        {"id": "sm-legionella", "type": "video", "source": "sketchy", "file": "Microbiology/Bacteria/06 - Gram-Negative Bacilli - Respiratory tract/6.3 - Legionella.m4v", "title": "Sketchy Micro: Legionella",
-         "tags": ["SM:01_Bacteria::06_Gram_(-)_Bacilli_-_Respiratory_Tract::03_Legionella_pneumophila"]},
-        {"id": "sm-klebsiella", "type": "video", "source": "sketchy", "file": "Microbiology/Bacteria/05 - Gram-Negative Bacilli - Enteric tract/5.1 - Klebsiella, Enterobacter, Serratia.m4v", "title": "Sketchy Micro: Klebsiella, Enterobacter, Serratia",
-         "tags": ["SM:01_Bacteria::05_Gram_(-)_Bacilli_-_Enteric_Tract::01_Klebsiella_pneumoniae,_Enterobacter_spp.,_Serratia_marcescens"]},
-        {"id": "sm-pseudomonas", "type": "video", "source": "sketchy", "file": "Microbiology/Bacteria/05 - Gram-Negative Bacilli - Enteric tract/5.9 - Pseudomonas.m4v", "title": "Sketchy Micro: Pseudomonas",
-         "tags": ["SM:01_Bacteria::06_Gram_(-)_Bacilli_-_Respiratory_Tract::04_Pseudomonas_aeruginosa"]},
-        {"id": "sm-mycoplasma", "type": "video", "source": "sketchy", "file": "Microbiology/Bacteria/10 - Gram-Indeterminate Bacteria/10.4 - Mycoplasma pneumoniae.m4v", "title": "Sketchy Micro: Mycoplasma pneumoniae",
-         "tags": ["SM:01_Bacteria::10_Gram-indeterminate_Bacteria::04_Mycoplasma_pneumoniae"]},
-        {"id": "sm-chlamydia", "type": "video", "source": "sketchy", "file": "Microbiology/Bacteria/10 - Gram-Indeterminate Bacteria/10.1 - Chlamydia.m4v", "title": "Sketchy Micro: Chlamydia / Chlamydophila",
-         "tags": ["SM:01_Bacteria::10_Gram-indeterminate_Bacteria::01_Chlamydia_trachomatis,_Chlamydophila_pneumoniae_&_Chlamydophila_psittaci"]},
-        {"id": "sm-coxiella", "type": "video", "source": "sketchy", "file": "Microbiology/Bacteria/10 - Gram-Indeterminate Bacteria/10.2 - Coxiella burnetii.m4v", "title": "Sketchy Micro: Coxiella burnetii",
-         "tags": ["SM:01_Bacteria::10_Gram-indeterminate_Bacteria::02_Coxiella_burnetii"]},
-        {"id": "sm-actinomyces", "type": "video", "source": "sketchy", "file": "Microbiology/Bacteria/03 - Gram-Positive Branching Filamentous Rods/3.1 - Actinomyces.m4v", "title": "Sketchy Micro: Actinomyces",
-         "tags": ["SM:01_Bacteria::03_Gram_(+)_Branching_Filamentous_Rods::01_Actinomyces_israelii"]},
-        {"id": "sm-nocardia", "type": "video", "source": "sketchy", "file": "Microbiology/Bacteria/03 - Gram-Positive Branching Filamentous Rods/3.2 - Nocardia.m4v", "title": "Sketchy Micro: Nocardia",
-         "tags": ["SM:01_Bacteria::03_Gram_(+)_Branching_Filamentous_Rods::02_Nocardia_asteroides"]},
-        {"id": "brick-cap", "type": "brick", "title": "Community-Acquired Bacterial Pneumonia", "url": "https://exchange.scholarrx.com/brick/j3256er09qge"},
-        {"id": "brick-pnaff", "type": "brick", "title": "Pneumonia: Foundations and Frameworks", "url": "https://exchange.scholarrx.com/brick/pneumonia-foundations-and-frameworks"},
-        {"id": "brick-bactpna", "type": "brick", "title": "Bacterial Pneumonia", "url": "https://exchange.scholarrx.com/brick/bacterial-pneumonia"},
-        {"id": "brick-abscess", "type": "brick", "title": "Pulmonary Abscess", "url": "https://exchange.scholarrx.com/brick/pulmonary-abscess"},
-        {"id": "amboss-bactpna", "type": "amboss", "title": "Bacterial pneumonia & lung abscess", "questions": 10}
+        {
+          "id": "bnb-pna",
+          "type": "video",
+          "source": "bnb",
+          "file": "3.Other Pulmonary Topics/1.Pneumonia.mp4",
+          "title": "Pneumonia",
+          "tags": [
+            "BNB:03_Other_Pulmonary_Topics::01_Pneumonia_I",
+            "BNB:03_Other_Pulmonary_Topics::02_Pneumonia_II"
+          ]
+        },
+        {
+          "id": "sm-spneumo",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Bacteria/01 - Gram Positive Cocci/1.5 - Strep. pneumoniae  Strep viridans.m4v",
+          "title": "Sketchy Micro: Strep pneumoniae & viridans",
+          "tags": [
+            "SM:01_Bacteria::01_Gram_(+)_Cocci::05_Strep_pneumoniae_&_viridans"
+          ]
+        },
+        {
+          "id": "sm-saureus",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Bacteria/01 - Gram Positive Cocci/1.1 - Staph Aureus.m4v",
+          "title": "Sketchy Micro: Staph aureus",
+          "tags": [
+            "SM:01_Bacteria::01_Gram_(+)_Cocci::01_Staph_aureus"
+          ]
+        },
+        {
+          "id": "sm-gas",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Bacteria/01 - Gram Positive Cocci/1.3 - Strep pyogenes (Group A Strep).m4v",
+          "title": "Sketchy Micro: Strep pyogenes (group A strep)",
+          "tags": [
+            "SM:01_Bacteria::01_Gram_(+)_Cocci::03_Strep_pyogenes_(group_A_strep)"
+          ]
+        },
+        {
+          "id": "sm-hflu",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Bacteria/06 - Gram-Negative Bacilli - Respiratory tract/6.2 - Haemophilus influenzae.m4v",
+          "title": "Sketchy Micro: Haemophilus influenzae",
+          "tags": [
+            "SM:01_Bacteria::06_Gram_(-)_Bacilli_-_Respiratory_Tract::02_Haemophilus_influenzae"
+          ]
+        },
+        {
+          "id": "sm-bordetella",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Bacteria/06 - Gram-Negative Bacilli - Respiratory tract/6.1 - Bordatella pertussis.m4v",
+          "title": "Sketchy Micro: Bordetella pertussis",
+          "tags": [
+            "SM:01_Bacteria::06_Gram_(-)_Bacilli_-_Respiratory_Tract::01_Bordetella_pertussis"
+          ]
+        },
+        {
+          "id": "sm-legionella",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Bacteria/06 - Gram-Negative Bacilli - Respiratory tract/6.3 - Legionella.m4v",
+          "title": "Sketchy Micro: Legionella",
+          "tags": [
+            "SM:01_Bacteria::06_Gram_(-)_Bacilli_-_Respiratory_Tract::03_Legionella_pneumophila"
+          ]
+        },
+        {
+          "id": "sm-klebsiella",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Bacteria/05 - Gram-Negative Bacilli - Enteric tract/5.1 - Klebsiella, Enterobacter, Serratia.m4v",
+          "title": "Sketchy Micro: Klebsiella, Enterobacter, Serratia",
+          "tags": [
+            "SM:01_Bacteria::05_Gram_(-)_Bacilli_-_Enteric_Tract::01_Klebsiella_pneumoniae,_Enterobacter_spp.,_Serratia_marcescens"
+          ]
+        },
+        {
+          "id": "sm-pseudomonas",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Bacteria/05 - Gram-Negative Bacilli - Enteric tract/5.9 - Pseudomonas.m4v",
+          "title": "Sketchy Micro: Pseudomonas",
+          "tags": [
+            "SM:01_Bacteria::06_Gram_(-)_Bacilli_-_Respiratory_Tract::04_Pseudomonas_aeruginosa"
+          ]
+        },
+        {
+          "id": "sm-mycoplasma",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Bacteria/10 - Gram-Indeterminate Bacteria/10.4 - Mycoplasma pneumoniae.m4v",
+          "title": "Sketchy Micro: Mycoplasma pneumoniae",
+          "tags": [
+            "SM:01_Bacteria::10_Gram-indeterminate_Bacteria::04_Mycoplasma_pneumoniae"
+          ]
+        },
+        {
+          "id": "sm-chlamydia",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Bacteria/10 - Gram-Indeterminate Bacteria/10.1 - Chlamydia.m4v",
+          "title": "Sketchy Micro: Chlamydia / Chlamydophila",
+          "tags": [
+            "SM:01_Bacteria::10_Gram-indeterminate_Bacteria::01_Chlamydia_trachomatis,_Chlamydophila_pneumoniae_&_Chlamydophila_psittaci"
+          ]
+        },
+        {
+          "id": "sm-coxiella",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Bacteria/10 - Gram-Indeterminate Bacteria/10.2 - Coxiella burnetii.m4v",
+          "title": "Sketchy Micro: Coxiella burnetii",
+          "tags": [
+            "SM:01_Bacteria::10_Gram-indeterminate_Bacteria::02_Coxiella_burnetii"
+          ]
+        },
+        {
+          "id": "sm-francisella",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Bacteria/07 - Gram-Negative Bacilli - Zoonotics/7.3 - Francisella tularensis.m4v",
+          "title": "Sketchy Micro: Francisella tularensis",
+          "tags": [
+            "SM:01_Bacteria::07_Gram_(-)_Bacilli_-_Zoonotics::03_Francisella_tularensis"
+          ]
+        },
+        {
+          "id": "sm-anthracis",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Bacteria/02 - Gram Positive Bacilli/2.1 - Bacillus anthracis and Bacillus cereus.m4v",
+          "title": "Sketchy Micro: Bacillus anthracis & cereus",
+          "tags": [
+            "SM:01_Bacteria::02_Gram_(+)_Bacilli::01_Bacillus_anthracis_&_cereus"
+          ]
+        },
+        {
+          "id": "sm-actinomyces",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Bacteria/03 - Gram-Positive Branching Filamentous Rods/3.1 - Actinomyces.m4v",
+          "title": "Sketchy Micro: Actinomyces",
+          "tags": [
+            "SM:01_Bacteria::03_Gram_(+)_Branching_Filamentous_Rods::01_Actinomyces_israelii"
+          ]
+        },
+        {
+          "id": "sm-nocardia",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Bacteria/03 - Gram-Positive Branching Filamentous Rods/3.2 - Nocardia.m4v",
+          "title": "Sketchy Micro: Nocardia",
+          "tags": [
+            "SM:01_Bacteria::03_Gram_(+)_Branching_Filamentous_Rods::02_Nocardia_asteroides"
+          ]
+        },
+        {
+          "id": "brick-cap",
+          "type": "brick",
+          "title": "Community-Acquired Bacterial Pneumonia",
+          "url": "https://exchange.scholarrx.com/brick/j3256er09qge"
+        },
+        {
+          "id": "brick-pnaff",
+          "type": "brick",
+          "title": "Pneumonia: Foundations and Frameworks",
+          "url": "https://exchange.scholarrx.com/brick/pneumonia-foundations-and-frameworks"
+        },
+        {
+          "id": "brick-bactpna",
+          "type": "brick",
+          "title": "Bacterial Pneumonia",
+          "url": "https://exchange.scholarrx.com/brick/bacterial-pneumonia"
+        },
+        {
+          "id": "brick-abscess",
+          "type": "brick",
+          "title": "Pulmonary Abscess",
+          "url": "https://exchange.scholarrx.com/brick/pulmonary-abscess"
+        },
+        {
+          "id": "amboss-bactpna",
+          "type": "amboss",
+          "title": "Bacterial pneumonia & lung abscess",
+          "questions": 10
+        }
+      ]
+    },
+    {
+      "title": "Pneumonia: antibiotics",
+      "items": [
+        {
+          "id": "sp-penicillin",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Antibacterial drugs/1.1 - Penicillin.m4v",
+          "title": "Sketchy Pharm: Penicillin",
+          "tags": [
+            "SP:07_Antimicrobials::01_Cell_Wall_&_Membrane-Active_Antibiotics::01_Penicillin"
+          ]
+        },
+        {
+          "id": "sp-antistaph",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Antibacterial drugs/1.2 - Nafcillin, oxacillin, methicillin & dicloxacillin.m4v",
+          "title": "Sketchy Pharm: Nafcillin, oxacillin, methicillin, dicloxacillin",
+          "tags": [
+            "SP:07_Antimicrobials::01_Cell_Wall_&_Membrane-Active_Antibiotics::02_Nafcillin,_Oxacillin,_Methicillin,_Dicloxacillin"
+          ]
+        },
+        {
+          "id": "sp-aminopcn",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Antibacterial drugs/1.3 - Ampicillin, amoxicillin, piperacillin, ticarcillin.m4v",
+          "title": "Sketchy Pharm: Ampicillin, amoxicillin, piperacillin",
+          "tags": [
+            "SP:07_Antimicrobials::01_Cell_Wall_&_Membrane-Active_Antibiotics::03_Ampicillin,_Amoxicillin,_Piperacillin,_Ticarcillin"
+          ]
+        },
+        {
+          "id": "sp-cephalosporins",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Antibacterial drugs/1.4 - Cephalosporins.m4v",
+          "title": "Sketchy Pharm: Cephalosporins",
+          "tags": [
+            "SP:07_Antimicrobials::01_Cell_Wall_&_Membrane-Active_Antibiotics::04_Cephalosporins"
+          ]
+        },
+        {
+          "id": "sp-carbapenems",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Antibacterial drugs/1.5 - Monobactams & carbapenems.m4v",
+          "title": "Sketchy Pharm: Monobactams & carbapenems",
+          "tags": [
+            "SP:07_Antimicrobials::01_Cell_Wall_&_Membrane-Active_Antibiotics::05_Monobactams_&_Carbapenems"
+          ]
+        },
+        {
+          "id": "sp-vancomycin",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Antibacterial drugs/1.6 - Vancomycin.m4v",
+          "title": "Sketchy Pharm: Vancomycin",
+          "tags": [
+            "SP:07_Antimicrobials::01_Cell_Wall_&_Membrane-Active_Antibiotics::06_Vancomycin"
+          ]
+        },
+        {
+          "id": "sp-daptomycin",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Antibacterial drugs/1.7 - Daptomycin.m4v",
+          "title": "Sketchy Pharm: Daptomycin",
+          "tags": [
+            "SP:07_Antimicrobials::01_Cell_Wall_&_Membrane-Active_Antibiotics::07_Daptomycin",
+            "SP:07_Antimicrobials::08_Retired_Lessons::01_Daptomycin_[Old_Version]"
+          ]
+        },
+        {
+          "id": "sp-tetracyclines",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Antibacterial drugs/2.1 - Tetracyclines.mp4",
+          "title": "Sketchy Pharm: Tetracyclines",
+          "tags": [
+            "SP:07_Antimicrobials::02_Inhibitors_of_Bacterial_Protein_Synthesis::01_Tetracyclines"
+          ]
+        },
+        {
+          "id": "sp-macrolides",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Antibacterial drugs/2.2 - Macrolides.mp4",
+          "title": "Sketchy Pharm: Macrolides",
+          "tags": [
+            "SP:07_Antimicrobials::02_Inhibitors_of_Bacterial_Protein_Synthesis::02_Macrolides",
+            "SP:07_Antimicrobials::08_Retired_Lessons::02_Macrolides_[Old_Version]"
+          ]
+        },
+        {
+          "id": "sp-clindamycin",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Antibacterial drugs/2.3 - Clindamycin.mp4",
+          "title": "Sketchy Pharm: Clindamycin",
+          "tags": [
+            "SP:07_Antimicrobials::02_Inhibitors_of_Bacterial_Protein_Synthesis::03_Clindamycin"
+          ]
+        },
+        {
+          "id": "sp-linezolid",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Antibacterial drugs/2.5 - Linezolid.mp4",
+          "title": "Sketchy Pharm: Linezolid",
+          "tags": [
+            "SP:07_Antimicrobials::02_Inhibitors_of_Bacterial_Protein_Synthesis::05_Linezolid"
+          ]
+        },
+        {
+          "id": "sp-aminoglycosides",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Antibacterial drugs/2.6 - Aminoglycosides.mp4",
+          "title": "Sketchy Pharm: Aminoglycosides",
+          "tags": [
+            "SP:07_Antimicrobials::02_Inhibitors_of_Bacterial_Protein_Synthesis::06_Aminoglycosides"
+          ]
+        },
+        {
+          "id": "sp-tmpsmx",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Antibacterial drugs/4.1 - Trimethoprim_sulfamethoxazole.mp4",
+          "title": "Sketchy Pharm: TMP-SMX",
+          "tags": [
+            "SP:07_Antimicrobials::04_Other_Antibiotics::01_Trimethoprim/Sulfamethoxazole"
+          ]
+        },
+        {
+          "id": "sp-fluoroquinolones",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Antibacterial drugs/4.2 - Fluoroquinolones.mp4",
+          "title": "Sketchy Pharm: Fluoroquinolones",
+          "tags": [
+            "SP:07_Antimicrobials::04_Other_Antibiotics::02_Fluoroquinolones"
+          ]
+        },
+        {
+          "id": "sp-metronidazole",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Antibacterial drugs/4.3 - Metronidazole.mp4",
+          "title": "Sketchy Pharm: Metronidazole",
+          "tags": [
+            "SP:07_Antimicrobials::04_Other_Antibiotics::03_Metronidazole"
+          ]
+        },
+        {
+          "id": "amboss-abx",
+          "type": "amboss",
+          "title": "Antibiotics for pneumonia",
+          "questions": 10
+        }
       ]
     },
     {
       "title": "Pneumonia: viruses & immunocompromise",
       "items": [
-        {"id": "sm-influenza", "type": "video", "source": "sketchy", "file": "Microbiology/Viruses/Ch2-RNA Negative Viruses/2.1 - Orthomyxovirus.m4v", "title": "Sketchy Micro: Influenza (Orthomyxovirus)",
-         "tags": ["SM:03_Viruses::02_RNA_(-)_Sense::01_Influenzavirus_(Orthomyxoviridae)"]},
-        {"id": "sm-paramyxo", "type": "video", "source": "sketchy", "file": "Microbiology/Viruses/Ch2-RNA Negative Viruses/2.2 - Paramyxovirus.m4v", "title": "Sketchy Micro: Paramyxovirus (measles, mumps, parainfluenza, RSV)",
-         "tags": ["SM:03_Viruses::02_RNA_(-)_Sense::02_Measles,_Mumps,_Parainfluenza_Viruses_(Paramyxoviridae)", "SM:03_Viruses::02_RNA_(-)_Sense::03_Respiratory_Syncytial_Virus_&_Human_Metapneumovirus_(Pneumoviridae)", "SM:03_Viruses::04_Retired_Lessons::09_Measles_virus,_mumps_virus,_respiratory_syncytial_virus,_parainfluenza_virus_(Paramyxoviridae)_[Retired_Video]"]},
-        {"id": "sm-corona", "type": "video", "source": "sketchy", "file": "Microbiology/Viruses/Ch1- RNA Positive Sense/1.10 - Coronavirus.m4v", "title": "Sketchy Micro: Coronavirus",
-         "tags": ["SM:03_Viruses::01_RNA_(+)_Sense::09_Coronavirus_(Coronaviridae)", "SM:03_Viruses::04_Retired_Lessons::04_Coronavirus_(Coronaviridae)_[Old_Version]"]},
-        {"id": "sm-rhino", "type": "video", "source": "sketchy", "file": "Microbiology/Viruses/Ch1- RNA Positive Sense/1.4 - (Pico) Rhinovirus.m4v", "title": "Sketchy Micro: Rhinovirus",
-         "tags": ["SM:03_Viruses::01_RNA_(+)_Sense::04_Rhinovirus_(PicoRNAviridae)"]},
-        {"id": "sm-adeno", "type": "video", "source": "sketchy", "file": "Microbiology/Viruses/Ch3- DNA Viruses/3.10 - Adenovirus.m4v", "title": "Sketchy Micro: Adenovirus",
-         "tags": ["SM:03_Viruses::03_DNA::10_Adenovirus_(Adenoviridae)"]},
-        {"id": "brick-viralpna", "type": "brick", "title": "Viral Pneumonia", "url": "https://exchange.scholarrx.com/brick/viral-pneumonia"},
-        {"id": "brick-viralcase", "type": "brick", "title": "Viral Pneumonia: A Case Study", "url": "https://exchange.scholarrx.com/brick/7dyn7y76npmg"},
-        {"id": "brick-immunocomp", "type": "brick", "title": "Pneumonia in Patients with Immunocompromise", "url": "https://exchange.scholarrx.com/brick/pneumonia-in-patients-with-immunocompromise"},
-        {"id": "amboss-viralpna", "type": "amboss", "title": "Viral pneumonia & respiratory viruses", "questions": 8}
+        {
+          "id": "sm-influenza",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Viruses/Ch2-RNA Negative Viruses/2.1 - Orthomyxovirus.m4v",
+          "title": "Sketchy Micro: Influenza (Orthomyxovirus)",
+          "tags": [
+            "SM:03_Viruses::02_RNA_(-)_Sense::01_Influenzavirus_(Orthomyxoviridae)"
+          ]
+        },
+        {
+          "id": "sm-paramyxo",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Viruses/Ch2-RNA Negative Viruses/2.2 - Paramyxovirus.m4v",
+          "title": "Sketchy Micro: Paramyxovirus (measles, mumps, parainfluenza, RSV)",
+          "tags": [
+            "SM:03_Viruses::02_RNA_(-)_Sense::02_Measles,_Mumps,_Parainfluenza_Viruses_(Paramyxoviridae)",
+            "SM:03_Viruses::02_RNA_(-)_Sense::03_Respiratory_Syncytial_Virus_&_Human_Metapneumovirus_(Pneumoviridae)",
+            "SM:03_Viruses::04_Retired_Lessons::09_Measles_virus,_mumps_virus,_respiratory_syncytial_virus,_parainfluenza_virus_(Paramyxoviridae)_[Retired_Video]"
+          ]
+        },
+        {
+          "id": "sm-corona",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Viruses/Ch1- RNA Positive Sense/1.10 - Coronavirus.m4v",
+          "title": "Sketchy Micro: Coronavirus",
+          "tags": [
+            "SM:03_Viruses::01_RNA_(+)_Sense::09_Coronavirus_(Coronaviridae)",
+            "SM:03_Viruses::04_Retired_Lessons::04_Coronavirus_(Coronaviridae)_[Old_Version]"
+          ]
+        },
+        {
+          "id": "sm-rhino",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Viruses/Ch1- RNA Positive Sense/1.4 - (Pico) Rhinovirus.m4v",
+          "title": "Sketchy Micro: Rhinovirus",
+          "tags": [
+            "SM:03_Viruses::01_RNA_(+)_Sense::04_Rhinovirus_(PicoRNAviridae)"
+          ]
+        },
+        {
+          "id": "sm-adeno",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Viruses/Ch3- DNA Viruses/3.10 - Adenovirus.m4v",
+          "title": "Sketchy Micro: Adenovirus",
+          "tags": [
+            "SM:03_Viruses::03_DNA::10_Adenovirus_(Adenoviridae)"
+          ]
+        },
+        {
+          "id": "sp-ribavirin",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Antiviral drugs/7.2 - Ribavirin, sofosbuvir, simeprevir.mp4",
+          "title": "Sketchy Pharm: Ribavirin, sofosbuvir, simeprevir",
+          "tags": [
+            "SP:07_Antimicrobials::08_Retired_Lessons::04_Ribavirin,_Sofosbuvir,_Simeprevir_[Retired_Video]",
+            "SP:07_Antimicrobials::07_Other_Antivirals::02_Hepatitis_C_Direct-Acting_Antivirals_(DAAs)"
+          ]
+        },
+        {
+          "id": "sp-acyclovir",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Antiviral drugs/8.1 - Acyclovir, valacyclovir, famciclovir.mp4",
+          "title": "Sketchy Pharm: Acyclovir, valacyclovir, famciclovir",
+          "tags": [
+            "SP:07_Antimicrobials::07_Other_Antivirals::01_Acyclovir,_Valacyclovir,_Famciclovir"
+          ]
+        },
+        {
+          "id": "sp-ganciclovir",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Antiviral drugs/8.2 - Ganciclovir, valganciclovir, foscarnet, cidofovir.mp4",
+          "title": "Sketchy Pharm: Ganciclovir, foscarnet, cidofovir",
+          "tags": [
+            "SP:07_Antimicrobials::07_Other_Antivirals::03_Ganciclovir,_Valganciclovir,_Foscarnet,_Cidofovir"
+          ]
+        },
+        {
+          "id": "brick-viralpna",
+          "type": "brick",
+          "title": "Viral Pneumonia",
+          "url": "https://exchange.scholarrx.com/brick/viral-pneumonia"
+        },
+        {
+          "id": "brick-viralcase",
+          "type": "brick",
+          "title": "Viral Pneumonia: A Case Study",
+          "url": "https://exchange.scholarrx.com/brick/7dyn7y76npmg"
+        },
+        {
+          "id": "brick-immunocomp",
+          "type": "brick",
+          "title": "Pneumonia in Patients with Immunocompromise",
+          "url": "https://exchange.scholarrx.com/brick/pneumonia-in-patients-with-immunocompromise"
+        },
+        {
+          "id": "amboss-viralpna",
+          "type": "amboss",
+          "title": "Viral pneumonia & respiratory viruses",
+          "questions": 8
+        }
       ]
     },
     {
       "title": "Pleura & lung cancer",
       "items": [
-        {"id": "bnb-pleural", "type": "video", "source": "bnb", "file": "3.Other Pulmonary Topics/2.Pleural Disease.mp4", "title": "Pleural Disease",
-         "tags": ["BNB:03_Other_Pulmonary_Topics::03_Pleural_Disease"]},
-        {"id": "bnb-cancer", "type": "video", "source": "bnb", "file": "3.Other Pulmonary Topics/3.Lung Cancer.mp4", "title": "Lung Cancer",
-         "tags": ["BNB:03_Other_Pulmonary_Topics::04_Lung_Cancer"]},
-        {"id": "brick-cancerff", "type": "brick", "title": "Lung Cancer: Foundations and Frameworks", "url": "https://exchange.scholarrx.com/brick/2jk54wdwnwmo"},
-        {"id": "brick-nsclc", "type": "brick", "title": "Non-Small Cell Lung Cancer", "url": "https://exchange.scholarrx.com/brick/non8211small-cell-lung-cancer"},
-        {"id": "brick-sclc", "type": "brick", "title": "Small Cell Lung Cancer", "url": "https://exchange.scholarrx.com/brick/small-cell-lung-cancer"},
-        {"id": "brick-meso", "type": "brick", "title": "Mesothelioma", "url": "https://exchange.scholarrx.com/brick/mesothelioma"},
-        {"id": "brick-paraneo", "type": "brick", "title": "Paraneoplastic Syndromes", "url": "https://exchange.scholarrx.com/brick/paraneoplastic-syndromes"},
-        {"id": "amboss-cancer", "type": "amboss", "title": "Pleural disease & lung cancer", "questions": 10}
+        {
+          "id": "bnb-pleural",
+          "type": "video",
+          "source": "bnb",
+          "file": "3.Other Pulmonary Topics/2.Pleural Disease.mp4",
+          "title": "Pleural Disease",
+          "tags": [
+            "BNB:03_Other_Pulmonary_Topics::03_Pleural_Disease"
+          ]
+        },
+        {
+          "id": "bnb-cancer",
+          "type": "video",
+          "source": "bnb",
+          "file": "3.Other Pulmonary Topics/3.Lung Cancer.mp4",
+          "title": "Lung Cancer",
+          "tags": [
+            "BNB:03_Other_Pulmonary_Topics::04_Lung_Cancer"
+          ]
+        },
+        {
+          "id": "brick-cancerff",
+          "type": "brick",
+          "title": "Lung Cancer: Foundations and Frameworks",
+          "url": "https://exchange.scholarrx.com/brick/2jk54wdwnwmo"
+        },
+        {
+          "id": "brick-nsclc",
+          "type": "brick",
+          "title": "Non-Small Cell Lung Cancer",
+          "url": "https://exchange.scholarrx.com/brick/non8211small-cell-lung-cancer"
+        },
+        {
+          "id": "brick-sclc",
+          "type": "brick",
+          "title": "Small Cell Lung Cancer",
+          "url": "https://exchange.scholarrx.com/brick/small-cell-lung-cancer"
+        },
+        {
+          "id": "brick-meso",
+          "type": "brick",
+          "title": "Mesothelioma",
+          "url": "https://exchange.scholarrx.com/brick/mesothelioma"
+        },
+        {
+          "id": "brick-paraneo",
+          "type": "brick",
+          "title": "Paraneoplastic Syndromes",
+          "url": "https://exchange.scholarrx.com/brick/paraneoplastic-syndromes"
+        },
+        {
+          "id": "amboss-cancer",
+          "type": "amboss",
+          "title": "Pleural disease & lung cancer",
+          "questions": 10
+        }
       ]
     },
     {
       "title": "Sleep apnea & cystic fibrosis",
       "items": [
-        {"id": "bnb-osa", "type": "video", "source": "bnb", "file": "3.Other Pulmonary Topics/4.Sleep Apnea.mp4", "title": "Sleep Apnea",
-         "tags": ["BNB:03_Other_Pulmonary_Topics::05_Sleep_Apnea"]},
-        {"id": "bnb-cf", "type": "video", "source": "bnb", "file": "3.Other Pulmonary Topics/5.Cystic Fibrosis.mp4", "title": "Cystic Fibrosis",
-         "tags": ["BNB:03_Other_Pulmonary_Topics::06_Cystic_Fibrosis"]},
-        {"id": "amboss-osacf", "type": "amboss", "title": "Sleep apnea & cystic fibrosis", "questions": 6}
+        {
+          "id": "bnb-osa",
+          "type": "video",
+          "source": "bnb",
+          "file": "3.Other Pulmonary Topics/4.Sleep Apnea.mp4",
+          "title": "Sleep Apnea",
+          "tags": [
+            "BNB:03_Other_Pulmonary_Topics::05_Sleep_Apnea"
+          ]
+        },
+        {
+          "id": "bnb-cf",
+          "type": "video",
+          "source": "bnb",
+          "file": "3.Other Pulmonary Topics/5.Cystic Fibrosis.mp4",
+          "title": "Cystic Fibrosis",
+          "tags": [
+            "BNB:03_Other_Pulmonary_Topics::06_Cystic_Fibrosis"
+          ]
+        },
+        {
+          "id": "amboss-osacf",
+          "type": "amboss",
+          "title": "Sleep apnea & cystic fibrosis",
+          "questions": 6
+        }
       ]
     },
     {
       "title": "TB & fungi",
       "items": [
-        {"id": "bnb-tb", "type": "video", "source": "bnb", "file": "3.Other Pulmonary Topics/6.Tuberculosis.mp4", "title": "Tuberculosis",
-         "tags": ["BNB:03_Other_Pulmonary_Topics::07_Tuberculosis", "BNB:03_Other_Pulmonary_Topics::08_Tuberculosis_Diagnosis_&_Treatment"]},
-        {"id": "sm-mtb", "type": "video", "source": "sketchy", "file": "Microbiology/Bacteria/08 - Mycobacteria/8.1 - Mycobacterium tuberculosis.m4v", "title": "Sketchy Micro: Mycobacterium tuberculosis",
-         "tags": ["SM:01_Bacteria::08_Mycobacteria::01_Mycobacterium_Tuberculosis"]},
-        {"id": "sp-tbdrugs", "type": "video", "source": "sketchy", "file": "pharmacology/Antibacterial drugs/3.1 - Tuberculosis Drugs.mp4", "title": "Sketchy Pharm: Tuberculosis drugs",
-         "tags": ["SP:07_Antimicrobials::03_Antimycobacterials::01_Tuberculosis_Drugs"]},
-        {"id": "sm-histo", "type": "video", "source": "sketchy", "file": "Microbiology/Fungi/01 - Systemic Mycoses/1.1 - Histoplasmosis.m4v", "title": "Sketchy Micro: Histoplasma",
-         "tags": ["SM:02_Fungi::01_Systemic_Mycoses::01_Histoplasma_capsulatum"]},
-        {"id": "sm-blasto", "type": "video", "source": "sketchy", "file": "Microbiology/Fungi/01 - Systemic Mycoses/1.2 - Blastomycosis.m4v", "title": "Sketchy Micro: Blastomyces",
-         "tags": ["SM:02_Fungi::01_Systemic_Mycoses::02_Blastomyces_dermatitidis"]},
-        {"id": "sm-cocci", "type": "video", "source": "sketchy", "file": "Microbiology/Fungi/01 - Systemic Mycoses/1.3 - Coccidioidomycosis.m4v", "title": "Sketchy Micro: Coccidioides",
-         "tags": ["SM:02_Fungi::01_Systemic_Mycoses::03_Coccidioides_immitis"]},
-        {"id": "sm-paracocci", "type": "video", "source": "sketchy", "file": "Microbiology/Fungi/01 - Systemic Mycoses/1.4 - Paracoccidioidomycosis.m4v", "title": "Sketchy Micro: Paracoccidioides",
-         "tags": ["SM:02_Fungi::01_Systemic_Mycoses::04_Paracoccidioides_brasiliensis"]},
-        {"id": "sm-aspergillus", "type": "video", "source": "sketchy", "file": "Microbiology/Fungi/03 - Opportunistic Fungal Infections/3.2 - Aspergillus fumigatus.m4v", "title": "Sketchy Micro: Aspergillus",
-         "tags": ["SM:02_Fungi::03_Opportunistic_Fungal_Infections::02_Aspergillus_fumigatus"]},
-        {"id": "sm-crypto", "type": "video", "source": "sketchy", "file": "Microbiology/Fungi/03 - Opportunistic Fungal Infections/3.3 - Cryptococcus neoformans.m4v", "title": "Sketchy Micro: Cryptococcus",
-         "tags": ["SM:02_Fungi::03_Opportunistic_Fungal_Infections::03_Cryptococcus_neoformans"]},
-        {"id": "sm-mucor", "type": "video", "source": "sketchy", "file": "Microbiology/Fungi/03 - Opportunistic Fungal Infections/3.4 - Mucormycosis.m4v", "title": "Sketchy Micro: Mucor & Rhizopus",
-         "tags": ["SM:02_Fungi::03_Opportunistic_Fungal_Infections::04_Mucor_spp._&_Rhizopus_spp._(Mucormycetes)"]},
-        {"id": "sm-pcp", "type": "video", "source": "sketchy", "file": "Microbiology/Fungi/03 - Opportunistic Fungal Infections/3.5 - Pneumocystis pneumonia.m4v", "title": "Sketchy Micro: Pneumocystis",
-         "tags": ["SM:02_Fungi::03_Opportunistic_Fungal_Infections::05_Pneumocystis_jirovecii"]},
-        {"id": "brick-tb", "type": "brick", "title": "Tuberculosis", "url": "https://exchange.scholarrx.com/brick/tuberculosis"},
-        {"id": "brick-tbdrugs", "type": "brick", "title": "Drugs to Treat Tuberculosis", "url": "https://exchange.scholarrx.com/brick/drugs-to-treat-tuberculosis"},
-        {"id": "brick-fungalpna", "type": "brick", "title": "Fungal Pneumonia", "url": "https://exchange.scholarrx.com/brick/fungal-pneumonia"},
-        {"id": "amboss-tb", "type": "amboss", "title": "TB, TB drugs & fungal pneumonia", "questions": 10}
+        {
+          "id": "bnb-tb",
+          "type": "video",
+          "source": "bnb",
+          "file": "3.Other Pulmonary Topics/6.Tuberculosis.mp4",
+          "title": "Tuberculosis",
+          "tags": [
+            "BNB:03_Other_Pulmonary_Topics::07_Tuberculosis",
+            "BNB:03_Other_Pulmonary_Topics::08_Tuberculosis_Diagnosis_&_Treatment"
+          ]
+        },
+        {
+          "id": "sm-mtb",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Bacteria/08 - Mycobacteria/8.1 - Mycobacterium tuberculosis.m4v",
+          "title": "Sketchy Micro: Mycobacterium tuberculosis",
+          "tags": [
+            "SM:01_Bacteria::08_Mycobacteria::01_Mycobacterium_Tuberculosis"
+          ]
+        },
+        {
+          "id": "sp-tbdrugs",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Antibacterial drugs/3.1 - Tuberculosis Drugs.mp4",
+          "title": "Sketchy Pharm: Tuberculosis drugs",
+          "tags": [
+            "SP:07_Antimicrobials::03_Antimycobacterials::01_Tuberculosis_Drugs"
+          ]
+        },
+        {
+          "id": "sm-histo",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Fungi/01 - Systemic Mycoses/1.1 - Histoplasmosis.m4v",
+          "title": "Sketchy Micro: Histoplasma",
+          "tags": [
+            "SM:02_Fungi::01_Systemic_Mycoses::01_Histoplasma_capsulatum"
+          ]
+        },
+        {
+          "id": "sm-blasto",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Fungi/01 - Systemic Mycoses/1.2 - Blastomycosis.m4v",
+          "title": "Sketchy Micro: Blastomyces",
+          "tags": [
+            "SM:02_Fungi::01_Systemic_Mycoses::02_Blastomyces_dermatitidis"
+          ]
+        },
+        {
+          "id": "sm-cocci",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Fungi/01 - Systemic Mycoses/1.3 - Coccidioidomycosis.m4v",
+          "title": "Sketchy Micro: Coccidioides",
+          "tags": [
+            "SM:02_Fungi::01_Systemic_Mycoses::03_Coccidioides_immitis"
+          ]
+        },
+        {
+          "id": "sm-paracocci",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Fungi/01 - Systemic Mycoses/1.4 - Paracoccidioidomycosis.m4v",
+          "title": "Sketchy Micro: Paracoccidioides",
+          "tags": [
+            "SM:02_Fungi::01_Systemic_Mycoses::04_Paracoccidioides_brasiliensis"
+          ]
+        },
+        {
+          "id": "sm-aspergillus",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Fungi/03 - Opportunistic Fungal Infections/3.2 - Aspergillus fumigatus.m4v",
+          "title": "Sketchy Micro: Aspergillus",
+          "tags": [
+            "SM:02_Fungi::03_Opportunistic_Fungal_Infections::02_Aspergillus_fumigatus"
+          ]
+        },
+        {
+          "id": "sm-crypto",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Fungi/03 - Opportunistic Fungal Infections/3.3 - Cryptococcus neoformans.m4v",
+          "title": "Sketchy Micro: Cryptococcus",
+          "tags": [
+            "SM:02_Fungi::03_Opportunistic_Fungal_Infections::03_Cryptococcus_neoformans"
+          ]
+        },
+        {
+          "id": "sm-mucor",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Fungi/03 - Opportunistic Fungal Infections/3.4 - Mucormycosis.m4v",
+          "title": "Sketchy Micro: Mucor & Rhizopus",
+          "tags": [
+            "SM:02_Fungi::03_Opportunistic_Fungal_Infections::04_Mucor_spp._&_Rhizopus_spp._(Mucormycetes)"
+          ]
+        },
+        {
+          "id": "sm-pcp",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Fungi/03 - Opportunistic Fungal Infections/3.5 - Pneumocystis pneumonia.m4v",
+          "title": "Sketchy Micro: Pneumocystis",
+          "tags": [
+            "SM:02_Fungi::03_Opportunistic_Fungal_Infections::05_Pneumocystis_jirovecii"
+          ]
+        },
+        {
+          "id": "sp-amphotericin",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/ANTIFUNGAL DRUGS/5.1 - Amphotericin, flucytosine.mp4",
+          "title": "Sketchy Pharm: Amphotericin, flucytosine",
+          "tags": [
+            "SP:07_Antimicrobials::05_Antifungals::01_Amphotericin_&_Flucytosine"
+          ]
+        },
+        {
+          "id": "sp-azoles",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/ANTIFUNGAL DRUGS/5.2 - Azoles.mp4",
+          "title": "Sketchy Pharm: Azoles",
+          "tags": [
+            "SP:07_Antimicrobials::05_Antifungals::02_Azoles"
+          ]
+        },
+        {
+          "id": "sp-echinocandins",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/ANTIFUNGAL DRUGS/5.3 - Griseofulvin, Terbinafine, Echinocandins.mp4",
+          "title": "Sketchy Pharm: Griseofulvin, terbinafine, echinocandins",
+          "tags": [
+            "SP:07_Antimicrobials::05_Antifungals::03_Griseofulvin,_Terbinafine,_Echinocandins"
+          ]
+        },
+        {
+          "id": "brick-tb",
+          "type": "brick",
+          "title": "Tuberculosis",
+          "url": "https://exchange.scholarrx.com/brick/tuberculosis"
+        },
+        {
+          "id": "brick-tbdrugs",
+          "type": "brick",
+          "title": "Drugs to Treat Tuberculosis",
+          "url": "https://exchange.scholarrx.com/brick/drugs-to-treat-tuberculosis"
+        },
+        {
+          "id": "brick-fungalpna",
+          "type": "brick",
+          "title": "Fungal Pneumonia",
+          "url": "https://exchange.scholarrx.com/brick/fungal-pneumonia"
+        },
+        {
+          "id": "amboss-tb",
+          "type": "amboss",
+          "title": "TB, TB drugs & fungal pneumonia",
+          "questions": 10
+        }
       ]
     },
     {
       "title": "Sarcoidosis",
       "items": [
-        {"id": "bnb-sarcoid", "type": "video", "source": "bnb", "file": "3.Other Pulmonary Topics/7.Sarcoidosis.mp4", "title": "Sarcoidosis",
-         "tags": ["BNB:03_Other_Pulmonary_Topics::09_Sarcoidosis"]},
-        {"id": "brick-sarcoid", "type": "brick", "title": "Sarcoidosis", "url": "https://brick-management.scholarrx.com/annotation/sarcoidosis-2?edition=edition-2"}
+        {
+          "id": "bnb-sarcoid",
+          "type": "video",
+          "source": "bnb",
+          "file": "3.Other Pulmonary Topics/7.Sarcoidosis.mp4",
+          "title": "Sarcoidosis",
+          "tags": [
+            "BNB:03_Other_Pulmonary_Topics::09_Sarcoidosis"
+          ]
+        },
+        {
+          "id": "brick-sarcoid",
+          "type": "brick",
+          "title": "Sarcoidosis",
+          "url": "https://brick-management.scholarrx.com/annotation/sarcoidosis-2?edition=edition-2"
+        }
       ]
     },
     {
       "title": "Pulmonary vascular disease",
       "items": [
-        {"id": "bnb-pe", "type": "video", "source": "bnb", "file": "3.Other Pulmonary Topics/8.Pulmonary Embolism.mp4", "title": "Pulmonary Embolism",
-         "note": "Also unsuspends the B&B Pulmonary Hypertension cards; the 2023 videos have no separate pulmonary hypertension video.",
-         "tags": ["BNB:03_Other_Pulmonary_Topics::10_Deep_Vein_Thrombosis_&_Pulmonary_Embolism", "BNB:01_Embryology_Anatomy_and_Physiology::08_Pulmonary_Hypertension"]},
-        {"id": "brick-pe", "type": "brick", "title": "Pulmonary Embolism", "url": "https://exchange.scholarrx.com/brick/pulmonary-embolism"},
-        {"id": "brick-phtn", "type": "brick", "title": "Pulmonary Hypertension", "url": "https://exchange.scholarrx.com/brick/pulmonary-hypertension"},
-        {"id": "brick-vasculitis", "type": "brick", "title": "Small-Vessel Vasculitis of the Lung", "url": "https://exchange.scholarrx.com/brick/jk69x4lm5ewz"},
-        {"id": "brick-ards", "type": "brick", "title": "Acute Respiratory Distress Syndrome", "url": "https://exchange.scholarrx.com/brick/acute-respiratory-distress-syndrome"},
-        {"id": "amboss-vascular", "type": "amboss", "title": "Sarcoid, PE, pulmonary hypertension, ARDS", "questions": 10}
+        {
+          "id": "bnb-pe",
+          "type": "video",
+          "source": "bnb",
+          "file": "3.Other Pulmonary Topics/8.Pulmonary Embolism.mp4",
+          "title": "Pulmonary Embolism",
+          "note": "Also unsuspends the B&B Pulmonary Hypertension cards; the 2023 videos have no separate pulmonary hypertension video.",
+          "tags": [
+            "BNB:03_Other_Pulmonary_Topics::10_Deep_Vein_Thrombosis_&_Pulmonary_Embolism",
+            "BNB:01_Embryology_Anatomy_and_Physiology::08_Pulmonary_Hypertension"
+          ]
+        },
+        {
+          "id": "brick-pe",
+          "type": "brick",
+          "title": "Pulmonary Embolism",
+          "url": "https://exchange.scholarrx.com/brick/pulmonary-embolism"
+        },
+        {
+          "id": "brick-phtn",
+          "type": "brick",
+          "title": "Pulmonary Hypertension",
+          "url": "https://exchange.scholarrx.com/brick/pulmonary-hypertension"
+        },
+        {
+          "id": "brick-vasculitis",
+          "type": "brick",
+          "title": "Small-Vessel Vasculitis of the Lung",
+          "url": "https://exchange.scholarrx.com/brick/jk69x4lm5ewz"
+        },
+        {
+          "id": "brick-ards",
+          "type": "brick",
+          "title": "Acute Respiratory Distress Syndrome",
+          "url": "https://exchange.scholarrx.com/brick/acute-respiratory-distress-syndrome"
+        },
+        {
+          "id": "amboss-vascular",
+          "type": "amboss",
+          "title": "Sarcoid, PE, pulmonary hypertension, ARDS",
+          "questions": 10
+        }
       ]
     },
     {
       "title": "Imaging & block review",
       "items": [
-        {"id": "bnb-cxr", "type": "video", "source": "bnb", "file": "3.Other Pulmonary Topics/9.Chest x-rays.mp4", "title": "Chest X-rays",
-         "tags": ["BNB:03_Other_Pulmonary_Topics::11_Chest_x-rays"]},
-        {"id": "amboss-review", "type": "amboss", "title": "Mixed pulmonary review", "questions": 20}
+        {
+          "id": "bnb-cxr",
+          "type": "video",
+          "source": "bnb",
+          "file": "3.Other Pulmonary Topics/9.Chest x-rays.mp4",
+          "title": "Chest X-rays",
+          "tags": [
+            "BNB:03_Other_Pulmonary_Topics::11_Chest_x-rays"
+          ]
+        },
+        {
+          "id": "amboss-review",
+          "type": "amboss",
+          "title": "Mixed pulmonary review",
+          "questions": 20
+        }
       ]
     }
   ]
