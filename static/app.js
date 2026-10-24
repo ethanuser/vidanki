@@ -103,8 +103,11 @@ function renderStats() {
   // three groups: overall progress | the goal and what it takes | today
   const group = (cls, ...stats) => `<div class="stat-group ${cls}">${stats.join("")}</div>`;
   $("stats").innerHTML = [
-    group("", stat("Done", `${st.items.done} / ${st.items.count}`, "", st.items.done / st.items.count,
-      `${st.items.videosDone}/${st.items.videos} videos`)),
+    group("",
+      stat("Done", `${st.items.done} / ${st.items.count}`, "", st.items.done / st.items.count,
+        `${st.items.videosDone}/${st.items.videos} videos`),
+      stat("Hours", `${hrs(hoursDone())} / ${hrs(hoursDone() + st.remainingSec)}`, "",
+        hoursDone() / (hoursDone() + st.remainingSec), "Hours done (items + Anki) out of the total, done plus left")),
     group("goal clickable",
       stat("Goal", `${goalStr} · ${st.daysLeft} d`),
       stat("Work left", "≈ " + hrs(st.remainingSec), "", null,
@@ -127,13 +130,23 @@ function todaySet() {
   // today's share of reviews comes first, then open-batch new cards, then items in order
   let acc = S.stats.todayAnkiSec;
   for (const it of flat) {
-    if (it.done || it.optional) continue;  // "If time" isn't part of today's target
+    if (it.done || !inPlan(it)) continue;  // collapsed "If time" isn't part of today's target
     if (acc >= left) break;
     out.add(it.id);
     acc += estTotal(it);
   }
   return out;
 }
+
+// Item counted in the plan: core items, plus "If time" when that section is open.
+const inPlan = (i) => !i.optional || S.stats.includeOptional;
+// Hours done: time the finished items took plus all Anki time logged.
+function hoursDone() {
+  const items = flat.filter((i) => i.done && inPlan(i)).reduce((a, i) => a + timeTaken(i), 0);
+  const anki = Object.values(S.stats.days || {}).reduce((a, d) => a + (d.anki || 0), 0);
+  return items + anki;
+}
+const shortDate = (ts) => new Date(ts * 1000).toLocaleDateString(undefined, { month: "short", day: "numeric" });
 
 // Time an item took: what VidAnki tracked, or the estimate if it wasn't tracked here.
 function timeTaken(i) {
@@ -175,12 +188,20 @@ function renderQueue() {
       metaTip = "Items done / total · time done / total time";
     }
     const opt = c.items.some((i) => i.optional);
-    if (opt) { metaTip = "Not counted toward the goal; watching doesn't unsuspend cards"; meta = `not counted · ${meta}`; }
-    html += `<div class="cluster ${opt ? "optional" : ""}"><div class="cluster-title"><span>${c.title}</span><span title="${metaTip}">${meta}</span></div>`;
+    if (opt) {  // "If time": a dropdown; open = shown and counted in the totals
+      const open = S.stats.includeOptional;
+      html += `<div class="cluster optional"><div class="cluster-title opt-toggle" data-toggle-optional
+        title="${open ? "Shown and counted in your totals. Click to hide." : "Click to show and count these in your totals."}">
+        <span><span class="caret ${open ? "open" : ""}"></span>${c.title} (${c.items.length})</span><span>${meta}</span></div>`;
+      if (!open) { html += "</div>"; continue; }
+    } else {
+      html += `<div class="cluster"><div class="cluster-title"><span>${c.title}</span><span title="${metaTip}">${meta}</span></div>`;
+    }
     for (const i of items) {
       const tag = i.type === "video" ? (i.source === "bnb" ? "B&B" : "SK") : i.type === "brick" ? "BRX" : "AMB";
       const cls = i.type === "video" ? i.source : i.type;
       let meta = hrs(i.done ? timeTaken(i) : estTotal(i));
+      if (i.done && !hide && i.doneAt) meta = `${shortDate(i.doneAt)} · ${meta}`;
       let title = "";
       if (i.type === "video" && i.est) {
         title = `Video ${hrs(i.est.video || 0)} + Anki ${hrs(i.est.anki || 0)} (${i.est.cards || 0} HY cards)`;
@@ -677,7 +698,7 @@ function ankiRowShown() {
 }
 function queueOrder() {
   const hide = $("hideDone").checked;
-  const ids = flat.filter((i) => !hide || !i.done || i.id === curId).map((i) => i.id);
+  const ids = flat.filter((i) => (!hide || !i.done || i.id === curId) && (inPlan(i) || i.id === curId)).map((i) => i.id);
   return ankiRowShown() ? ["__anki", ...ids] : ids;
 }
 function step(dir) {
@@ -696,6 +717,12 @@ function step(dir) {
 }
 const goPrev = () => step(-1);
 $("prevBtn").onclick = goPrev;
+$("queueList").addEventListener("click", async (e) => {
+  if (!e.target.closest("[data-toggle-optional]")) return;
+  e.stopImmediatePropagation();
+  await api("/api/settings", { includeOptional: !S.stats.includeOptional });
+  await load();
+}, true);
 $("queueList").onclick = (e) => {
   const el = e.target.closest(".qi");
   if (!el) return;

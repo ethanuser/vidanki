@@ -323,3 +323,8 @@ button.t-pause:hover { background: var(--pause-bg2); border-color: var(--pause-b
 .cluster.optional { margin-top: 10px; border-top: 1px dashed var(--line2); padding-top: 8px; }
 .cluster.optional .qi .qt { color: var(--muted); }
 .cluster.optional .qi.current .qt { color: var(--text); }
+
+.opt-toggle { cursor: pointer; }
+.opt-toggle:hover span { color: var(--text); }
+.caret { display: inline-block; width: 0; height: 0; border-left: 5px solid currentColor; border-top: 4px solid transparent; border-bottom: 4px solid transparent; margin-right: 7px; vertical-align: 1px; transition: transform .15s; }
+.caret.open { transform: rotate(90deg); }

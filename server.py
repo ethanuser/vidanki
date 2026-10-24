@@ -596,18 +596,20 @@ def estimates(block):
     open_new = sum(b.get("newLeft", len(b.get("cids", []))) for b in batches if not b.get("closed"))
     work = {"video": 0, "newCards": 0, "reviews": 0, "bricks": 0, "amboss": 0}
     optional_sec = 0
+    include_opt = state["settings"].get("includeOptional", False)
     for it in items:
         e = per_item.get(it["id"], {})
-        if it.get("optional"):  # shown in the queue, but not part of the goal
+        if it.get("optional"):
             optional_sec += e.get("video", 0)
-            continue
+            if not include_opt:  # collapsed "If time": not part of the goal
+                continue
         work["video"] += e.get("video", 0)
         work["newCards"] += e.get("anki", 0)
         work["bricks" if it["type"] == "brick" else "amboss"] += e.get("other", 0)
     new_cards_left = open_new + sum(e.get("newCards", 0) for e in per_item.values())  # optional items have 0
     work["newCards"] += open_new * rates["cardSec"]
 
-    core = [it for it in items if not it.get("optional")]
+    core = [it for it in items if include_opt or not it.get("optional")]
     bnb = [it for it in items if it["type"] == "video" and it["source"] == "bnb"]
     bnb_total = sum(duration(block, it) for it in bnb)
     bnb_done = sum(duration(block, it) for it in bnb if is_done(block, it))
@@ -663,6 +665,7 @@ def estimates(block):
         "bnb": {"doneSec": bnb_done, "totalSec": bnb_total,
                 "done": sum(1 for it in bnb if is_done(block, it)), "count": len(bnb)},
         "optionalSec": optional_sec,
+        "includeOptional": include_opt,
         "items": {"done": sum(1 for it in core if is_done(block, it)), "count": len(core),
                   "videosDone": sum(1 for it in vids if is_done(block, it)), "videos": len(vids)},
         "daysLeft": days_left,
@@ -797,7 +800,7 @@ def api_state(block_id):
             st = peek_state(it["id"])
             e = {
                 "id": it["id"], "type": it["type"], "title": it["title"], "source": it.get("source"),
-                "done": is_done(block, it), "note": it.get("note"), "optional": it.get("optional", False), "questions": it.get("questions"), "url": it.get("url"),
+                "done": is_done(block, it), "note": it.get("note"), "optional": it.get("optional", False), "doneAt": st.get("doneAt"), "questions": it.get("questions"), "url": it.get("url"),
                 "pos": st.get("pos", 0), "activeSec": st.get("activeSec", 0),
                 "ambossLog": st.get("amboss"), "est": est["perItem"].get(it["id"], {}),
             }
@@ -938,6 +941,8 @@ def api_settings(body):
                 pins[k] = float(v)
     if "tiers" in body:
         state["settings"]["tiers"] = [t for t in TIERS if t in body["tiers"]] or ["1"]
+    if "includeOptional" in body:
+        state["settings"]["includeOptional"] = bool(body["includeOptional"])
     if "reviewsInDeck" in body:
         state["settings"]["reviewsInDeck"] = bool(body["reviewsInDeck"])
         state["deckBuiltDay"] = None  # the worker rebuilds the deck within a few seconds
