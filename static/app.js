@@ -423,7 +423,9 @@ const timer = { id: null, running: false, shown: 0 };
 function updateTimer() {
   $("timerVal").textContent = clock(timer.shown);
   // symbol button, fixed width; the tooltip says what it does
-  $("timerBtn").textContent = timer.running ? "❚❚" : "▶";
+  $("timerBtn").innerHTML = timer.running
+    ? '<svg viewBox="0 0 14 14"><rect x="2" y="1" width="3.5" height="12"/><rect x="8.5" y="1" width="3.5" height="12"/></svg>'
+    : '<svg viewBox="0 0 14 14"><path d="M3 1 L13 7 L3 13 Z"/></svg>';
   $("timerBtn").title = (timer.running ? "Pause timer" : timer.shown ? "Resume timer" : "Start timer") + " (t)";
   $("timerBtn").className = timer.running ? "t-pause" : "t-start";
 }

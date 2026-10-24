@@ -309,3 +309,12 @@ button.t-pause:hover { background: var(--pause-bg2); border-color: var(--pause-b
 .cluster-title span:last-child { text-transform: none; }  /* keep "h" lowercase in section times */
 
 #timerBtn { width: 52px; text-align: center; padding-left: 0; padding-right: 0; }
+
+/* the time and its edit field take the same box, so Edit doesn't shift the buttons */
+.task #timerVal, .task #timerEdit { box-sizing: border-box; width: 112px; height: 38px; margin-right: 8px; }
+.task #timerVal { display: inline-flex; align-items: center; }
+.task #timerEdit { font-family: inherit; font-size: 24px; font-weight: 600; line-height: 1; padding: 0 6px; }
+.task .timer button { height: 36px; }
+/* play / pause drawn as shapes so the bars have real spacing */
+#timerBtn { display: inline-flex; align-items: center; justify-content: center; }
+#timerBtn svg { width: 14px; height: 14px; fill: currentColor; }
