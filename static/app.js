@@ -127,7 +127,7 @@ function todaySet() {
   // today's share of reviews comes first, then open-batch new cards, then items in order
   let acc = S.stats.todayAnkiSec;
   for (const it of flat) {
-    if (it.done) continue;
+    if (it.done || it.optional) continue;  // "If time" isn't part of today's target
     if (acc >= left) break;
     out.add(it.id);
     acc += estTotal(it);
@@ -174,7 +174,9 @@ function renderQueue() {
       meta = `${nDone}/${c.items.length} · ` + (nDone ? `${hrs(spent)} / ${hrs(spent + left)}` : hrs(left));
       metaTip = "Items done / total · time done / total time";
     }
-    html += `<div class="cluster"><div class="cluster-title"><span>${c.title}</span><span title="${metaTip}">${meta}</span></div>`;
+    const opt = c.items.some((i) => i.optional);
+    if (opt) { metaTip = "Not counted toward the goal; watching doesn't unsuspend cards"; meta = `not counted · ${meta}`; }
+    html += `<div class="cluster ${opt ? "optional" : ""}"><div class="cluster-title"><span>${c.title}</span><span title="${metaTip}">${meta}</span></div>`;
     for (const i of items) {
       const tag = i.type === "video" ? (i.source === "bnb" ? "B&B" : "SK") : i.type === "brick" ? "BRX" : "AMB";
       const cls = i.type === "video" ? i.source : i.type;
@@ -265,8 +267,8 @@ function showItem(id) {
   $("itemNote").textContent = it.note || "";
   $("doneBtn").hidden = it.done;
   $("undoneBtn").hidden = !it.done;
-  $("doneBtn").textContent = it.type === "video" && it.est && it.est.cards
-    ? `Mark done · unsuspend ${it.est.cards} cards` : "Mark done";
+  $("doneBtn").textContent = it.optional ? "Mark done (no cards)"
+    : it.type === "video" && it.est && it.est.cards ? `Mark done · unsuspend ${it.est.cards} cards` : "Mark done";
   const isVideo = it.type === "video";
   $("player").hidden = !isVideo;
   $("task").hidden = isVideo;

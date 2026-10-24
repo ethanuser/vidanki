@@ -141,6 +141,8 @@ def load_blocks():
         for cluster in b["clusters"]:
             for it in cluster["items"]:
                 it["cluster"] = cluster["title"]
+                # "If time" items: not counted toward the goal, and video only (no cards)
+                it["optional"] = bool(cluster.get("optional"))
                 tags = []
                 for t in it.get("tags", []):
                     for short, full in prefixes.items():
@@ -288,7 +290,7 @@ def _store_counts(block, item_cards, tier_of, source):
         if cids is None:
             continue
         own, excl = {}, {}
-        pending = not is_done(block, it)
+        pending = not is_done(block, it) and not it.get("optional")
         for cid in cids:
             combo = tier_of.get(cid)
             if not combo:
@@ -579,11 +581,11 @@ def estimates(block):
             d = duration(block, it)
             left = 0 if done else max(d - st.get("pos", 0), 0)
             c = counts.get(it["id"], {})
-            cards = 0 if done else count_cards(c.get("excl"), tiers)
+            cards = 0 if done or it.get("optional") else count_cards(c.get("excl"), tiers)
             per_item[it["id"]] = {
                 "video": left * rates["videoFactor"][it["source"]],
                 "anki": cards * rates["cardSec"],
-                "cards": count_cards(c.get("own"), tiers),
+                "cards": 0 if it.get("optional") else count_cards(c.get("own"), tiers),
                 "newCards": cards,
             }
         elif it["type"] == "brick":
@@ -593,18 +595,23 @@ def estimates(block):
 
     open_new = sum(b.get("newLeft", len(b.get("cids", []))) for b in batches if not b.get("closed"))
     work = {"video": 0, "newCards": 0, "reviews": 0, "bricks": 0, "amboss": 0}
+    optional_sec = 0
     for it in items:
         e = per_item.get(it["id"], {})
+        if it.get("optional"):  # shown in the queue, but not part of the goal
+            optional_sec += e.get("video", 0)
+            continue
         work["video"] += e.get("video", 0)
         work["newCards"] += e.get("anki", 0)
         work["bricks" if it["type"] == "brick" else "amboss"] += e.get("other", 0)
-    new_cards_left = open_new + sum(e.get("newCards", 0) for e in per_item.values())
+    new_cards_left = open_new + sum(e.get("newCards", 0) for e in per_item.values())  # optional items have 0
     work["newCards"] += open_new * rates["cardSec"]
 
+    core = [it for it in items if not it.get("optional")]
     bnb = [it for it in items if it["type"] == "video" and it["source"] == "bnb"]
     bnb_total = sum(duration(block, it) for it in bnb)
     bnb_done = sum(duration(block, it) for it in bnb if is_done(block, it))
-    vids = [it for it in items if it["type"] == "video"]
+    vids = [it for it in core if it["type"] == "video"]
 
     today = dt.date.fromisoformat(study_day())
     goal = dt.date.fromisoformat(goal_date(block))
@@ -655,7 +662,8 @@ def estimates(block):
         "openBatchNew": open_new,
         "bnb": {"doneSec": bnb_done, "totalSec": bnb_total,
                 "done": sum(1 for it in bnb if is_done(block, it)), "count": len(bnb)},
-        "items": {"done": sum(1 for it in items if is_done(block, it)), "count": len(items),
+        "optionalSec": optional_sec,
+        "items": {"done": sum(1 for it in core if is_done(block, it)), "count": len(core),
                   "videosDone": sum(1 for it in vids if is_done(block, it)), "videos": len(vids)},
         "daysLeft": days_left,
         "perDaySec": remaining / days_left,
@@ -789,7 +797,7 @@ def api_state(block_id):
             st = peek_state(it["id"])
             e = {
                 "id": it["id"], "type": it["type"], "title": it["title"], "source": it.get("source"),
-                "done": is_done(block, it), "note": it.get("note"), "questions": it.get("questions"), "url": it.get("url"),
+                "done": is_done(block, it), "note": it.get("note"), "optional": it.get("optional", False), "questions": it.get("questions"), "url": it.get("url"),
                 "pos": st.get("pos", 0), "activeSec": st.get("activeSec", 0),
                 "ambossLog": st.get("amboss"), "est": est["perItem"].get(it["id"], {}),
             }
@@ -859,7 +867,7 @@ def api_done(body):
         st["questions"] = int(body["amboss"].get("n") or 0)
     st["done"] = True
     st["doneAt"] = time.time()
-    if item.get("tags") and not body.get("skipAnki"):
+    if item.get("tags") and not body.get("skipAnki") and not item.get("optional"):
         batch = {"block": block["id"], "itemId": item["id"], "createdAt": time.time(), "needsAnki": True}
         state["batches"].append(batch)
         if anki_reachable():

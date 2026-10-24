@@ -318,3 +318,8 @@ button.t-pause:hover { background: var(--pause-bg2); border-color: var(--pause-b
 /* play / pause drawn as shapes so the bars have real spacing */
 #timerBtn { display: inline-flex; align-items: center; justify-content: center; }
 #timerBtn svg { width: 14px; height: 14px; fill: currentColor; }
+
+/* "If time" section at the bottom: visibly secondary */
+.cluster.optional { margin-top: 10px; border-top: 1px dashed var(--line2); padding-top: 8px; }
+.cluster.optional .qi .qt { color: var(--muted); }
+.cluster.optional .qi.current .qt { color: var(--text); }

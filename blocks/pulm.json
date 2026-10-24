@@ -392,66 +392,6 @@
           ]
         },
         {
-          "id": "sp-sympathomimetics",
-          "type": "video",
-          "source": "sketchy",
-          "file": "pharmacology/ANS drugs/2.1 - Sympathomimetics.mp4",
-          "title": "Sketchy Pharm: Sympathomimetics",
-          "tags": [
-            "SP:01_Autonomic_Drugs::02_Sympathetic::01_Sympathomimetics"
-          ]
-        },
-        {
-          "id": "sp-indirect-symp",
-          "type": "video",
-          "source": "sketchy",
-          "file": "pharmacology/ANS drugs/2.2 - Indirect sympathomimetics.mp4",
-          "title": "Sketchy Pharm: Indirect sympathomimetics",
-          "tags": [
-            "SP:01_Autonomic_Drugs::02_Sympathetic::02_Indirect_Sympathomimetics"
-          ]
-        },
-        {
-          "id": "sp-muscarinic",
-          "type": "video",
-          "source": "sketchy",
-          "file": "pharmacology/ANS drugs/1.3 - Muscarinic antagonists.mp4",
-          "title": "Sketchy Pharm: Muscarinic antagonists",
-          "tags": [
-            "SP:01_Autonomic_Drugs::01_Parasympathetic::03_Muscarinic_antagonists"
-          ]
-        },
-        {
-          "id": "sp-glucocorticoids",
-          "type": "video",
-          "source": "sketchy",
-          "file": "pharmacology/Endocrine drugs/3.4 - Glucocorticoids.mp4",
-          "title": "Sketchy Pharm: Glucocorticoids",
-          "tags": [
-            "SP:05_GI_&_Endocrine::03_Thyroid,_Parathyroid,_Adrenal::04_Glucocorticoids"
-          ]
-        },
-        {
-          "id": "sp-opiates",
-          "type": "video",
-          "source": "sketchy",
-          "file": "pharmacology/CNS drugs/2.3 - Opiates, naloxone, naltrexone.mp4",
-          "title": "Sketchy Pharm: Opiates (codeine, dextromethorphan)",
-          "tags": [
-            "SP:06_Neuro_&_Psych::01_Anesthetics_&_Analgesics::03_Opiates,_Naloxone,_Naltrexone"
-          ]
-        },
-        {
-          "id": "sp-bupropion",
-          "type": "video",
-          "source": "sketchy",
-          "file": "pharmacology/CNS drugs/3.4 - Bupropion, mirtazapine, trazodone.mp4",
-          "title": "Sketchy Pharm: Bupropion, mirtazapine, trazodone",
-          "tags": [
-            "SP:06_Neuro_&_Psych::02_Antidepressants_&_Anxiolytics::04_Bupropion,_Mirtazapine,_Trazodone"
-          ]
-        },
-        {
           "id": "amboss-pharm",
           "type": "amboss",
           "title": "Asthma/COPD drugs & antihistamines",
@@ -494,16 +434,6 @@
           ]
         },
         {
-          "id": "sm-gas",
-          "type": "video",
-          "source": "sketchy",
-          "file": "Microbiology/Bacteria/01 - Gram Positive Cocci/1.3 - Strep pyogenes (Group A Strep).m4v",
-          "title": "Sketchy Micro: Strep pyogenes (group A strep)",
-          "tags": [
-            "SM:01_Bacteria::01_Gram_(+)_Cocci::03_Strep_pyogenes_(group_A_strep)"
-          ]
-        },
-        {
           "id": "sm-hflu",
           "type": "video",
           "source": "sketchy",
@@ -511,16 +441,6 @@
           "title": "Sketchy Micro: Haemophilus influenzae",
           "tags": [
             "SM:01_Bacteria::06_Gram_(-)_Bacilli_-_Respiratory_Tract::02_Haemophilus_influenzae"
-          ]
-        },
-        {
-          "id": "sm-bordetella",
-          "type": "video",
-          "source": "sketchy",
-          "file": "Microbiology/Bacteria/06 - Gram-Negative Bacilli - Respiratory tract/6.1 - Bordatella pertussis.m4v",
-          "title": "Sketchy Micro: Bordetella pertussis",
-          "tags": [
-            "SM:01_Bacteria::06_Gram_(-)_Bacilli_-_Respiratory_Tract::01_Bordetella_pertussis"
           ]
         },
         {
@@ -574,56 +494,6 @@
           ]
         },
         {
-          "id": "sm-coxiella",
-          "type": "video",
-          "source": "sketchy",
-          "file": "Microbiology/Bacteria/10 - Gram-Indeterminate Bacteria/10.2 - Coxiella burnetii.m4v",
-          "title": "Sketchy Micro: Coxiella burnetii",
-          "tags": [
-            "SM:01_Bacteria::10_Gram-indeterminate_Bacteria::02_Coxiella_burnetii"
-          ]
-        },
-        {
-          "id": "sm-francisella",
-          "type": "video",
-          "source": "sketchy",
-          "file": "Microbiology/Bacteria/07 - Gram-Negative Bacilli - Zoonotics/7.3 - Francisella tularensis.m4v",
-          "title": "Sketchy Micro: Francisella tularensis",
-          "tags": [
-            "SM:01_Bacteria::07_Gram_(-)_Bacilli_-_Zoonotics::03_Francisella_tularensis"
-          ]
-        },
-        {
-          "id": "sm-anthracis",
-          "type": "video",
-          "source": "sketchy",
-          "file": "Microbiology/Bacteria/02 - Gram Positive Bacilli/2.1 - Bacillus anthracis and Bacillus cereus.m4v",
-          "title": "Sketchy Micro: Bacillus anthracis & cereus",
-          "tags": [
-            "SM:01_Bacteria::02_Gram_(+)_Bacilli::01_Bacillus_anthracis_&_cereus"
-          ]
-        },
-        {
-          "id": "sm-actinomyces",
-          "type": "video",
-          "source": "sketchy",
-          "file": "Microbiology/Bacteria/03 - Gram-Positive Branching Filamentous Rods/3.1 - Actinomyces.m4v",
-          "title": "Sketchy Micro: Actinomyces",
-          "tags": [
-            "SM:01_Bacteria::03_Gram_(+)_Branching_Filamentous_Rods::01_Actinomyces_israelii"
-          ]
-        },
-        {
-          "id": "sm-nocardia",
-          "type": "video",
-          "source": "sketchy",
-          "file": "Microbiology/Bacteria/03 - Gram-Positive Branching Filamentous Rods/3.2 - Nocardia.m4v",
-          "title": "Sketchy Micro: Nocardia",
-          "tags": [
-            "SM:01_Bacteria::03_Gram_(+)_Branching_Filamentous_Rods::02_Nocardia_asteroides"
-          ]
-        },
-        {
           "id": "brick-cap",
           "type": "brick",
           "title": "Community-Acquired Bacterial Pneumonia",
@@ -659,26 +529,6 @@
       "title": "Pneumonia: antibiotics",
       "items": [
         {
-          "id": "sp-penicillin",
-          "type": "video",
-          "source": "sketchy",
-          "file": "pharmacology/Antibacterial drugs/1.1 - Penicillin.m4v",
-          "title": "Sketchy Pharm: Penicillin",
-          "tags": [
-            "SP:07_Antimicrobials::01_Cell_Wall_&_Membrane-Active_Antibiotics::01_Penicillin"
-          ]
-        },
-        {
-          "id": "sp-antistaph",
-          "type": "video",
-          "source": "sketchy",
-          "file": "pharmacology/Antibacterial drugs/1.2 - Nafcillin, oxacillin, methicillin & dicloxacillin.m4v",
-          "title": "Sketchy Pharm: Nafcillin, oxacillin, methicillin, dicloxacillin",
-          "tags": [
-            "SP:07_Antimicrobials::01_Cell_Wall_&_Membrane-Active_Antibiotics::02_Nafcillin,_Oxacillin,_Methicillin,_Dicloxacillin"
-          ]
-        },
-        {
           "id": "sp-aminopcn",
           "type": "video",
           "source": "sketchy",
@@ -699,16 +549,6 @@
           ]
         },
         {
-          "id": "sp-carbapenems",
-          "type": "video",
-          "source": "sketchy",
-          "file": "pharmacology/Antibacterial drugs/1.5 - Monobactams & carbapenems.m4v",
-          "title": "Sketchy Pharm: Monobactams & carbapenems",
-          "tags": [
-            "SP:07_Antimicrobials::01_Cell_Wall_&_Membrane-Active_Antibiotics::05_Monobactams_&_Carbapenems"
-          ]
-        },
-        {
           "id": "sp-vancomycin",
           "type": "video",
           "source": "sketchy",
@@ -716,27 +556,6 @@
           "title": "Sketchy Pharm: Vancomycin",
           "tags": [
             "SP:07_Antimicrobials::01_Cell_Wall_&_Membrane-Active_Antibiotics::06_Vancomycin"
-          ]
-        },
-        {
-          "id": "sp-daptomycin",
-          "type": "video",
-          "source": "sketchy",
-          "file": "pharmacology/Antibacterial drugs/1.7 - Daptomycin.m4v",
-          "title": "Sketchy Pharm: Daptomycin",
-          "tags": [
-            "SP:07_Antimicrobials::01_Cell_Wall_&_Membrane-Active_Antibiotics::07_Daptomycin",
-            "SP:07_Antimicrobials::08_Retired_Lessons::01_Daptomycin_[Old_Version]"
-          ]
-        },
-        {
-          "id": "sp-tetracyclines",
-          "type": "video",
-          "source": "sketchy",
-          "file": "pharmacology/Antibacterial drugs/2.1 - Tetracyclines.mp4",
-          "title": "Sketchy Pharm: Tetracyclines",
-          "tags": [
-            "SP:07_Antimicrobials::02_Inhibitors_of_Bacterial_Protein_Synthesis::01_Tetracyclines"
           ]
         },
         {
@@ -748,36 +567,6 @@
           "tags": [
             "SP:07_Antimicrobials::02_Inhibitors_of_Bacterial_Protein_Synthesis::02_Macrolides",
             "SP:07_Antimicrobials::08_Retired_Lessons::02_Macrolides_[Old_Version]"
-          ]
-        },
-        {
-          "id": "sp-clindamycin",
-          "type": "video",
-          "source": "sketchy",
-          "file": "pharmacology/Antibacterial drugs/2.3 - Clindamycin.mp4",
-          "title": "Sketchy Pharm: Clindamycin",
-          "tags": [
-            "SP:07_Antimicrobials::02_Inhibitors_of_Bacterial_Protein_Synthesis::03_Clindamycin"
-          ]
-        },
-        {
-          "id": "sp-linezolid",
-          "type": "video",
-          "source": "sketchy",
-          "file": "pharmacology/Antibacterial drugs/2.5 - Linezolid.mp4",
-          "title": "Sketchy Pharm: Linezolid",
-          "tags": [
-            "SP:07_Antimicrobials::02_Inhibitors_of_Bacterial_Protein_Synthesis::05_Linezolid"
-          ]
-        },
-        {
-          "id": "sp-aminoglycosides",
-          "type": "video",
-          "source": "sketchy",
-          "file": "pharmacology/Antibacterial drugs/2.6 - Aminoglycosides.mp4",
-          "title": "Sketchy Pharm: Aminoglycosides",
-          "tags": [
-            "SP:07_Antimicrobials::02_Inhibitors_of_Bacterial_Protein_Synthesis::06_Aminoglycosides"
           ]
         },
         {
@@ -798,16 +587,6 @@
           "title": "Sketchy Pharm: Fluoroquinolones",
           "tags": [
             "SP:07_Antimicrobials::04_Other_Antibiotics::02_Fluoroquinolones"
-          ]
-        },
-        {
-          "id": "sp-metronidazole",
-          "type": "video",
-          "source": "sketchy",
-          "file": "pharmacology/Antibacterial drugs/4.3 - Metronidazole.mp4",
-          "title": "Sketchy Pharm: Metronidazole",
-          "tags": [
-            "SP:07_Antimicrobials::04_Other_Antibiotics::03_Metronidazole"
           ]
         },
         {
@@ -841,68 +620,6 @@
             "SM:03_Viruses::02_RNA_(-)_Sense::02_Measles,_Mumps,_Parainfluenza_Viruses_(Paramyxoviridae)",
             "SM:03_Viruses::02_RNA_(-)_Sense::03_Respiratory_Syncytial_Virus_&_Human_Metapneumovirus_(Pneumoviridae)",
             "SM:03_Viruses::04_Retired_Lessons::09_Measles_virus,_mumps_virus,_respiratory_syncytial_virus,_parainfluenza_virus_(Paramyxoviridae)_[Retired_Video]"
-          ]
-        },
-        {
-          "id": "sm-corona",
-          "type": "video",
-          "source": "sketchy",
-          "file": "Microbiology/Viruses/Ch1- RNA Positive Sense/1.10 - Coronavirus.m4v",
-          "title": "Sketchy Micro: Coronavirus",
-          "tags": [
-            "SM:03_Viruses::01_RNA_(+)_Sense::09_Coronavirus_(Coronaviridae)",
-            "SM:03_Viruses::04_Retired_Lessons::04_Coronavirus_(Coronaviridae)_[Old_Version]"
-          ]
-        },
-        {
-          "id": "sm-rhino",
-          "type": "video",
-          "source": "sketchy",
-          "file": "Microbiology/Viruses/Ch1- RNA Positive Sense/1.4 - (Pico) Rhinovirus.m4v",
-          "title": "Sketchy Micro: Rhinovirus",
-          "tags": [
-            "SM:03_Viruses::01_RNA_(+)_Sense::04_Rhinovirus_(PicoRNAviridae)"
-          ]
-        },
-        {
-          "id": "sm-adeno",
-          "type": "video",
-          "source": "sketchy",
-          "file": "Microbiology/Viruses/Ch3- DNA Viruses/3.10 - Adenovirus.m4v",
-          "title": "Sketchy Micro: Adenovirus",
-          "tags": [
-            "SM:03_Viruses::03_DNA::10_Adenovirus_(Adenoviridae)"
-          ]
-        },
-        {
-          "id": "sp-ribavirin",
-          "type": "video",
-          "source": "sketchy",
-          "file": "pharmacology/Antiviral drugs/7.2 - Ribavirin, sofosbuvir, simeprevir.mp4",
-          "title": "Sketchy Pharm: Ribavirin, sofosbuvir, simeprevir",
-          "tags": [
-            "SP:07_Antimicrobials::08_Retired_Lessons::04_Ribavirin,_Sofosbuvir,_Simeprevir_[Retired_Video]",
-            "SP:07_Antimicrobials::07_Other_Antivirals::02_Hepatitis_C_Direct-Acting_Antivirals_(DAAs)"
-          ]
-        },
-        {
-          "id": "sp-acyclovir",
-          "type": "video",
-          "source": "sketchy",
-          "file": "pharmacology/Antiviral drugs/8.1 - Acyclovir, valacyclovir, famciclovir.mp4",
-          "title": "Sketchy Pharm: Acyclovir, valacyclovir, famciclovir",
-          "tags": [
-            "SP:07_Antimicrobials::07_Other_Antivirals::01_Acyclovir,_Valacyclovir,_Famciclovir"
-          ]
-        },
-        {
-          "id": "sp-ganciclovir",
-          "type": "video",
-          "source": "sketchy",
-          "file": "pharmacology/Antiviral drugs/8.2 - Ganciclovir, valganciclovir, foscarnet, cidofovir.mp4",
-          "title": "Sketchy Pharm: Ganciclovir, foscarnet, cidofovir",
-          "tags": [
-            "SP:07_Antimicrobials::07_Other_Antivirals::03_Ganciclovir,_Valganciclovir,_Foscarnet,_Cidofovir"
           ]
         },
         {
@@ -1088,16 +805,6 @@
           ]
         },
         {
-          "id": "sm-paracocci",
-          "type": "video",
-          "source": "sketchy",
-          "file": "Microbiology/Fungi/01 - Systemic Mycoses/1.4 - Paracoccidioidomycosis.m4v",
-          "title": "Sketchy Micro: Paracoccidioides",
-          "tags": [
-            "SM:02_Fungi::01_Systemic_Mycoses::04_Paracoccidioides_brasiliensis"
-          ]
-        },
-        {
           "id": "sm-aspergillus",
           "type": "video",
           "source": "sketchy",
@@ -1108,26 +815,6 @@
           ]
         },
         {
-          "id": "sm-crypto",
-          "type": "video",
-          "source": "sketchy",
-          "file": "Microbiology/Fungi/03 - Opportunistic Fungal Infections/3.3 - Cryptococcus neoformans.m4v",
-          "title": "Sketchy Micro: Cryptococcus",
-          "tags": [
-            "SM:02_Fungi::03_Opportunistic_Fungal_Infections::03_Cryptococcus_neoformans"
-          ]
-        },
-        {
-          "id": "sm-mucor",
-          "type": "video",
-          "source": "sketchy",
-          "file": "Microbiology/Fungi/03 - Opportunistic Fungal Infections/3.4 - Mucormycosis.m4v",
-          "title": "Sketchy Micro: Mucor & Rhizopus",
-          "tags": [
-            "SM:02_Fungi::03_Opportunistic_Fungal_Infections::04_Mucor_spp._&_Rhizopus_spp._(Mucormycetes)"
-          ]
-        },
-        {
           "id": "sm-pcp",
           "type": "video",
           "source": "sketchy",
@@ -1135,36 +822,6 @@
           "title": "Sketchy Micro: Pneumocystis",
           "tags": [
             "SM:02_Fungi::03_Opportunistic_Fungal_Infections::05_Pneumocystis_jirovecii"
-          ]
-        },
-        {
-          "id": "sp-amphotericin",
-          "type": "video",
-          "source": "sketchy",
-          "file": "pharmacology/ANTIFUNGAL DRUGS/5.1 - Amphotericin, flucytosine.mp4",
-          "title": "Sketchy Pharm: Amphotericin, flucytosine",
-          "tags": [
-            "SP:07_Antimicrobials::05_Antifungals::01_Amphotericin_&_Flucytosine"
-          ]
-        },
-        {
-          "id": "sp-azoles",
-          "type": "video",
-          "source": "sketchy",
-          "file": "pharmacology/ANTIFUNGAL DRUGS/5.2 - Azoles.mp4",
-          "title": "Sketchy Pharm: Azoles",
-          "tags": [
-            "SP:07_Antimicrobials::05_Antifungals::02_Azoles"
-          ]
-        },
-        {
-          "id": "sp-echinocandins",
-          "type": "video",
-          "source": "sketchy",
-          "file": "pharmacology/ANTIFUNGAL DRUGS/5.3 - Griseofulvin, Terbinafine, Echinocandins.mp4",
-          "title": "Sketchy Pharm: Griseofulvin, terbinafine, echinocandins",
-          "tags": [
-            "SP:07_Antimicrobials::05_Antifungals::03_Griseofulvin,_Terbinafine,_Echinocandins"
           ]
         },
         {
@@ -1279,6 +936,390 @@
           "type": "amboss",
           "title": "Mixed pulmonary review",
           "questions": 20
+        }
+      ]
+    },
+    {
+      "title": "If time",
+      "optional": true,
+      "note": "Not counted toward the goal. Watching marks it done without unsuspending cards.",
+      "items": [
+        {
+          "id": "sp-sympathomimetics",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/ANS drugs/2.1 - Sympathomimetics.mp4",
+          "title": "Sketchy Pharm: Sympathomimetics",
+          "tags": [
+            "SP:01_Autonomic_Drugs::02_Sympathetic::01_Sympathomimetics"
+          ],
+          "from": "Asthma, COPD, cough & cold pharmacology"
+        },
+        {
+          "id": "sp-indirect-symp",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/ANS drugs/2.2 - Indirect sympathomimetics.mp4",
+          "title": "Sketchy Pharm: Indirect sympathomimetics",
+          "tags": [
+            "SP:01_Autonomic_Drugs::02_Sympathetic::02_Indirect_Sympathomimetics"
+          ],
+          "from": "Asthma, COPD, cough & cold pharmacology"
+        },
+        {
+          "id": "sp-muscarinic",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/ANS drugs/1.3 - Muscarinic antagonists.mp4",
+          "title": "Sketchy Pharm: Muscarinic antagonists",
+          "tags": [
+            "SP:01_Autonomic_Drugs::01_Parasympathetic::03_Muscarinic_antagonists"
+          ],
+          "from": "Asthma, COPD, cough & cold pharmacology"
+        },
+        {
+          "id": "sp-glucocorticoids",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Endocrine drugs/3.4 - Glucocorticoids.mp4",
+          "title": "Sketchy Pharm: Glucocorticoids",
+          "tags": [
+            "SP:05_GI_&_Endocrine::03_Thyroid,_Parathyroid,_Adrenal::04_Glucocorticoids"
+          ],
+          "from": "Asthma, COPD, cough & cold pharmacology"
+        },
+        {
+          "id": "sp-opiates",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/CNS drugs/2.3 - Opiates, naloxone, naltrexone.mp4",
+          "title": "Sketchy Pharm: Opiates (codeine, dextromethorphan)",
+          "tags": [
+            "SP:06_Neuro_&_Psych::01_Anesthetics_&_Analgesics::03_Opiates,_Naloxone,_Naltrexone"
+          ],
+          "from": "Asthma, COPD, cough & cold pharmacology"
+        },
+        {
+          "id": "sp-bupropion",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/CNS drugs/3.4 - Bupropion, mirtazapine, trazodone.mp4",
+          "title": "Sketchy Pharm: Bupropion, mirtazapine, trazodone",
+          "tags": [
+            "SP:06_Neuro_&_Psych::02_Antidepressants_&_Anxiolytics::04_Bupropion,_Mirtazapine,_Trazodone"
+          ],
+          "from": "Asthma, COPD, cough & cold pharmacology"
+        },
+        {
+          "id": "sm-gas",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Bacteria/01 - Gram Positive Cocci/1.3 - Strep pyogenes (Group A Strep).m4v",
+          "title": "Sketchy Micro: Strep pyogenes (group A strep)",
+          "tags": [
+            "SM:01_Bacteria::01_Gram_(+)_Cocci::03_Strep_pyogenes_(group_A_strep)"
+          ],
+          "from": "Pneumonia: bacteria"
+        },
+        {
+          "id": "sm-bordetella",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Bacteria/06 - Gram-Negative Bacilli - Respiratory tract/6.1 - Bordatella pertussis.m4v",
+          "title": "Sketchy Micro: Bordetella pertussis",
+          "tags": [
+            "SM:01_Bacteria::06_Gram_(-)_Bacilli_-_Respiratory_Tract::01_Bordetella_pertussis"
+          ],
+          "from": "Pneumonia: bacteria"
+        },
+        {
+          "id": "sm-coxiella",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Bacteria/10 - Gram-Indeterminate Bacteria/10.2 - Coxiella burnetii.m4v",
+          "title": "Sketchy Micro: Coxiella burnetii",
+          "tags": [
+            "SM:01_Bacteria::10_Gram-indeterminate_Bacteria::02_Coxiella_burnetii"
+          ],
+          "from": "Pneumonia: bacteria"
+        },
+        {
+          "id": "sm-francisella",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Bacteria/07 - Gram-Negative Bacilli - Zoonotics/7.3 - Francisella tularensis.m4v",
+          "title": "Sketchy Micro: Francisella tularensis",
+          "tags": [
+            "SM:01_Bacteria::07_Gram_(-)_Bacilli_-_Zoonotics::03_Francisella_tularensis"
+          ],
+          "from": "Pneumonia: bacteria"
+        },
+        {
+          "id": "sm-anthracis",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Bacteria/02 - Gram Positive Bacilli/2.1 - Bacillus anthracis and Bacillus cereus.m4v",
+          "title": "Sketchy Micro: Bacillus anthracis & cereus",
+          "tags": [
+            "SM:01_Bacteria::02_Gram_(+)_Bacilli::01_Bacillus_anthracis_&_cereus"
+          ],
+          "from": "Pneumonia: bacteria"
+        },
+        {
+          "id": "sm-actinomyces",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Bacteria/03 - Gram-Positive Branching Filamentous Rods/3.1 - Actinomyces.m4v",
+          "title": "Sketchy Micro: Actinomyces",
+          "tags": [
+            "SM:01_Bacteria::03_Gram_(+)_Branching_Filamentous_Rods::01_Actinomyces_israelii"
+          ],
+          "from": "Pneumonia: bacteria"
+        },
+        {
+          "id": "sm-nocardia",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Bacteria/03 - Gram-Positive Branching Filamentous Rods/3.2 - Nocardia.m4v",
+          "title": "Sketchy Micro: Nocardia",
+          "tags": [
+            "SM:01_Bacteria::03_Gram_(+)_Branching_Filamentous_Rods::02_Nocardia_asteroides"
+          ],
+          "from": "Pneumonia: bacteria"
+        },
+        {
+          "id": "sp-penicillin",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Antibacterial drugs/1.1 - Penicillin.m4v",
+          "title": "Sketchy Pharm: Penicillin",
+          "tags": [
+            "SP:07_Antimicrobials::01_Cell_Wall_&_Membrane-Active_Antibiotics::01_Penicillin"
+          ],
+          "from": "Pneumonia: antibiotics"
+        },
+        {
+          "id": "sp-antistaph",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Antibacterial drugs/1.2 - Nafcillin, oxacillin, methicillin & dicloxacillin.m4v",
+          "title": "Sketchy Pharm: Nafcillin, oxacillin, methicillin, dicloxacillin",
+          "tags": [
+            "SP:07_Antimicrobials::01_Cell_Wall_&_Membrane-Active_Antibiotics::02_Nafcillin,_Oxacillin,_Methicillin,_Dicloxacillin"
+          ],
+          "from": "Pneumonia: antibiotics"
+        },
+        {
+          "id": "sp-carbapenems",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Antibacterial drugs/1.5 - Monobactams & carbapenems.m4v",
+          "title": "Sketchy Pharm: Monobactams & carbapenems",
+          "tags": [
+            "SP:07_Antimicrobials::01_Cell_Wall_&_Membrane-Active_Antibiotics::05_Monobactams_&_Carbapenems"
+          ],
+          "from": "Pneumonia: antibiotics"
+        },
+        {
+          "id": "sp-daptomycin",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Antibacterial drugs/1.7 - Daptomycin.m4v",
+          "title": "Sketchy Pharm: Daptomycin",
+          "tags": [
+            "SP:07_Antimicrobials::01_Cell_Wall_&_Membrane-Active_Antibiotics::07_Daptomycin",
+            "SP:07_Antimicrobials::08_Retired_Lessons::01_Daptomycin_[Old_Version]"
+          ],
+          "from": "Pneumonia: antibiotics"
+        },
+        {
+          "id": "sp-tetracyclines",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Antibacterial drugs/2.1 - Tetracyclines.mp4",
+          "title": "Sketchy Pharm: Tetracyclines",
+          "tags": [
+            "SP:07_Antimicrobials::02_Inhibitors_of_Bacterial_Protein_Synthesis::01_Tetracyclines"
+          ],
+          "from": "Pneumonia: antibiotics"
+        },
+        {
+          "id": "sp-clindamycin",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Antibacterial drugs/2.3 - Clindamycin.mp4",
+          "title": "Sketchy Pharm: Clindamycin",
+          "tags": [
+            "SP:07_Antimicrobials::02_Inhibitors_of_Bacterial_Protein_Synthesis::03_Clindamycin"
+          ],
+          "from": "Pneumonia: antibiotics"
+        },
+        {
+          "id": "sp-linezolid",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Antibacterial drugs/2.5 - Linezolid.mp4",
+          "title": "Sketchy Pharm: Linezolid",
+          "tags": [
+            "SP:07_Antimicrobials::02_Inhibitors_of_Bacterial_Protein_Synthesis::05_Linezolid"
+          ],
+          "from": "Pneumonia: antibiotics"
+        },
+        {
+          "id": "sp-aminoglycosides",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Antibacterial drugs/2.6 - Aminoglycosides.mp4",
+          "title": "Sketchy Pharm: Aminoglycosides",
+          "tags": [
+            "SP:07_Antimicrobials::02_Inhibitors_of_Bacterial_Protein_Synthesis::06_Aminoglycosides"
+          ],
+          "from": "Pneumonia: antibiotics"
+        },
+        {
+          "id": "sp-metronidazole",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Antibacterial drugs/4.3 - Metronidazole.mp4",
+          "title": "Sketchy Pharm: Metronidazole",
+          "tags": [
+            "SP:07_Antimicrobials::04_Other_Antibiotics::03_Metronidazole"
+          ],
+          "from": "Pneumonia: antibiotics"
+        },
+        {
+          "id": "sm-corona",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Viruses/Ch1- RNA Positive Sense/1.10 - Coronavirus.m4v",
+          "title": "Sketchy Micro: Coronavirus",
+          "tags": [
+            "SM:03_Viruses::01_RNA_(+)_Sense::09_Coronavirus_(Coronaviridae)",
+            "SM:03_Viruses::04_Retired_Lessons::04_Coronavirus_(Coronaviridae)_[Old_Version]"
+          ],
+          "from": "Pneumonia: viruses & immunocompromise"
+        },
+        {
+          "id": "sm-rhino",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Viruses/Ch1- RNA Positive Sense/1.4 - (Pico) Rhinovirus.m4v",
+          "title": "Sketchy Micro: Rhinovirus",
+          "tags": [
+            "SM:03_Viruses::01_RNA_(+)_Sense::04_Rhinovirus_(PicoRNAviridae)"
+          ],
+          "from": "Pneumonia: viruses & immunocompromise"
+        },
+        {
+          "id": "sm-adeno",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Viruses/Ch3- DNA Viruses/3.10 - Adenovirus.m4v",
+          "title": "Sketchy Micro: Adenovirus",
+          "tags": [
+            "SM:03_Viruses::03_DNA::10_Adenovirus_(Adenoviridae)"
+          ],
+          "from": "Pneumonia: viruses & immunocompromise"
+        },
+        {
+          "id": "sp-ribavirin",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Antiviral drugs/7.2 - Ribavirin, sofosbuvir, simeprevir.mp4",
+          "title": "Sketchy Pharm: Ribavirin, sofosbuvir, simeprevir",
+          "tags": [
+            "SP:07_Antimicrobials::08_Retired_Lessons::04_Ribavirin,_Sofosbuvir,_Simeprevir_[Retired_Video]",
+            "SP:07_Antimicrobials::07_Other_Antivirals::02_Hepatitis_C_Direct-Acting_Antivirals_(DAAs)"
+          ],
+          "from": "Pneumonia: viruses & immunocompromise"
+        },
+        {
+          "id": "sp-acyclovir",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Antiviral drugs/8.1 - Acyclovir, valacyclovir, famciclovir.mp4",
+          "title": "Sketchy Pharm: Acyclovir, valacyclovir, famciclovir",
+          "tags": [
+            "SP:07_Antimicrobials::07_Other_Antivirals::01_Acyclovir,_Valacyclovir,_Famciclovir"
+          ],
+          "from": "Pneumonia: viruses & immunocompromise"
+        },
+        {
+          "id": "sp-ganciclovir",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/Antiviral drugs/8.2 - Ganciclovir, valganciclovir, foscarnet, cidofovir.mp4",
+          "title": "Sketchy Pharm: Ganciclovir, foscarnet, cidofovir",
+          "tags": [
+            "SP:07_Antimicrobials::07_Other_Antivirals::03_Ganciclovir,_Valganciclovir,_Foscarnet,_Cidofovir"
+          ],
+          "from": "Pneumonia: viruses & immunocompromise"
+        },
+        {
+          "id": "sm-paracocci",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Fungi/01 - Systemic Mycoses/1.4 - Paracoccidioidomycosis.m4v",
+          "title": "Sketchy Micro: Paracoccidioides",
+          "tags": [
+            "SM:02_Fungi::01_Systemic_Mycoses::04_Paracoccidioides_brasiliensis"
+          ],
+          "from": "TB & fungi"
+        },
+        {
+          "id": "sm-crypto",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Fungi/03 - Opportunistic Fungal Infections/3.3 - Cryptococcus neoformans.m4v",
+          "title": "Sketchy Micro: Cryptococcus",
+          "tags": [
+            "SM:02_Fungi::03_Opportunistic_Fungal_Infections::03_Cryptococcus_neoformans"
+          ],
+          "from": "TB & fungi"
+        },
+        {
+          "id": "sm-mucor",
+          "type": "video",
+          "source": "sketchy",
+          "file": "Microbiology/Fungi/03 - Opportunistic Fungal Infections/3.4 - Mucormycosis.m4v",
+          "title": "Sketchy Micro: Mucor & Rhizopus",
+          "tags": [
+            "SM:02_Fungi::03_Opportunistic_Fungal_Infections::04_Mucor_spp._&_Rhizopus_spp._(Mucormycetes)"
+          ],
+          "from": "TB & fungi"
+        },
+        {
+          "id": "sp-amphotericin",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/ANTIFUNGAL DRUGS/5.1 - Amphotericin, flucytosine.mp4",
+          "title": "Sketchy Pharm: Amphotericin, flucytosine",
+          "tags": [
+            "SP:07_Antimicrobials::05_Antifungals::01_Amphotericin_&_Flucytosine"
+          ],
+          "from": "TB & fungi"
+        },
+        {
+          "id": "sp-azoles",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/ANTIFUNGAL DRUGS/5.2 - Azoles.mp4",
+          "title": "Sketchy Pharm: Azoles",
+          "tags": [
+            "SP:07_Antimicrobials::05_Antifungals::02_Azoles"
+          ],
+          "from": "TB & fungi"
+        },
+        {
+          "id": "sp-echinocandins",
+          "type": "video",
+          "source": "sketchy",
+          "file": "pharmacology/ANTIFUNGAL DRUGS/5.3 - Griseofulvin, Terbinafine, Echinocandins.mp4",
+          "title": "Sketchy Pharm: Griseofulvin, terbinafine, echinocandins",
+          "tags": [
+            "SP:07_Antimicrobials::05_Antifungals::03_Griseofulvin,_Terbinafine,_Echinocandins"
+          ],
+          "from": "TB & fungi"
         }
       ]
     }
