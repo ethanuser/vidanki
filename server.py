@@ -158,6 +158,24 @@ def load_blocks():
 BLOCKS = load_blocks()
 
 
+def backfill_done_dates():
+    """Videos finished outside VidAnki (renamed by hand) have no completion date;
+    use the time the file was renamed (its inode change time). Stored once."""
+    changed = False
+    for block in BLOCKS.values():
+        for it in all_items(block):
+            if it["type"] != "video" or peek_state(it["id"]).get("doneAt"):
+                continue
+            path, done = resolve_video(block, it)
+            if path is not None and done:
+                st = item_state(it["id"])
+                st["doneAt"] = path.stat().st_ctime
+                st["doneAtFrom"] = "file rename"
+                changed = True
+    if changed:
+        save_state()
+
+
 def goal_date(block):
     return state["settings"].get("goalDates", {}).get(block["id"], block["goalDate"])
 
@@ -1094,6 +1112,7 @@ def main():
     ap.add_argument("--lan", action="store_true", help="listen on all interfaces (phone access)")
     args = ap.parse_args()
     host = "0.0.0.0" if args.lan else "127.0.0.1"
+    backfill_done_dates()
     srv = ThreadingHTTPServer((host, args.port), Handler)
     threading.Thread(target=anki_worker, daemon=True).start()
     print(f"VidAnki on http://localhost:{args.port}  (blocks: {', '.join(BLOCKS)})")

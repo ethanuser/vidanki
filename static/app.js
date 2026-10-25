@@ -146,7 +146,8 @@ function hoursDone() {
   const anki = Object.values(S.stats.days || {}).reduce((a, d) => a + (d.anki || 0), 0);
   return items + anki;
 }
-const shortDate = (ts) => new Date(ts * 1000).toLocaleDateString(undefined, { month: "short", day: "numeric" });
+// study-day date (days roll over at 4 am, like Anki)
+const shortDate = (ts) => new Date((ts - 4 * 3600) * 1000).toLocaleDateString(undefined, { month: "short", day: "numeric" });
 
 // Time an item took: what VidAnki tracked, or the estimate if it wasn't tracked here.
 function timeTaken(i) {
