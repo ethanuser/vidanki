@@ -35,6 +35,7 @@ function toast(msg, err = false) {
   const t = $("toast");
   t.textContent = msg;
   t.className = "toast" + (err ? " err" : "");
+  if (err) Sound.play("error");
   clearTimeout(toast.t);
   toast.t = setTimeout(() => (t.textContent = ""), 9000);
 }
@@ -453,7 +454,7 @@ function updateTimer() {
   $("timerBtn").title = (timer.running ? "Pause timer" : timer.shown ? "Resume timer" : "Start timer") + " (t)";
   $("timerBtn").className = timer.running ? "t-pause" : "t-start";
 }
-$("timerBtn").onclick = () => { timer.running = !timer.running; updateTimer(); };
+$("timerBtn").onclick = () => { timer.running = !timer.running; Sound.play(timer.running ? "start" : "pause"); updateTimer(); };
 // Edit / reset. Typed values: "1:05:00", "12:30", or a plain number of minutes.
 function parseDuration(text) {
   text = text.trim();
@@ -491,6 +492,7 @@ $("timerEdit").addEventListener("keydown", (e) => {
     if (sec === null) { toast("Use m:ss, h:mm:ss, or a number of minutes", true); return; }
     closeTimerEdit();
     setTimerTo(sec);
+    Sound.play("confirm");
   } else if (e.key === "Escape") { e.stopPropagation(); closeTimerEdit(); }
 });
 $("timerEdit").addEventListener("blur", closeTimerEdit);
@@ -509,10 +511,11 @@ $("timerReset").onclick = () => {
   btn.classList.remove("confirm");
   timer.running = false;
   setTimerTo(0);
+  Sound.play("confirm");
 };
 
 // Opening the brick or AMBOSS starts the timer (it keeps running while you're in that tab).
-function startTimer() { if (!timer.running) { timer.running = true; updateTimer(); } }
+function startTimer() { if (!timer.running) { timer.running = true; Sound.play("start"); updateTimer(); } }
 $("brickLink").addEventListener("click", startTimer);
 $("ambLink").addEventListener("click", startTimer);
 
@@ -564,6 +567,9 @@ async function markDone() {
   try {
     const r = await api("/api/done", body);
     pauseVideo();
+    const section = S.clusters.find((c) => c.items.some((i) => i.id === it.id));
+    const lastInSection = section && section.items.every((i) => i.done || i.id === it.id);
+    Sound.play(lastInSection ? "milestone" : "done");
     const parts = [];
     if (r.renamed) parts.push(`Renamed → ${r.renamed}`);
     if (r.batch) {
@@ -604,6 +610,7 @@ function renderGate() {
   const g = S.anki.gate, next = nextPending(curId);
   const nextTitle = next ? next.title : "nothing left";
   if (!g) {
+    if (gateFor && renderGate.cleared !== gateFor) { renderGate.cleared = gateFor; Sound.play("milestone"); }
     $("gateText").innerHTML = `All new cards from <b>${gateFor || "the last video"}</b> done.`;
     $("gateBar").style.width = "100%";
     $("gateSub").textContent = "";
@@ -707,6 +714,7 @@ function step(dir) {
   const at = order.indexOf(view === "anki" ? "__anki" : curId);
   const id = order[at + dir];
   if (id === undefined) return;  // already at the end; the button is disabled there
+  Sound.play("select");
   if (id === "__anki") { showAnki(); return; }
   const it = flat.find((x) => x.id === id);
   if (dir > 0 && S.anki.gate && it.type === "video" && !it.done) {
@@ -721,18 +729,20 @@ $("prevBtn").onclick = goPrev;
 $("queueList").addEventListener("click", async (e) => {
   if (!e.target.closest("[data-toggle-optional]")) return;
   e.stopImmediatePropagation();
+  Sound.play("toggle");
   await api("/api/settings", { includeOptional: !S.stats.includeOptional });
   await load();
 }, true);
 $("queueList").onclick = (e) => {
   const el = e.target.closest(".qi");
   if (!el) return;
+  Sound.play("select");
   if (el.dataset.id === "__anki") { showAnki(); return; }
   view = "item";
   showItem(el.dataset.id);
   renderQueue();
 };
-$("hideDone").onchange = renderQueue;
+$("hideDone").onchange = () => { Sound.play("toggle"); renderQueue(); };
 
 // ---------- settings ----------
 const PIN_FIELDS = [
@@ -746,7 +756,12 @@ const PIN_FIELDS = [
 function openSettings() {
   openModal("settingsModal");
   renderSettings();
+  $("soundOn").checked = Sound.on;
+  $("soundVol").value = Sound.volume;
 }
+$("soundOn").onchange = (e) => { Sound.on = e.target.checked; Sound.play("toggle"); };
+$("soundVol").oninput = (e) => { Sound.volume = +e.target.value; };
+$("soundVol").onchange = () => Sound.play("done");  // preview at the new volume
 function renderSettings() {
   const r = S.stats.rates;
   $("setBlockName").textContent = S.block.name;
@@ -858,6 +873,7 @@ const COMMANDS = [
   { group: "App", title: "Settings: goal date & estimates", keys: [","], run: openSettings },
   { group: "App", title: "Goal date: one day later", run: () => shiftGoal(1) },
   { group: "App", title: "Goal date: one day earlier", run: () => shiftGoal(-1) },
+  { group: "App", title: "Sound effects on / off", run: () => { Sound.on = !Sound.on; Sound.play("toggle"); toast(Sound.on ? "Sounds on" : "Sounds off"); } },
   { group: "App", title: "Keyboard shortcuts", keys: ["?"], run: () => openModal("helpModal") },
   { group: "App", title: "Search commands", keys: ["⌘K"], run: () => openPalette() },
 ];
@@ -876,7 +892,7 @@ $("keysTable").innerHTML = (() => {
   }
   return html;
 })();
-function openModal(id) { closeModals(); $(id).hidden = false; }
+function openModal(id) { closeModals(); $(id).hidden = false; Sound.play("open"); }
 function closeModals() { document.querySelectorAll(".modal").forEach((m) => (m.hidden = true)); }
 $("helpBtn").onclick = (e) => { e.stopPropagation(); openModal("helpModal"); };
 document.querySelectorAll(".modal").forEach((m) => m.addEventListener("click", (e) => {

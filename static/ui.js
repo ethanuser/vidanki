@@ -33,10 +33,11 @@ window.Dropdown = class Dropdown {
   pick(v) {
     this.close();
     this.btn.focus();
-    if (v !== this.value) { this.setValue(v); this.onChange(v); }
+    if (v !== this.value) { this.setValue(v); this.onChange(v); window.Sound && Sound.play("toggle"); }
   }
   open() {
     document.querySelectorAll(".dd-menu").forEach((m) => (m.hidden = true));
+    window.Sound && Sound.play("open");
     this.menu.hidden = false;
     this.el.classList.add("open");
     (this.menu.querySelector(".sel") || this.menu.firstElementChild)?.focus();

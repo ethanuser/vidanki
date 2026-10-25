@@ -157,6 +157,11 @@
       <div id="setPins"></div>
       <div class="set-section">Anki</div>
       <div class="tiers" id="setTiers"></div>
+      <div class="set-section">Sound</div>
+      <div class="set-row">
+        <label class="check"><input type="checkbox" id="soundOn"><span></span>Sound effects</label>
+        <input type="range" id="soundVol" min="0" max="1" step="0.05" aria-label="Sound volume" title="Volume">
+      </div>
       <div class="set-result" id="setResult"></div>
     </div>
   </div>
@@ -171,6 +176,7 @@
 </div>
 
 <script src="shader.js"></script>
+<script src="sound.js"></script>
 <script src="ui.js"></script>
 <script src="app.js"></script>
 </body>
