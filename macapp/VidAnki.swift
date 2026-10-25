@@ -40,6 +40,15 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         statusItem.menu = menu
 
         ensureServer { ok in if ok { self.openSite() } }
+
+        // Safety net: if the server is down for any reason (crash, killed, missed
+        // exit notice), start it again. Checked off the main thread every 30 s.
+        Timer.scheduledTimer(withTimeInterval: 30, repeats: true) { [weak self] _ in
+            guard let self = self, !self.stopping else { return }
+            DispatchQueue.global().async {
+                if !self.isUp() { DispatchQueue.main.async { self.ensureServer { _ in } } }
+            }
+        }
     }
 
     // Launching the app again (Dock, Spotlight, Finder) just brings the tab back.
