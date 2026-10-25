@@ -671,13 +671,28 @@ def estimates(block):
         "daysLeft": days_left,
         "perDaySec": remaining / days_left,
         "todaySec": today_sec,
-        "todayNeededSec": today_need + today_sec,
+        "todayNeededSec": today_target(block, today, days_left, remaining, today_sec, today_anki),
         "paceSec": pace,
         "projectedFinish": projected,
         "today": today.isoformat(),
         "days": day_totals,
         "cardCountsSource": cache.get("cardCountsSource"),
     }
+
+
+def today_target(block, today, days_left, remaining, today_sec, today_anki):
+    """Today's target, fixed for the day. Recomputing it from what's left on every
+    refresh made it climb as you worked (done today + a fresh share of the rest).
+    It's set from the work left at the start of the day: what you've already done
+    today is added back, then split over the days left (at least today's Anki).
+    Changing the goal or the plan resets it so it reflects the new plan."""
+    snap = state.get("todayTarget") or {}
+    if snap.get("day") != today.isoformat() or snap.get("block") != block["id"]:
+        start_left = remaining + today_sec
+        sec = max(start_left / days_left, today_anki)
+        state["todayTarget"] = snap = {"day": today.isoformat(), "block": block["id"], "sec": sec}
+        save_state()
+    return snap["sec"]
 
 
 def anki_now(rates):
@@ -941,6 +956,8 @@ def api_settings(body):
                 pins[k] = float(v)
     if "tiers" in body:
         state["settings"]["tiers"] = [t for t in TIERS if t in body["tiers"]] or ["1"]
+    if any(k in body for k in ("goalDate", "pins", "tiers", "includeOptional")):
+        state.pop("todayTarget", None)  # plan changed: recompute today's target
     if "includeOptional" in body:
         state["settings"]["includeOptional"] = bool(body["includeOptional"])
     if "reviewsInDeck" in body:
