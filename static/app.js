@@ -371,9 +371,15 @@ function applyDark(mode) {
     try { renderer = SmartDark.create(canvas, video); } catch (e) { console.error(e); }
     if (!renderer) mode = "invert";
   }
-  canvas.hidden = mode !== "smart";
-  if (mode === "smart") renderer.start(); else if (renderer) renderer.stop();
-  video.style.filter = { invert: "invert(1) hue-rotate(180deg)", dim: "brightness(.78) contrast(1.05)" }[mode] || "";
+  // Smart dark and Invert both go through the shader, which keeps the video's
+  // own black bars black; the CSS filter is only a fallback without WebGL.
+  if (mode === "invert" && !renderer) {
+    try { renderer = SmartDark.create(canvas, video); } catch (e) { console.error(e); }
+  }
+  const shaded = renderer && (mode === "smart" || mode === "invert");
+  canvas.hidden = !shaded;
+  if (shaded) { renderer.setPlain(mode === "invert"); renderer.start(); } else if (renderer) renderer.stop();
+  video.style.filter = shaded ? "" : ({ invert: "invert(1) hue-rotate(180deg)", dim: "brightness(.78) contrast(1.05)" }[mode] || "");
 }
 systemDark.addEventListener("change", () => {
   const it = cur();

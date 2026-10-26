@@ -14,6 +14,8 @@ window.SmartDark = (function () {
     uniform sampler2D tex;
     uniform float bg;   // output lightness for pure white (OKLab L)
     uniform float fg;   // output lightness for pure black
+    uniform vec4 crop;  // picture area inside the frame (x0, y0, x1, y1); outside = black bars
+    uniform float plain; // 1 = plain invert (lightness flip, hue kept), 0 = smart dark
 
     vec3 toLin(vec3 c) { return mix(c / 12.92, pow((c + 0.055) / 1.055, vec3(2.4)), step(0.04045, c)); }
     vec3 toSrgb(vec3 c) { return mix(c * 12.92, 1.055 * pow(c, vec3(1.0 / 2.4)) - 0.055, step(0.0031308, c)); }
@@ -38,9 +40,19 @@ window.SmartDark = (function () {
     }
 
     void main() {
+      // letterbox / pillarbox bars baked into the video stay black, not flipped to white
+      if (uv.x < crop.x || uv.x > crop.z || uv.y < crop.y || uv.y > crop.w) {
+        gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0);
+        return;
+      }
       vec3 c = texture2D(tex, uv).rgb;
       vec3 lab = toOklab(toLin(c));
       float L = lab.x;
+      if (plain > 0.5) {
+        lab.x = 1.0 - L;
+        gl_FragColor = vec4(toSrgb(clamp(fromOklab(lab), 0.0, 1.0)), 1.0);
+        return;
+      }
       float C = length(lab.yz);
       float inv = mix(fg, bg, L);                  // neutral: flip lightness
       float keep = clamp(max(inv, L), 0.0, 0.86);  // colour: keep, but lift dark ink
@@ -86,6 +98,45 @@ window.SmartDark = (function () {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.uniform1f(gl.getUniformLocation(prog, "bg"), 0.17);
     gl.uniform1f(gl.getUniformLocation(prog, "fg"), 0.93);
+    const uCrop = gl.getUniformLocation(prog, "crop"), uPlain = gl.getUniformLocation(prog, "plain");
+    gl.uniform4f(uCrop, 0, 0, 1, 1);
+    gl.uniform1f(uPlain, 0);
+
+    // Find black bars at the frame edges from a small copy of the frame: rows or
+    // columns whose brightest pixel is near black. A bar must show up twice in a
+    // row before it's used, so a dark scene doesn't get clipped.
+    const probe = document.createElement("canvas");
+    const pctx = probe.getContext("2d", { willReadFrequently: true });
+    let crop = [0, 0, 1, 1], candidate = null, lastProbe = 0;
+    function detectBars() {
+      if (video.readyState < 2 || !video.videoWidth) return;
+      const W = 96, H = Math.max(8, Math.round(96 * video.videoHeight / video.videoWidth));
+      probe.width = W; probe.height = H;
+      try { pctx.drawImage(video, 0, 0, W, H); } catch { return; }
+      const d = pctx.getImageData(0, 0, W, H).data;
+      const lum = (x, y) => { const i = (y * W + x) * 4; return 0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2]; };
+      const colMax = (x) => { let m = 0; for (let y = 0; y < H; y++) m = Math.max(m, lum(x, y)); return m; };
+      const rowMax = (y) => { let m = 0; for (let x = 0; x < W; x++) m = Math.max(m, lum(x, y)); return m; };
+      const DARK = 22;
+      let l = 0, r = W - 1, t = 0, b = H - 1;
+      while (l < W / 2 && colMax(l) < DARK) l++;
+      while (r > W / 2 && colMax(r) < DARK) r--;
+      while (t < H / 2 && rowMax(t) < DARK) t++;
+      while (b > H / 2 && rowMax(b) < DARK) b--;
+      if (l >= W / 2 - 1 || t >= H / 2 - 1) return;  // all dark (a fade): keep what we had
+      // bars thinner than ~2% are just a dark edge of the picture; ignore them
+      const minX = Math.ceil(W * 0.02), minY = Math.ceil(H * 0.02);
+      const next = [l >= minX ? l / W : 0, t >= minY ? t / H : 0,
+                    W - 1 - r >= minX ? (r + 1) / W : 1, H - 1 - b >= minY ? (b + 1) / H : 1];
+      const same = (a, c) => a && a.every((v, i) => Math.abs(v - c[i]) < 0.015);
+      if (same(candidate, next) && !same(crop, next)) { crop = next; gl.useProgram(prog); gl.uniform4f(uCrop, ...crop); kick(); }
+      candidate = next;
+    }
+    // a paused frame (just loaded or seeked) won't be probed again by playback,
+    // so probe it twice to pass the "seen twice" check
+    const probeNow = () => setTimeout(() => { detectBars(); detectBars(); }, 250);
+    video.addEventListener("loadeddata", () => { crop = [0, 0, 1, 1]; candidate = null; gl.useProgram(prog); gl.uniform4f(uCrop, 0, 0, 1, 1); probeNow(); });
+    video.addEventListener("seeked", probeNow);
 
     let running = false;
     const useVFC = "requestVideoFrameCallback" in HTMLVideoElement.prototype;
@@ -105,6 +156,8 @@ window.SmartDark = (function () {
         gl.viewport((cw - w) >> 1, (ch - h) >> 1, w, h);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, video);
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
+        const now = performance.now();
+        if (now - lastProbe > 1500) { lastProbe = now; detectBars(); }
       }
     }
     // While playing, draw every decoded frame; while paused, draw only when the
@@ -121,11 +174,13 @@ window.SmartDark = (function () {
     }
     function kick() { if (running && !pending) { pending = true; requestAnimationFrame(loop); } }
     ["play", "seeked", "loadeddata"].forEach((ev) => video.addEventListener(ev, kick));
+    video.addEventListener("seeked", () => { lastProbe = 0; });
     // a pending frame callback may never fire once paused; don't let it block redraws
     video.addEventListener("pause", () => { pending = false; kick(); });
     new ResizeObserver(kick).observe(canvas);
     return {
       start() { running = true; kick(); },
+      setPlain(v) { gl.useProgram(prog); gl.uniform1f(uPlain, v ? 1 : 0); kick(); },
       stop() { running = false; },
       redraw: kick,
     };
