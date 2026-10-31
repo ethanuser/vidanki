@@ -86,27 +86,33 @@
       </div>
     </div>
 
-    <!-- anki gate -->
-    <div id="gate" class="panel" hidden>
-      <div class="gate-title">Anki time</div>
-      <p id="gateText"></p>
-      <div class="bar big"><div id="gateBar"></div></div>
-      <p id="gateSub" class="muted"></p>
-      <div class="row">
-        <button class="primary" id="gateOpen">Open Anki</button>
-        <button id="gateNext" hidden></button>
-        <button id="gateSkip">Skip, next item anyway</button>
+    <!-- anki gate: how many cards stand between you and the next video -->
+    <div id="gate" class="panel task" hidden>
+      <div class="task-sec">
+        <div class="hero">
+          <div class="hero-num" id="gateNum"></div>
+          <div class="hero-text"><div class="hero-title" id="gateText"></div><div class="muted" id="gateFrom"></div></div>
+        </div>
+        <div id="gateProgress">
+          <div class="bar big"><div id="gateBar"></div></div>
+          <div class="bar-label"><span id="gateDone"></span><span id="gateLater"></span></div>
+        </div>
+        <div class="row hero-actions">
+          <button class="primary" id="gateOpen">Open Anki</button>
+          <button class="primary" id="gateNext" hidden></button>
+          <button class="quiet" id="gateSkip">Skip for now</button>
+        </div>
       </div>
+      <div class="task-sec warn-note" id="gateWarn" hidden></div>
     </div>
 
     <!-- today's anki (from the queue's Anki row) -->
     <div id="ankiPanel" class="panel task" hidden>
       <div class="task-sec">
-        <div class="sec-label" id="ankiLabel">In the VidAnki deck</div>
-        <table class="anki-table" id="ankiTable"></table>
-        <div class="row">
+        <div class="tiles" id="ankiTiles"></div>
+        <div class="row hero-actions">
           <button class="primary" id="ankiOpen">Open Anki</button>
-          <button id="ankiRebuild" data-tip="Pull in reviews that became due since the deck was built">Rebuild deck</button>
+          <button id="ankiRebuild" class="icon-btn boxed" aria-label="Rebuild deck" data-tip="Rebuild deck, to pull in reviews that came due since"><i data-icon="reset"></i></button>
         </div>
       </div>
       <div class="task-sec anki-notes" id="ankiSub"></div>
@@ -155,10 +161,12 @@
           <button id="goalPlus" data-tip="One day later">+1 d</button>
         </div>
       </div>
-      <div class="set-section">Time estimates <span class="muted small">(blank = learned value)</span></div>
+      <div class="set-section">Time per item <span class="muted small">(blank = learned)</span></div>
       <div id="setPins"></div>
-      <div class="set-section">Anki</div>
+      <div class="set-section">Unsuspend</div>
       <div class="tiers" id="setTiers"></div>
+      <div class="set-section">Deck</div>
+      <div class="tiers" id="setDeck"></div>
       <div class="set-section">Sound</div>
       <div class="set-row">
         <label class="check"><input type="checkbox" id="soundOn"><span></span>Sound effects</label>

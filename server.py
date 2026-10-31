@@ -414,7 +414,8 @@ def refresh_deck_now():
         "review": sum(1 for c in due if c["type"] == 2 and c["queue"] == 2),
         "learn": sum(1 for c in due if c["queue"] in (1, 3)),
         "new": new_today,
-        "newLater": len(new) - new_today,
+        # everything else new in the deck, including siblings Anki has already buried
+        "newLater": len(anki("findCards", query=f"{deck} is:new -is:suspended")) - new_today,
         "dueNotes": sorted(due_notes),
         "at": time.time(),
     }
@@ -506,6 +507,7 @@ def refresh_batches():
             continue
         cids = b["cids"]
         info = [c for c in anki("cardsInfo", cards=cids) if c["queue"] != -1]  # suspended cards don't block
+        b["activeTotal"] = len(info)
         b["newLeft"] = sum(1 for c in info if c["type"] == 0)
         # new cards Anki will actually show today (one per note; buried siblings wait)
         due_notes = set(cache.get("deckNow", {}).get("dueNotes", []))
@@ -759,16 +761,16 @@ def current_gate(block):
               and b.get("newToday", b.get("newLeft", 1)) > 0]
     if not open_b:
         return None
-    b = open_b[-1]
-    item = find_item(block, b["itemId"])
+    # Every open video counts: the next one waits on all of them, so show one total.
+    latest = find_item(block, open_b[-1]["itemId"])
+    new_today = sum(b.get("newToday", b.get("newLeft", len(b.get("cids", [])))) for b in open_b)
+    new_left = sum(b.get("newLeft", len(b.get("cids", []))) for b in open_b)
     return {
-        "itemId": b["itemId"], "title": item["title"],
-        "needsAnki": b.get("needsAnki", False),
-        "total": len(b.get("cids", [])),
-        "newLeft": b.get("newToday", b.get("newLeft", len(b.get("cids", [])))),
-        "newLater": b.get("newLeft", 0) - b.get("newToday", b.get("newLeft", 0)),
-        "learning": b.get("learning", 0), "unsuspended": b.get("unsuspended", 0),
-        "deckError": b.get("deckError"), "openBatches": len(open_b),
+        "itemId": latest["id"], "title": latest["title"], "others": len(open_b) - 1,
+        "needsAnki": any(b.get("needsAnki") for b in open_b),
+        "total": sum(b.get("activeTotal", len(b.get("cids", []))) for b in open_b),
+        "newLeft": new_today, "newLater": new_left - new_today,
+        "deckError": next((b["deckError"] for b in open_b if b.get("deckError")), None),
     }
 
 

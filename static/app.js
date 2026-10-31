@@ -263,7 +263,7 @@ function renderEstimates() {
       `<label class="check"><input type="checkbox" data-tier="${t}" ${c.tiers.includes(t) ? "checked" : ""}><span></span>${label}</label>`).join("")}
   </div>
   <div class="est-notes">
-    <div>Rates adapt as you study. Card times come from Anki's review log.</div>
+    <div>Rates adapt as you study.</div>
   </div>`;
   $("estBody").querySelectorAll("[data-tier]").forEach((el) => (el.onchange = setTiers));
 }
@@ -590,12 +590,8 @@ async function markDone() {
     const lastInSection = section && section.items.every((i) => i.done || i.id === it.id);
     Sound.play(lastInSection ? "milestone" : "done");
     const parts = [];
-    if (r.renamed) parts.push(`Renamed → ${r.renamed}`);
-    if (r.batch) {
-      if (r.batch.needsAnki) parts.push("Anki isn't open: cards will be unsuspended once it is");
-      else parts.push(`Unsuspended ${r.batch.unsuspended}, ${r.batch.newCards} new cards in ${S.anki.deck}`);
-    }
-    toast(parts.join(". ") || "Done");
+    if (r.batch) parts.push(r.batch.needsAnki ? "Cards unsuspend when Anki opens" : `${r.batch.newCards} new cards added to ${S.anki.deck}`);
+    if (parts.length) toast(parts.join(". "));
     await load();
     if (S.anki.gate) { gateFor = S.anki.gate.title; view = "gate"; renderGate(); }
     else goNext();
@@ -625,37 +621,45 @@ function renderGate() {
   $("undoneBtn").hidden = true;
   $("itemNote").hidden = true;
   $("crumbs").textContent = S.block.name;
-  $("itemTitle").textContent = "Do the new Anki cards";
+  $("itemTitle").textContent = "Anki first";
   const g = S.anki.gate, next = nextPending(curId);
-  const nextTitle = next ? next.title : "nothing left";
-  if (!g) {
+  const nextTitle = next ? next.title : "the next item";
+  const from = g && (g.others ? `From ${g.title} and ${g.others} earlier video${g.others > 1 ? "s" : ""}` : `From ${g.title}`);
+  $("gateWarn").hidden = !(g && g.deckError);
+  if (g && g.deckError) $("gateWarn").textContent = "The VidAnki deck couldn't be built. Restart Anki, or study these in your AnKing deck for now.";
+  if (!g) {  // cleared
     if (gateFor && renderGate.cleared !== gateFor) { renderGate.cleared = gateFor; Sound.play("milestone"); }
-    $("gateText").innerHTML = `All new cards from <b>${gateFor || "the last video"}</b> done.`;
-    $("gateBar").style.width = "100%";
-    $("gateSub").textContent = "";
-    $("gateNext").hidden = !next;
-    $("gateNext").textContent = `Continue: ${nextTitle}`;
+    $("itemTitle").textContent = "Anki done";
+    $("gateNum").innerHTML = icon("check");
+    $("gateNum").className = "hero-num good";
+    $("gateText").textContent = "All done";
+    $("gateFrom").textContent = gateFor ? `New cards from ${gateFor}` : "";
+    $("gateProgress").hidden = true;
+    $("gateOpen").hidden = true;
     $("gateSkip").hidden = true;
+    $("gateNext").hidden = !next;
+    $("gateNext").innerHTML = `${next ? attr(next.title) : ""}${icon("chevron-right")}`;
     return;
   }
+  $("gateOpen").hidden = false;
   $("gateSkip").hidden = false;
   $("gateNext").hidden = true;
+  $("gateNum").className = "hero-num";
   if (g.needsAnki) {
-    $("gateText").innerHTML = `Waiting for Anki to unsuspend <b>${g.title}</b>'s cards.`;
-    $("gateBar").style.width = "0%";
-    $("gateSub").textContent = "Waiting for Anki…";
+    $("gateNum").textContent = "";
+    $("gateText").textContent = "Open Anki to unsuspend the cards";
+    $("gateFrom").textContent = from;
+    $("gateProgress").hidden = true;
     return;
   }
-  const done = g.total - g.newLeft;
-  $("gateText").innerHTML = `<b>${g.newLeft}</b> of ${g.total} new cards left from <b>${g.title}</b>`;
+  const left = g.newLeft + g.newLater, done = Math.max(g.total - left, 0);
+  $("gateNum").textContent = g.newLeft;
+  $("gateText").innerHTML = `new card${g.newLeft === 1 ? "" : "s"} before <b>${nextTitle}</b>`;
+  $("gateFrom").textContent = from;
+  $("gateProgress").hidden = false;
   $("gateBar").style.width = (g.total ? (done / g.total) * 100 : 100) + "%";
-  $("gateSub").textContent = [
-    g.learning ? `${g.learning} in learning` : "",
-    g.newLater ? `${g.newLater} more tomorrow (siblings)` : "",
-    g.openBatches > 1 ? `${g.openBatches} videos' cards are still open` : "",
-    g.deckError ? `Couldn't build the filtered deck (${g.deckError}). Restart Anki once so the VidAnki bridge add-on loads; until then study them in your normal deck.` : "",
-    `Next: ${nextTitle}`,
-  ].filter(Boolean).join(". ");
+  $("gateDone").textContent = `${done} of ${g.total} done`;
+  $("gateLater").textContent = g.newLater ? `${g.newLater} wait until tomorrow` : "";
 }
 
 function showAnki() {
@@ -672,26 +676,23 @@ function renderAnkiPanel() {
   $("undoneBtn").hidden = true;
   $("itemNote").hidden = true;
   $("crumbs").textContent = `${S.block.name} / Anki`;
-  $("itemTitle").textContent = "Today's Anki";
   const a = S.stats.ankiNow, r = S.stats.rates, g = S.anki.gate;
-  $("ankiLabel").textContent = `In the ${S.anki.deck} deck`;
-  const rows = [
-    ["New", a.new, r.cardSec],
-    ["Learning", a.learn, r.reviewSec],
-    ["Review", a.review, r.reviewSec],
-  ];
-  $("ankiTable").innerHTML = `<thead><tr><th></th><th>Cards</th><th>Each</th><th>Time</th></tr></thead><tbody>` +
-    rows.map(([k, n, sec]) => `<tr><td>${k}</td><td>${n}</td><td>${Math.round(sec)} s</td><td>${hrs(n * sec)}</td></tr>`).join("") +
-    `</tbody><tfoot><tr><td>Total</td><td>${a.new + a.learn + a.review}</td><td></td><td>${hrs(a.sec)}</td></tr></tfoot>`;
-  $("ankiSub").innerHTML = [
-    g ? `<b>${g.newLeft}</b> new from <b>${g.title}</b> left before the next video.` : "",
-    a.newLater ? `${a.newLater} more new card${a.newLater === 1 ? "" : "s"} wait until tomorrow (Anki shows one card per note a day).` : "",
-    "Learning cards return later today; small leftovers hide from the queue.",
-  ].filter(Boolean).map((t) => `<p>${t}</p>`).join("");
+  // same three counts and colors as Anki's deck list
+  const tile = (k, n, sec, cls) => `<div class="tile ${cls}"><div class="tile-num">${n}</div><div class="tile-k">${k}</div><div class="tile-t">${hrs(sec)}</div></div>`;
+  $("ankiTiles").innerHTML = tile("New", a.new, a.new * r.cardSec, "new") +
+    tile("Learning", a.learn, a.learn * r.reviewSec, "learn") + tile("Review", a.review, a.review * r.reviewSec, "rev");
+  $("itemTitle").innerHTML = `Today's Anki <span class="title-meta">${hrs(a.sec)}</span>`;
+  const next = nextPending(curId);
+  const notes = [
+    g && !g.needsAnki && next ? `<b>${g.newLeft}</b> of these before <b>${next.title}</b>` : "",
+    a.newLater ? `${a.newLater} more new card${a.newLater === 1 ? "" : "s"} wait until tomorrow` : "",
+  ].filter(Boolean);
+  $("ankiSub").hidden = !notes.length;
+  $("ankiSub").innerHTML = notes.map((t) => `<p>${t}</p>`).join("");
 }
 $("ankiOpen").onclick = () => api("/api/open-anki", {}).catch((e) => toast(e.message, true));
 $("ankiRebuild").onclick = async () => {
-  try { const r = await api("/api/rebuild-deck", {}); toast(`VidAnki deck: ${r.cards} cards`); await load(); }
+  try { const r = await api("/api/rebuild-deck", {}); toast(`Deck rebuilt, ${r.cards} cards`); Sound.play("confirm"); await load(); }
   catch (e) { toast(e.message, true); }
 };
 $("gateOpen").onclick = () => api("/api/open-anki", {}).catch((e) => toast(e.message, true));
@@ -712,7 +713,7 @@ $("doneBtn").onclick = markDone;
 $("undoneBtn").onclick = async () => {
   try {
     await api("/api/undone", { block: blockId, id: curId });
-    toast("Marked not done (file renamed back; cards stay unsuspended)");
+    toast("Marked not done");
     await load();
   } catch (e) { toast(e.message, true); }
 };
@@ -767,12 +768,12 @@ new ResizeObserver(([e]) => document.documentElement.style.setProperty("--head-h
 
 // ---------- settings ----------
 const PIN_FIELDS = [
-  { key: "bnbFactor", label: "B&B video time", unit: "× length", get: (r) => r.videoFactor.bnb, scale: 1, dp: 2 },
-  { key: "sketchyFactor", label: "Sketchy video time", unit: "× length", get: (r) => r.videoFactor.sketchy, scale: 1, dp: 2 },
-  { key: "cardSec", label: "New card, incl. reading & re-reviewing", unit: "s", get: (r) => r.cardSec, scale: 1, dp: 0 },
-  { key: "reviewSec", label: "Review card", unit: "s", get: (r) => r.reviewSec, scale: 1, dp: 0 },
-  { key: "brickSec", label: "Brick end-questions", unit: "min", get: (r) => r.brickSec, scale: 60, dp: 1 },
-  { key: "ambossSecPerQ", label: "AMBOSS per question, incl. explanation", unit: "min", get: (r) => r.ambossSecPerQ, scale: 60, dp: 1 },
+  { key: "bnbFactor", label: "B&B video", unit: "× length", get: (r) => r.videoFactor.bnb, scale: 1, dp: 2 },
+  { key: "sketchyFactor", label: "Sketchy video", unit: "× length", get: (r) => r.videoFactor.sketchy, scale: 1, dp: 2 },
+  { key: "cardSec", label: "New card", unit: "s", get: (r) => r.cardSec, scale: 1, dp: 0 },
+  { key: "reviewSec", label: "Review", unit: "s", get: (r) => r.reviewSec, scale: 1, dp: 0 },
+  { key: "brickSec", label: "Brick", unit: "min", get: (r) => r.brickSec, scale: 60, dp: 1 },
+  { key: "ambossSecPerQ", label: "AMBOSS question", unit: "min", get: (r) => r.ambossSecPerQ, scale: 60, dp: 1 },
 ];
 function openSettings() {
   openModal("settingsModal");
@@ -803,15 +804,15 @@ function renderSettings() {
     row.querySelector(".reset").onclick = () => savePin(f, null);
   });
   $("setTiers").innerHTML = Object.entries(TIER_LABELS).map(([t, label]) =>
-    `<label class="check"><input type="checkbox" data-tier="${t}" ${S.stats.cards.tiers.includes(t) ? "checked" : ""}><span></span>Unsuspend ${label.toLowerCase()} cards</label>`).join("");
+    `<label class="check"><input type="checkbox" data-tier="${t}" ${S.stats.cards.tiers.includes(t) ? "checked" : ""}><span></span>${label}</label>`).join("");
   const rev = S.settings.reviewsInDeck !== false;
-  $("setTiers").insertAdjacentHTML("beforeend",
-    `<label class="check"><input type="checkbox" id="setReviewsInDeck" ${rev ? "checked" : ""}><span></span>One deck: also put today's due AnKing reviews and unsuspended high-yield new cards in the VidAnki deck</label>`);
+  $("setDeck").innerHTML = (
+    `<label class="check"><input type="checkbox" id="setReviewsInDeck" ${rev ? "checked" : ""}><span></span>Study everything from the VidAnki deck</label>`);
   $("setReviewsInDeck").onchange = async (e) => {
     await api("/api/settings", { reviewsInDeck: e.target.checked });
     await api("/api/rebuild-deck", {}).catch((err) => toast(err.message, true));
     await load();
-    toast(e.target.checked ? "VidAnki deck now includes today's AnKing reviews" : "Reviews left in your AnKing deck");
+    toast(e.target.checked ? "Reviews moved to the VidAnki deck" : "Reviews left in your AnKing deck");
   };
   $("setTiers").querySelectorAll("[data-tier]").forEach((el) => (el.onchange = async () => {
     const tiers = [...$("setTiers").querySelectorAll("[data-tier]:checked")].map((x) => x.dataset.tier);

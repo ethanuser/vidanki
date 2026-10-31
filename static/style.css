@@ -249,7 +249,6 @@ main { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 360px; 
 .task-sec + .task-sec { border-top: 1px solid var(--line); }
 .sec-label { font-size: var(--t-sm); color: var(--muted); font-weight: 600; margin-bottom: var(--s2); }
 #taskInstr { margin: 0 0 var(--s3); color: var(--muted); }
-.gate-title { font-size: var(--t-lg); font-weight: 600; letter-spacing: -.02em; }
 .fields { display: flex; gap: var(--s3); align-items: end; flex-wrap: wrap; }
 .fields label { display: flex; flex-direction: column; gap: var(--s1); color: var(--muted); font-size: var(--t-sm); }
 .timer { display: flex; align-items: center; gap: var(--s2); }
@@ -259,15 +258,31 @@ main { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 360px; 
 #timerEdit { font-size: var(--t-lg); font-weight: 600; font-variant-numeric: tabular-nums; }
 @media (hover: hover) { #timerVal:hover { color: var(--accent); } }
 #timerBtn { width: 52px; padding: 0; }
-.anki-table { border-collapse: collapse; width: 100%; margin: 2px 0 var(--s4); font-variant-numeric: tabular-nums; }
-.anki-table th { font-size: var(--t-xs); color: var(--muted); font-weight: 600; text-align: right; padding: 0 0 6px var(--s4); }
-.anki-table td { padding: var(--s2) 0 var(--s2) var(--s4); border-top: 1px solid var(--line); text-align: right; }
-.anki-table td:first-child, .anki-table th:first-child { text-align: left; padding-left: 0; }
-.anki-table td:nth-child(3) { color: var(--muted); }
-.anki-table tfoot td { font-weight: 600; border-top-color: var(--line2); }
+/* one big fact, then what to do about it */
+.hero { display: flex; align-items: center; gap: var(--s4); }
+.hero-num { display: flex; align-items: center; justify-content: center; font-size: 44px; line-height: 1; font-weight: 600; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.hero-num:empty { display: none; }
+.hero-num.good { color: var(--good); }
+.hero-num.good .icon { width: 40px; height: 40px; stroke-width: 2.5; }
+.hero-title { font-size: 15px; font-weight: 500; }
+.hero-title b { font-weight: 600; }
+.hero-text .muted { font-size: 13px; }
+.bar-label { display: flex; justify-content: space-between; gap: var(--s3); color: var(--muted); font-size: var(--t-sm); font-variant-numeric: tabular-nums; }
+.hero-actions { margin-top: var(--s4); }
+button.quiet { background: transparent; color: var(--muted); }
+@media (hover: hover) { button.quiet:hover { background: var(--hover); color: var(--text); } }
+.warn-note { color: var(--warn); font-size: 13px; }
+.title-meta { margin-left: var(--s2); color: var(--muted); font-weight: 500; letter-spacing: 0; }
+.tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s2); }
+.tile { --c: var(--text); padding: var(--s3); border-radius: var(--r-sm); background: var(--panel2); font-variant-numeric: tabular-nums; }
+.tile.new { --c: var(--bnb); } .tile.learn { --c: var(--bad); } .tile.rev { --c: var(--good); }
+.tile-num { font-size: var(--t-xl); line-height: 1.1; font-weight: 600; letter-spacing: -.02em; color: var(--c); }
+.tile-k { margin-top: 2px; font-weight: 500; }
+.tile-t { color: var(--muted); font-size: var(--t-sm); }
 .anki-notes { color: var(--muted); font-size: 13px; }
 .anki-notes p { margin: 0; }
-.anki-notes p + p { margin-top: 6px; }
+.anki-notes p + p { margin-top: var(--s1); }
+.anki-notes b { color: var(--text); font-weight: 600; }
 
 /* ---------- queue ---------- */
 #queue { border-left: 1px solid var(--line); background: var(--panel); overflow: auto; padding: var(--s2) 0 var(--s5); }
