@@ -309,7 +309,7 @@ function syncQueue() {
     }
     if (!S) return;
     const order = queueOrder(), at = order.indexOf(key);
-    const atStart = view !== "gate" && at <= 0, atEnd = view !== "gate" && (at < 0 || at >= order.length - 1);
+    const atStart = view !== "gate" && at <= 0, atEnd = view !== "gate" && at >= order.length - 1;
     $("prevBtn").setAttribute("aria-disabled", atStart);
     $("nextBtn").setAttribute("aria-disabled", atEnd);
     $("prevBtn").dataset.tip = atStart ? "Start of queue" : "Previous item (P)";
@@ -721,6 +721,7 @@ function renderGate() {
   flushTime();
   pauseVideo();
   leaveFullscreen();
+  syncQueue();
   $("ankiPanel").hidden = true;
   $("player").hidden = true;
   $("task").hidden = true;

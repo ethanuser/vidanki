@@ -4,6 +4,7 @@
   --s1: 4px; --s2: 8px; --s3: 12px; --s4: 16px; --s5: 20px; --s6: 24px;
   /* type */
   --t-xs: 11px; --t-sm: 12px; --t-md: 14px; --t-lg: 20px; --t-xl: 28px;
+  --t-big: clamp(44px, 7vw, 96px);  /* the one number a frame is about */
   /* radii: square them all here to get a square UI back */
   --r-xs: 4px; --r-sm: 8px; --r-lg: 12px;
   /* motion */
@@ -233,7 +234,8 @@ header { flex: none; display: flex; align-items: center; gap: var(--s4); padding
 main { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 360px; grid-template-rows: minmax(0, 1fr); }
 /* the view scrolls if it must; the action bar below it never moves */
 #center { display: flex; flex-direction: column; min-width: 0; min-height: 0; padding: var(--s4) var(--s5); }
-#view { flex: 1; min-height: 0; margin: -4px; padding: 4px; overflow: auto; }
+#view { flex: 1; display: flex; flex-direction: column; min-height: 0; margin: -4px; padding: 4px; overflow: auto; }
+#itemHead, #player { flex: none; }
 /* one line each, so the picture and panels start at the same height for every item */
 .crumb-row { display: flex; align-items: center; gap: var(--s2); min-height: 20px; }
 .crumbs { min-width: 0; overflow: hidden; color: var(--muted); font-size: var(--t-sm); text-overflow: ellipsis; white-space: nowrap; }
@@ -283,43 +285,45 @@ main { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 360px; 
 .oc-sub { color: var(--muted); margin: 2px 0 var(--s3); min-height: 1px; }
 
 /* ---------- panels ---------- */
-.panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: var(--shadow-sm); padding: var(--s4) var(--s5); max-width: 560px; }
-.panel p:first-child { margin-top: 0; }
-.panel.task { padding: 0; }
-.task-sec { padding: var(--s4) var(--s5); }
-.task-sec + .task-sec { border-top: 1px solid var(--line); }
+/* bricks, AMBOSS and Anki fill the same frame a video does, in tiles */
+.panel { flex: 1; display: flex; flex-direction: column; gap: var(--s3); min-height: max-content; text-align: center; }
+#task { flex-direction: row; }
+#task .task-sec, #gate .task-sec:first-child, .tile { display: flex; flex: 1 1 0; flex-direction: column; justify-content: center; min-width: 0; padding: var(--s5);
+  background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: var(--shadow-sm); }
+#task .task-sec { align-items: center; }
+#ankiPanel .task-sec:first-child { display: flex; flex: 1; flex-direction: column; }
 .sec-label { font-size: var(--t-sm); color: var(--muted); font-weight: 600; margin-bottom: var(--s2); }
-.fields { display: flex; gap: var(--s3); align-items: end; flex-wrap: wrap; }
+.fields { display: flex; justify-content: center; gap: var(--s3); align-items: end; flex-wrap: wrap; }
 .fields label { display: flex; flex-direction: column; gap: var(--s1); color: var(--muted); font-size: var(--t-sm); }
-.timer { display: flex; align-items: center; gap: var(--s2); }
+.timer { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: var(--s2); width: 100%; container-type: inline-size; }
 /* the time and its edit field share one box, so Edit doesn't shift the buttons */
-#timerVal, #timerEdit { width: 112px; height: 36px; margin-right: var(--s2); }
-#timerVal { display: inline-flex; align-items: center; font-size: var(--t-xl); font-weight: 600; letter-spacing: -.02em; font-variant-numeric: tabular-nums; cursor: text; transition: color var(--fast) var(--ease); }
-#timerEdit { font-size: var(--t-lg); font-weight: 600; font-variant-numeric: tabular-nums; }
+#timerVal, #timerEdit { flex-basis: 100%; height: 72px; margin-bottom: var(--s2); }
+#timerVal { display: inline-flex; align-items: center; justify-content: center; font-size: min(var(--t-big), 24cqw);  /* 1:05:00 still fits a narrow tile */ font-weight: 600; letter-spacing: -.02em; font-variant-numeric: tabular-nums; cursor: text; transition: color var(--fast) var(--ease); }
+#timerEdit { max-width: 200px; font-size: var(--t-xl); font-weight: 600; font-variant-numeric: tabular-nums; text-align: center; }
 #timerVal.running { color: var(--accent); }
 @media (hover: hover) { #timerVal:hover { color: var(--accent); } }
 #timerBtn { width: 52px; padding: 0; }
 /* one big fact, then what to do about it */
-.hero { display: flex; align-items: center; gap: var(--s4); }
-.hero-num { display: flex; align-items: center; justify-content: center; font-size: 44px; line-height: 1; font-weight: 600; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+.hero { display: flex; flex-direction: column; align-items: center; gap: var(--s2); }
+.hero-num { display: flex; align-items: center; justify-content: center; font-size: var(--t-big); line-height: 1; font-weight: 600; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
 .hero-num:empty { display: none; }
 .hero-num.good { color: var(--good); }
-.hero-num.good .icon { width: 40px; height: 40px; stroke-width: 2.5; }
+.hero-num.good .icon { width: 1em; height: 1em; stroke-width: 2.5; }
 .hero-num.good .icon path { stroke-dasharray: 30; animation: draw 420ms var(--ease); }
 .hero-title { font-size: 15px; font-weight: 500; }
 .hero-title b { font-weight: 600; }
 .hero-text .muted { font-size: 13px; }
 .bar-label { display: flex; justify-content: space-between; gap: var(--s3); color: var(--muted); font-size: var(--t-sm); font-variant-numeric: tabular-nums; }
-.hero-actions { margin-top: var(--s4); }
+.hero-actions { justify-content: center; margin-top: var(--s5); }
 button.quiet { background: transparent; color: var(--muted); }
 @media (hover: hover) { button.quiet:hover { background: var(--hover); color: var(--text); } }
 .warn-note { color: var(--warn); font-size: 13px; }
 .title-meta { margin-left: var(--s2); color: var(--muted); font-weight: 500; letter-spacing: 0; }
-.tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--s2); }
-.tile { --c: var(--text); padding: var(--s3); border-radius: var(--r-sm); background: var(--panel2); font-variant-numeric: tabular-nums; }
+.tiles { flex: 1; display: flex; gap: var(--s3); }
+.tile { --c: var(--text); font-variant-numeric: tabular-nums; }
 .tile.new { --c: var(--bnb); } .tile.learn { --c: var(--bad); } .tile.rev { --c: var(--good); }
-.tile-num { font-size: var(--t-xl); line-height: 1.1; font-weight: 600; letter-spacing: -.02em; color: var(--c); }
-.tile-k { margin-top: 2px; font-weight: 500; }
+.tile-num { font-size: var(--t-big); line-height: 1.1; font-weight: 600; letter-spacing: -.02em; color: var(--c); }
+.tile-k { margin-top: var(--s1); font-size: 15px; font-weight: 500; }
 .tile-t { color: var(--muted); font-size: var(--t-sm); }
 .anki-notes { color: var(--muted); font-size: 13px; }
 .anki-notes p { margin: 0; }
@@ -467,7 +471,10 @@ button.quiet { background: transparent; color: var(--muted); }
   main { grid-template-columns: 1fr; }
   #queue { border-left: 0; border-top: 1px solid var(--line); }
   #center { display: block; padding: var(--s3) var(--s4) 0; }
-  #view { margin: 0; padding: 0; overflow: visible; }
+  #view { display: block; margin: 0; padding: 0; overflow: visible; }
+  #task { flex-direction: column; }
+  #task .task-sec, #gate .task-sec:first-child { flex: none; }
+  .tile { padding: var(--s3); }
   .actions { position: fixed; left: 0; right: 0; bottom: 0; z-index: 4; margin: 0; padding: var(--s2) var(--s4); border-top: 1px solid var(--line); background: var(--panel); }
   .toast { bottom: 64px; }
   header { flex-wrap: wrap; gap: var(--s2); padding: var(--s2) var(--s4); }
