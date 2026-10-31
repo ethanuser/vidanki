@@ -739,6 +739,7 @@ function renderGate() {
   $("gateWarn").hidden = !(g && g.deckError);
   if (g && g.deckError) $("gateWarn").textContent = "Deck not built. Restart Anki";
   if (!g) {  // cleared
+    paintScene(gateFor);
     if (gateFor && renderGate.cleared !== gateFor) { renderGate.cleared = gateFor; Sound.play("milestone"); }
     $("itemTitle").textContent = "Anki done";
     if (!$("gateNum").classList.contains("good")) $("gateNum").innerHTML = icon("check");  // draws once, not on every poll
@@ -775,19 +776,54 @@ function renderGate() {
   $("gateLater").textContent = g.newLater ? `+${g.newLater} tomorrow` : "";
 }
 
-// A branching tree for the "All done" screen, drawn once. The two sides differ, so it reads as a plant.
-(function growBranches() {
-  let d = "";
-  const grow = (x, y, angle, len, depth) => {
-    const nx = x + len * Math.cos(angle), ny = y + len * Math.sin(angle);
-    d += `M${x.toFixed(1)} ${y.toFixed(1)}L${nx.toFixed(1)} ${ny.toFixed(1)}`;
-    if (!depth) return;
-    grow(nx, ny, angle - 0.42, len * 0.76, depth - 1);
-    grow(nx, ny, angle + 0.3, len * 0.72, depth - 1);
+// The "All done" picture: layered hills, pines and a cabin. Drawn here so it needs no
+// image file and takes its colors from the theme; each video gets its own hills.
+function paintScene(name) {
+  if (paintScene.name_ === name) return;
+  paintScene.name_ = name;
+  let seed = [...String(name)].reduce((h, c) => (h * 31 + c.charCodeAt(0)) | 0, 7);
+  const rnd = () => { seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t ^= t + Math.imul(t ^ (t >>> 7), 61 | t); return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+  const pine = (x, y, h) => {
+    const w = h * 0.32;
+    return `M${x} ${y - h}L${x + w * 0.7} ${y - h * 0.55}L${x + w * 0.4} ${y - h * 0.55}L${x + w} ${y - h * 0.1}L${x - w} ${y - h * 0.1}L${x - w * 0.4} ${y - h * 0.55}L${x - w * 0.7} ${y - h * 0.55}ZM${x - w * 0.12} ${y - h * 0.1}h${w * 0.24}v${h * 0.15}h${-w * 0.24}Z`;
   };
-  grow(4, 400, -1, 96, 9);
-  $("branches").setAttribute("d", d);
-})();
+  let art = "";
+  for (let i = 0; i < 26; i++) {  // stars keep to the sides of the sun
+    const x = rnd() < 0.5 ? 40 + rnd() * 470 : 1090 + rnd() * 470;
+    art += `<circle class="sc-star" cx="${x.toFixed(0)}" cy="${(30 + rnd() * 400).toFixed(0)}" r="${(1.5 + rnd() * 2).toFixed(1)}"/>`;
+  }
+  for (const [x, y, w] of [[230, 180, 240], [1290, 120, 200], [1120, 320, 150]]) {
+    const dx = (rnd() - 0.5) * 80;
+    art += `<rect class="sc-cloud" x="${(x + dx).toFixed(0)}" y="${y}" width="${w}" height="26" rx="13"/><rect class="sc-cloud" x="${(x + dx + w * 0.2).toFixed(0)}" y="${y - 20}" width="${w * 0.5}" height="26" rx="13"/>`;
+  }
+  const phases = [0, 1, 2, 3, 4].map(() => [rnd() * 6.3, rnd() * 6.3, rnd() * 6.3]);
+  const cabinX = Math.round(400 + rnd() * 120);
+  const ridge = (i, x) => {  // hills rise toward the sides and leave the middle open
+    const [a, b, c] = phases[i], side = Math.abs(x - 800) / 800;
+    return 610 + i * 56 - (150 - i * 18) * side ** 1.6 +
+      (34 - i * 3) * (0.6 * Math.sin(x * 0.0045 + a) + 0.3 * Math.sin(x * 0.011 + b) + 0.1 * Math.sin(x * 0.027 + c));
+  };
+  for (let i = 0; i < 5; i++) {
+    let d = "M0 900";
+    for (let x = 0; x <= 1600; x += 16) d += `L${x} ${ridge(i, x).toFixed(1)}`;
+    art += `<path class="sc-${i + 1}" d="${d}L1600 900Z"/>`;
+    if (i >= 2) {  // pines, bigger on the nearer hills, never in front of the middle
+      let trees = "";
+      for (let n = 0; n < 7 + i * 3; n++) {
+        const left = rnd() < 0.5, x = left ? rnd() * 560 : 1040 + rnd() * 560;
+        if (Math.abs(x - cabinX) < 120) continue;  // nothing stands in front of the cabin
+        trees += pine(Math.round(x), Math.round(ridge(i, x) + 8), 28 + i * 13 + rnd() * 24);
+      }
+      art += `<path class="sc-${i + 1}" d="${trees}"/>`;
+    }
+    if (i === 3) {  // a cabin with its light on
+      const X = cabinX, y = Math.round(ridge(3, X)) + 6;
+      art += `<path class="sc-5" d="M${X - 46} ${y}v-44l46-34l46 34v44ZM${X + 20} ${y - 80}h14v30h-14Z"/>` +
+        `<rect class="sc-glow" x="${X - 12}" y="${y - 34}" width="24" height="20" rx="2"/>`;
+    }
+  }
+  $("scene").innerHTML = art;
+}
 
 function showAnki() {
   flushTime();
