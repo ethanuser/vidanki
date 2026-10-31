@@ -123,6 +123,7 @@ a { color: var(--accent); }
 .spacer { flex: 1; }
 .icon { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .icon .f { fill: currentColor; stroke: none; }
+.icon text { fill: currentColor; stroke: none; font-size: 9px; font-weight: 700; text-anchor: middle; }
 ::-webkit-scrollbar { width: 10px; height: 10px; }
 ::-webkit-scrollbar-track, ::-webkit-scrollbar-corner { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--thumb); border: 2px solid var(--panel); border-radius: var(--r-sm); }
@@ -141,7 +142,7 @@ button.primary, .btn.primary { background: var(--accent-bg); color: #fff; }
 button.ghost { height: 28px; padding: 0 var(--s2); background: transparent; color: var(--muted); font-size: var(--t-sm); }
 .icon-btn { width: 36px; padding: 0; background: transparent; color: var(--muted); }
 .icon-btn.boxed { background: var(--panel2); color: var(--text); }
-.icon-btn.skip { width: auto; padding: 0 var(--s2); gap: var(--s1); font-size: var(--t-sm); font-variant-numeric: tabular-nums; }
+.icon-btn.skip .icon { width: 24px; height: 24px; stroke-width: 1.75; }
 .key-btn { width: auto; padding: 0 var(--s2); font-size: var(--t-sm); }
 button.t-start { background: var(--go-bg); color: #fff; }
 button.t-pause { background: var(--pause-bg); color: #fff; }
@@ -271,7 +272,7 @@ main { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 360px; 
 .ctl-row { display: flex; align-items: center; gap: var(--s1); }
 #controls button, #controls .dd-btn { height: 32px; color: var(--ctl-text); background: transparent; }
 #controls .icon-btn { width: 32px; }
-#controls .icon-btn.skip { width: auto; }
+#controls .icon-btn.skip { width: 36px; }
 #controls .dd-caret { border-top-color: var(--ctl-muted); }
 #controls .dd-menu { background: var(--ctl-menu); border-color: var(--ctl-line); }
 #controls .dd-item { color: var(--ctl-text); }
@@ -524,8 +525,7 @@ button.quiet { background: transparent; color: var(--muted); }
   .stat-group { border-left: 0; padding: 0; gap: var(--s4); }
   .stat { min-width: 84px; }
   .head-tools { margin-left: auto; }
-  .icon-btn, #controls .icon-btn { width: 40px; height: 40px; }
-  #controls .icon-btn.skip { width: auto; }
+  .icon-btn, #controls .icon-btn, #controls .icon-btn.skip { width: 40px; height: 40px; }
   .qi { padding: var(--s2); }
   #vol { display: none; }
   .ctl-row { flex-wrap: wrap; row-gap: var(--s1); }
