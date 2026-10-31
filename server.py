@@ -407,7 +407,9 @@ def refresh_deck_now():
     # a new card waits if its note already has a card due today.
     avail = "-is:suspended -is:buried"
     due = anki("cardsInfo", cards=anki("findCards", query=f"{deck} is:due -is:new {avail}"))
-    new = anki("cardsInfo", cards=anki("findCards", query=f"{deck} is:new {avail}"))
+    # new cards count while they wait outside the deck for the reviews to finish
+    all_new = f"({deck} is:new" + "".join(f" OR {q}" for q in new_searches()) + ")"
+    new = anki("cardsInfo", cards=anki("findCards", query=f"{all_new} {avail}"))
     due_notes = {c["note"] for c in due}
     new_today = len({c["note"] for c in new} - due_notes)
     cache["deckNow"] = {
@@ -415,36 +417,61 @@ def refresh_deck_now():
         "learn": sum(1 for c in due if c["queue"] in (1, 3)),
         "new": new_today,
         # everything else new in the deck, including siblings Anki has already buried
-        "newLater": len(anki("findCards", query=f"{deck} is:new -is:suspended")) - new_today,
+        "newLater": len(anki("findCards", query=f"{all_new} -is:suspended")) - new_today,
         "dueNotes": sorted(due_notes),
         "at": time.time(),
     }
+
+
+def open_batch_cids():
+    return sorted({c for b in state["batches"] if not b.get("closed") for c in b.get("cids", [])})
+
+
+def new_searches():
+    """New cards for the deck: from finished videos, plus (with "one deck" on) any
+    other unsuspended high-yield new cards in your AnKing deck."""
+    open_cids = open_batch_cids()
+    parts = []
+    if open_cids:
+        parts.append(f'(cid:{",".join(map(str, open_cids))} is:new)')
+    if state["settings"].get("reviewsInDeck", True):
+        parts.append(f'("deck:{REVIEW_DECK}" is:new -is:suspended {hy_query()})')
+    return parts
+
+
+def reviews_waiting():
+    """Is anything already studied due right now, in the VidAnki deck or about to join it?"""
+    places = [f'"deck:{FILTERED_DECK}"']
+    open_cids = open_batch_cids()
+    if open_cids:
+        places.append(f'cid:{",".join(map(str, open_cids))}')
+    if state["settings"].get("reviewsInDeck", True):
+        places.append(f'"deck:{REVIEW_DECK}"')
+    return bool(anki("findCards", query=f'({" OR ".join(places)}) is:due -is:new -is:suspended -is:buried'))
 
 
 def rebuild_filtered_deck():
     """VidAnki deck = new cards from finished videos + (optionally) reviews due today
     in your AnKing deck, so everything can be studied from one place. Reviews done
     here count as normal reviews (the deck reschedules)."""
-    # Gathered in two passes so the deck studies in a sensible order:
+    # A filtered deck has no options preset, so Anki mixes its new cards in with the
+    # reviews whatever order they were gathered in. Reviews come first only if the new
+    # cards aren't in the deck yet: the worker adds them once the reviews are finished.
     # 1) cards already studied (reviews, learning) by due date, most overdue first;
-    # 2) new cards: from finished videos, plus (with "one deck" on) any other
-    #    unsuspended high-yield new cards in your AnKing deck, in deck order.
-    #    Anki allows only two search terms, so both kinds of new card share this one.
-    open_cids = sorted({c for b in state["batches"] if not b.get("closed") for c in b.get("cids", [])})
+    # 2) new cards, in deck order. Anki allows only two search terms, so both kinds
+    #    of new card share this one.
+    open_cids = open_batch_cids()
     seen = []
     if state["settings"].get("reviewsInDeck", True):
-        seen.append(f'("deck:{REVIEW_DECK}" is:due -is:new -is:suspended)')
+        seen.append(f'("deck:{REVIEW_DECK}" (is:due OR is:learn) -is:new -is:suspended)')
     if open_cids:
         seen.append(f'(cid:{",".join(map(str, open_cids))} is:learn)')
     terms = []
     if seen:
         terms.append({"search": " OR ".join(seen), "order": "DUE"})
-    new_parts = []
-    if open_cids:
-        new_parts.append(f'(cid:{",".join(map(str, open_cids))} is:new)')
-    if state["settings"].get("reviewsInDeck", True):
-        new_parts.append(f'("deck:{REVIEW_DECK}" is:new -is:suspended {hy_query()})')
-    if new_parts:
+    new_parts = new_searches()
+    state["newHeld"] = bool(new_parts) and reviews_waiting()
+    if new_parts and not state["newHeld"]:
         terms.append({"search": " OR ".join(new_parts), "order": "DUE"})
     state["deckBuiltDay"] = study_day()
     if not terms:
@@ -797,7 +824,10 @@ def anki_worker():
                             refresh_card_counts_from_anki(block)
                     if not was_ok and state.get("deckFallback"):  # Anki restarted: rebuild in proper order
                         state["deckBuiltDay"] = None
-                    if state.get("deckBuiltDay") != study_day():  # new day: pull in today's reviews
+                    now = cache["deckNow"]
+                    reviews_done = state.get("newHeld") and not now["review"] and not now["learn"]
+                    if state.get("deckBuiltDay") != study_day() or reviews_done or "newHeld" not in state:
+                        # a new day's reviews, or the new cards' turn
                         with lock:
                             rebuild_filtered_deck()
                             save_state()
