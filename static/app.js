@@ -445,7 +445,7 @@ function showEndCard() {
   $("stage").classList.remove("idle");
 }
 $("endDone").onclick = () => { $("endCard").hidden = true; markDone(); };
-$("endKeep").onclick = () => ($("endCard").hidden = true);
+$("endKeep").onclick = () => { $("endCard").hidden = true; Sound.play("close"); };
 
 // Controls: hidden the moment playback starts; mouse movement shows them
 // briefly; always shown while paused or while the pointer is on them.
@@ -512,7 +512,7 @@ $("timerEdit").addEventListener("keydown", (e) => {
     closeTimerEdit();
     setTimerTo(sec);
     Sound.play("confirm");
-  } else if (e.key === "Escape") { e.stopPropagation(); closeTimerEdit(); }
+  } else if (e.key === "Escape") { e.stopPropagation(); closeTimerEdit(); Sound.play("close"); }
 });
 $("timerEdit").addEventListener("blur", closeTimerEdit);
 let resetArmed = null;
@@ -769,6 +769,7 @@ $("queueList").onclick = (e) => {
   renderQueue();
 };
 $("hideDone").onchange = () => { Sound.play("toggle"); renderQueue(); };
+$("estDetails").addEventListener("toggle", (e) => Sound.play(e.target.open ? "open" : "close"));
 // keep the player from outgrowing the window, whatever height the header wraps to
 new ResizeObserver(([e]) => document.documentElement.style.setProperty("--head-h", e.target.offsetHeight + "px")).observe($("top"));
 
@@ -921,8 +922,12 @@ $("keysTable").innerHTML = (() => {
   }
   return html;
 })();
-function openModal(id) { closeModals(); $(id).hidden = false; Sound.play("open"); }
-function closeModals() { document.querySelectorAll(".modal").forEach((m) => (m.hidden = true)); }
+function openModal(id) { closeModals(true); $(id).hidden = false; Sound.play("open"); }
+function closeModals(silent = false) {
+  const open = document.querySelectorAll(".modal:not([hidden])");
+  if (open.length && !silent) Sound.play("close");
+  open.forEach((m) => (m.hidden = true));
+}
 $("helpBtn").onclick = (e) => { e.stopPropagation(); openModal("helpModal"); };
 document.querySelectorAll(".modal").forEach((m) => m.addEventListener("click", (e) => {
   if (e.target === m || e.target.closest("[data-close]")) closeModals();
@@ -976,7 +981,7 @@ function drawPalette() {
 }
 function runPal(i) {
   const p = palItems[i];
-  closeModals();
+  closeModals(true);  // running a command makes its own sound
   if (p) p.run();
 }
 $("palInput").addEventListener("input", renderPalette);

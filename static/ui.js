@@ -31,7 +31,7 @@ window.Dropdown = class Dropdown {
     this.menu.querySelectorAll(".dd-item").forEach((li) => li.classList.toggle("sel", li.dataset.value === this.value));
   }
   pick(v) {
-    this.close();
+    this.close(true);
     this.btn.focus();
     if (v !== this.value) { this.setValue(v); this.onChange(v); window.Sound && Sound.play("toggle"); }
   }
@@ -42,7 +42,11 @@ window.Dropdown = class Dropdown {
     this.el.classList.add("open");
     (this.menu.querySelector(".sel") || this.menu.firstElementChild)?.focus();
   }
-  close() { this.menu.hidden = true; this.el.classList.remove("open"); }
+  close(silent = false) {
+    if (!this.menu.hidden && !silent) window.Sound && Sound.play("close");
+    this.menu.hidden = true;
+    this.el.classList.remove("open");
+  }
   key(e) {
     const items = [...this.menu.querySelectorAll(".dd-item")];
     const i = items.indexOf(document.activeElement);
