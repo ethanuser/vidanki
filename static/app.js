@@ -39,8 +39,24 @@ function toast(msg, err = false) {
   t.hidden = false;
   if (err) Sound.play("error");
   clearTimeout(toast.t);
-  toast.t = setTimeout(() => (t.hidden = true), err ? 9000 : 5000);
+  toast.t = setTimeout(() => {
+    t.classList.add("out");
+    toast.t = setTimeout(() => (t.hidden = true), 120);
+  }, err ? 9000 : 5000);
 }
+// Replay a one-shot CSS animation. dir is the direction of travel, for nudge/rubber/enter.
+function cue(el, cls, dir = 1) {
+  if (!el) return;
+  el.style.setProperty("--dir", dir);
+  el.classList.remove(cls);
+  void el.offsetWidth;
+  el.classList.add(cls);
+  clearTimeout(el["cue" + cls]);
+  el["cue" + cls] = setTimeout(() => el.classList.remove(cls), 500);
+}
+// Hit the end of something: it pushes back with a soft tap.
+function limit(el, dir = 1) { cue(el, "nudge", dir); Sound.play("limit"); }
+const wait = (ms) => new Promise((r) => setTimeout(r, matchMedia("(prefers-reduced-motion: reduce)").matches ? 0 : ms));
 function nextPending(fromId) {
   const i = flat.findIndex((x) => x.id === fromId);
   return flat.slice(i + 1).find((x) => !x.done) || flat.find((x) => !x.done && x.id !== fromId);
@@ -65,7 +81,7 @@ function render() {
   renderEstimates();
   const dot = $("ankiDot");
   dot.className = "anki-dot" + (S.anki.ok ? " ok" : "");
-  dot.dataset.tip = S.anki.ok ? "Anki connected" : "Anki isn't running. Cards get unsuspended once it's open";
+  dot.dataset.tip = S.anki.ok ? "Anki connected" : "Anki closed";
   if (view === "gate") renderGate();
   else if (view === "anki") renderAnkiPanel();
   else showItem(curId);
@@ -88,7 +104,7 @@ function switchBlock(id) {
 }
 
 function stat(k, v, cls = "", bar = null, title = "") {
-  return `<div class="stat" data-tip="${attr(title)}"><span class="k">${k}</span><span class="v ${cls}">${v}</span>` +
+  return `<div class="stat" data-k="${k}" data-tip="${attr(title)}"><span class="k">${k}</span><span class="v ${cls}">${v}</span>` +
     (bar === null ? "" : `<div class="bar"><div style="width:${Math.min(100, bar * 100).toFixed(1)}%"></div></div>`) + "</div>";
 }
 
@@ -110,20 +126,39 @@ function renderStats() {
       stat("Done", `${st.items.done} / ${st.items.count}`, "", st.items.done / st.items.count,
         `${st.items.videosDone}/${st.items.videos} videos`),
       stat("Hours", `${hrs(hoursDone())} / ${hrs(hoursDone() + st.remainingSec)}`, "",
-        hoursDone() / (hoursDone() + st.remainingSec), "Hours done (items + Anki) out of the total, done plus left")),
+        hoursDone() / (hoursDone() + st.remainingSec), "Items + Anki")),
     group("goal clickable",
       stat("Goal", `${goalStr}, ${st.daysLeft} d`),
       stat("Work left", "≈ " + hrs(st.remainingSec), "", null,
-        `Videos ${hrs(w.video)}, new cards ${hrs(w.newCards)}, reviews ${hrs(w.reviews)}, bricks ${hrs(w.bricks)}, AMBOSS ${hrs(w.amboss)}`),
+        workParts(w).map((p) => `${p.label}\t${hrs(p.sec)}`).join("\n")),
       stat("Needed", `${hrs(st.perDaySec)}/day`)),
     group("",
       stat("Today", `${hrs(st.todaySec)} / ${hrs(st.todayNeededSec)}`, "", st.todaySec / st.todayNeededSec),
-      stat("Pace", pace, paceCls, null, "Average of the last 3 days you studied → projected finish")),
+      stat("Pace", pace, paceCls, null, "Last 3 study days → finish")),
   ].join("");
+  animateStats();
   const goalGroup = $("stats").querySelector(".goal");
-  goalGroup.dataset.tip = "Change goal date and estimates (,)";
+  goalGroup.dataset.tip = "Edit goal (,)";
   goalGroup.onclick = openSettings;
   if (!$("settingsModal").hidden) renderSettingsResult();
+}
+
+const workParts = (w) => [
+  { label: "Videos", sec: w.video, cls: "video" }, { label: "New cards", sec: w.newCards, cls: "new" },
+  { label: "Reviews", sec: w.reviews, cls: "rev" }, { label: "Bricks", sec: w.bricks, cls: "brick" },
+  { label: "AMBOSS", sec: w.amboss, cls: "amboss" },
+];
+// The header is rebuilt on every poll: slide bars from where they were, bump numbers that moved.
+const lastStats = {};
+function animateStats() {
+  $("stats").querySelectorAll(".stat").forEach((el) => {
+    const was = lastStats[el.dataset.k], fill = el.querySelector(".bar > div"), v = el.querySelector(".v");
+    const now = { width: fill && fill.style.width, text: v.textContent };
+    lastStats[el.dataset.k] = now;
+    if (!was) return;
+    if (fill && was.width !== now.width) { fill.style.width = was.width; void fill.offsetWidth; fill.style.width = now.width; }
+    if (was.text !== now.text && (el.dataset.k === "Done" || el.dataset.k === "Today")) cue(v, "bump");
+  });
 }
 
 function todaySet() {
@@ -178,7 +213,7 @@ function renderQueue() {
     // same order and wording as Anki's deck list: new, learning, review
     const parts = [a.new && `${a.new} new`, a.learn && `${a.learn} learning`, a.review && `${a.review} review`].filter(Boolean);
     html += `<div class="cluster"><div class="cluster-title lead"><span>Anki</span><span>${hrs(a.sec)}</span></div>
-      <div class="qi ${view === "anki" ? "current" : ""}" data-id="__anki" data-tip="Due reviews and new cards in the VidAnki deck">
+      <div class="qi ${view === "anki" ? "current" : ""}" data-id="__anki">
         <span class="chk"></span><span class="qt"><span class="tag anki">ANKI</span>${parts.join(", ") || "Cards waiting"}</span>
         <span class="qm">${hrs(a.sec)}</span></div></div>`;
   }
@@ -188,10 +223,10 @@ function renderQueue() {
   // right side of a section title: time left, or with done items showing, progress
   const sectionMeta = (items) => {
     const l = left(items), n = items.filter((i) => i.done).length;
-    if (n === items.length) return { html: `${icon("check")}${hide ? "" : hrs(taken(items))}`, tip: "Finished. Total time, tracked or estimated" };
-    if (hide) return { html: hrs(l), tip: "Time left" };
+    if (n === items.length) return `${icon("check")}${hide ? "" : hrs(taken(items))}`;
+    if (hide) return hrs(l);
     const t = taken(items);
-    return { html: `<span class="count">${n}/${items.length}</span>${n ? `${hrs(t)} / ${hrs(t + l)}` : hrs(l)}`, tip: "Items done of total, then time done of total" };
+    return `<span class="count">${n}/${items.length}</span>${n ? `${hrs(t)} / ${hrs(t + l)}` : hrs(l)}`;
   };
   for (const c of S.clusters) {
     const items = c.items.filter((i) => !hide || !i.done || i.id === curId);
@@ -199,19 +234,17 @@ function renderQueue() {
     if (c.group && c.group !== group) {  // heading over the topic sections of a phase
       group = c.group;
       const all = S.clusters.filter((x) => x.group === group).flatMap((x) => x.items);
-      const m = sectionMeta(all);
-      html += `<div class="group-title"><span>${group}</span><span class="meta" data-tip="${attr(m.tip)}">${m.html}</span></div>`;
+      html += `<div class="group-title"><span>${group}</span><span class="meta">${sectionMeta(all)}</span></div>`;
     }
     const meta = sectionMeta(c.items);
     const opt = c.items.some((i) => i.optional);
-    if (opt) {  // "If time": a dropdown; open = shown and counted in the totals
+    if (opt) {  // "If time": a dropdown; open = shown and counted in the totals, closed = "+" what it would add
       const open = S.stats.includeOptional;
-      html += `<div class="cluster optional"><button class="cluster-title lead opt-toggle" data-toggle-optional aria-expanded="${open}"
-        data-tip="${open ? "Shown and counted in your totals. Click to hide" : "Click to show and count these in your totals"}">
-        <span><span class="caret"></span>${c.title} (${c.items.length})</span><span class="meta">${meta.html}</span></button>`;
+      html += `<div class="cluster optional"><button class="cluster-title lead opt-toggle" data-toggle-optional aria-expanded="${open}">
+        <span><span class="caret"></span>${c.title} (${c.items.length})</span><span class="meta">${open ? meta : "+" + hrs(left(c.items))}</span></button>`;
       if (!open) { html += "</div>"; continue; }
     } else {
-      html += `<div class="cluster"><div class="cluster-title ${c.group ? "" : "lead"}"><span data-tip="${attr(c.title)}">${c.title}</span><span class="meta" data-tip="${attr(meta.tip)}">${meta.html}</span></div>`;
+      html += `<div class="cluster"><div class="cluster-title ${c.group ? "" : "lead"}"><span data-clip data-tip="${attr(c.title)}">${c.title}</span><span class="meta">${meta}</span></div>`;
     }
     for (const i of items) {
       const tag = i.type === "video" ? (i.source === "bnb" ? "B&B" : "SK") : i.type === "brick" ? "BRX" : "AMB";
@@ -219,14 +252,10 @@ function renderQueue() {
       let m = hrs(i.done ? timeTaken(i) : estTotal(i));
       if (i.done && !hide && i.doneAt) m = `<span class="date">${shortDate(i.doneAt)}</span>${m}`;
       const name = i.title.replace(/^Sketchy (Micro|Pharm): /, "");
-      let tip = i.title;
-      if (i.type === "video" && i.est) {
-        tip += `. Video ${hrs(i.est.video || 0)}, Anki ${hrs(i.est.anki || 0)}, ${i.est.cards || 0} cards`;
-        if (i.missing) m = "missing";
-      }
-      html += `<div class="qi ${i.done ? "done" : ""} ${i.id === curId && view !== "anki" ? "current" : ""} ${beyond && !i.done ? "later" : ""}" data-id="${i.id}" data-tip="${attr(tip)}">
+      if (i.type === "video" && i.est && i.missing) m = "missing";
+      html += `<div class="qi ${i.done ? "done" : ""} ${i.id === curId && view !== "anki" ? "current" : ""} ${beyond && !i.done ? "later" : ""}" data-id="${i.id}">
         <span class="chk">${i.done ? icon("check") : ""}</span>
-        <span class="qt"><span class="tag ${cls}">${tag}</span>${name}</span>
+        <span class="qt" data-clip data-tip="${attr(name)}"><span class="tag ${cls}">${tag}</span>${name}</span>
         <span class="qm">${m}</span></div>`;
       if (i.id === lastToday) { html += todayLine(); beyond = true; }
     }
@@ -249,9 +278,9 @@ function renderEstimates() {
   $("estBody").innerHTML = `<table class="est-table">
     <thead><tr><th></th><th>Left</th><th>Each</th><th>Time</th></tr></thead>
     <tbody>
-    ${row("Videos", hrs(vidLeft), `${r.videoFactor.bnb.toFixed(1)}× / ${r.videoFactor.sketchy.toFixed(1)}×`, w.video, "B&B / Sketchy time per minute of video")}
-    ${row("New cards", c.newLeft, `${Math.round(r.cardSec)} s`, w.newCards, c.waitingNew ? `incl. ${c.waitingNew} already unsuspended in your decks` : "")}
-    ${row("Reviews", c.existingReviews + Math.round(c.freshReviews), `${r.reviewSec} s`, w.reviews, `${c.existingReviews} scheduled before the goal + ~${Math.round(c.freshReviews)} from new cards`)}
+    ${row("Videos", hrs(vidLeft), `${r.videoFactor.bnb.toFixed(1)}× / ${r.videoFactor.sketchy.toFixed(1)}×`, w.video, "B&B / Sketchy")}
+    ${row("New cards", c.newLeft, `${Math.round(r.cardSec)} s`, w.newCards, c.waitingNew ? `${c.waitingNew} already unsuspended` : "")}
+    ${row("Reviews", c.existingReviews + Math.round(c.freshReviews), `${r.reviewSec} s`, w.reviews, `${c.existingReviews} due + ~${Math.round(c.freshReviews)} from new cards`)}
     ${row("Bricks", bricks, hrs(r.brickSec), w.bricks)}
     ${row("AMBOSS", `${aq} Q`, `${(r.ambossSecPerQ / 60).toFixed(1)} min`, w.amboss)}
     </tbody>
@@ -261,9 +290,6 @@ function renderEstimates() {
   <div class="tiers">
     ${Object.entries(TIER_LABELS).map(([t, label]) =>
       `<label class="check"><input type="checkbox" data-tier="${t}" ${c.tiers.includes(t) ? "checked" : ""}><span></span>${label}</label>`).join("")}
-  </div>
-  <div class="est-notes">
-    <div>Rates adapt as you study.</div>
   </div>`;
   $("estBody").querySelectorAll("[data-tier]").forEach((el) => (el.onchange = setTiers));
 }
@@ -280,8 +306,11 @@ function syncQueue() {
     }
     if (!S) return;
     const order = queueOrder(), at = order.indexOf(key);
-    $("prevBtn").disabled = view !== "gate" && at <= 0;
-    $("nextBtn").disabled = view !== "gate" && (at < 0 || at >= order.length - 1);
+    const atStart = view !== "gate" && at <= 0, atEnd = view !== "gate" && (at < 0 || at >= order.length - 1);
+    $("prevBtn").setAttribute("aria-disabled", atStart);
+    $("nextBtn").setAttribute("aria-disabled", atEnd);
+    $("prevBtn").dataset.tip = atStart ? "Start of queue" : "Previous item (P)";
+    $("nextBtn").dataset.tip = atEnd ? "End of queue" : "Next item (N)";
   }, 0);
 }
 async function setTiers() {
@@ -305,8 +334,9 @@ function showItem(id) {
   $("itemNote").textContent = it.note || "";
   $("doneBtn").hidden = it.done;
   $("undoneBtn").hidden = !it.done;
-  $("doneBtn").innerHTML = icon("check") + (it.optional ? "Mark done, no cards"
-    : it.type === "video" && it.est && it.est.cards ? `Mark done, unsuspend ${it.est.cards} cards` : "Mark done");
+  const cards = !it.optional && it.type === "video" && it.est && it.est.cards;
+  $("doneBtn").innerHTML = icon("check") + "Mark done" + (cards ? `<span class="btn-badge">+${cards} cards</span>` : "");
+  $("doneBtn").dataset.tip = it.optional ? "No cards" : "";
   const isVideo = it.type === "video";
   $("player").hidden = !isVideo;
   $("task").hidden = isVideo;
@@ -314,6 +344,16 @@ function showItem(id) {
   else { pauseVideo(); setupTask(it); }
   document.querySelectorAll(".qi").forEach((el) => el.classList.toggle("current", el.dataset.id === curId));
   syncQueue();
+  entered(id, isVideo ? null : $("task"));
+}
+// Slide a new view in, from the side you're moving toward. Polling re-renders stay still.
+let shownView = null, navDir = 0;
+function entered(key, panel) {
+  if (key === shownView) return;
+  shownView = key;
+  cue($("itemHead"), "enter", navDir);
+  if (panel) cue(panel, "enter", navDir);
+  navDir = 0;
 }
 
 function setupTask(it) {
@@ -323,7 +363,7 @@ function setupTask(it) {
   if (it.url) $("brickLink").href = it.url;
   $("taskKind").textContent = amb ? "AMBOSS questions" : "ScholarRx brick, end questions";
   $("taskInstr").hidden = !amb;
-  $("taskInstr").textContent = amb ? `${it.questions} recommended` : "";
+  $("taskInstr").textContent = amb ? `${it.questions} Q` : "";
   if (timer.id !== it.id) {  // first time showing this item (polling re-renders must not wipe input)
     timer.running = false;
     timer.id = it.id;
@@ -401,7 +441,17 @@ Theme.onChange(() => {
 });
 
 function pauseVideo() { if (!video.paused) video.pause(); }
-function togglePlay() { if (video.paused) video.play(); else video.pause(); }
+function togglePlay() {
+  flashPic(icon(video.paused ? "play" : "pause"));
+  if (video.paused) video.play(); else video.pause();
+}
+function flashPic(html, side = "") {
+  const f = $("picFlash");
+  f.innerHTML = html;
+  f.className = "pic-flash " + side;
+  void f.offsetWidth;
+  f.classList.add("show");
+}
 function setRate(r) {
   video.playbackRate = r;
   rateDD.setValue(r);
@@ -413,8 +463,8 @@ function toggleFullscreen() {
 }
 
 $("playBtn").onclick = togglePlay;
-$("back10").onclick = () => (video.currentTime -= 10);
-$("fwd10").onclick = () => (video.currentTime += 10);
+$("back10").onclick = () => seek(-10);
+$("fwd10").onclick = () => seek(10);
 $("vol").oninput = (e) => { video.volume = +e.target.value; video.muted = false; };
 $("fsBtn").onclick = toggleFullscreen;
 $("seek").oninput = (e) => { if (video.duration) video.currentTime = (e.target.value / 1000) * video.duration; };
@@ -438,8 +488,7 @@ function showEndCard() {
   const it = cur();
   if (!it || it.done) return;
   const n = it.est && it.est.cards;
-  $("endCardSub").textContent = n
-    ? `Unsuspends ${n} cards.` : "";
+  $("endCardSub").textContent = n ? `+${n} cards` : "";
   $("endCard").hidden = false;
   $("stage").classList.remove("idle");
 }
@@ -467,6 +516,7 @@ video.addEventListener("pause", () => { clearTimeout(idleT); $("stage").classLis
 const timer = { id: null, running: false, shown: 0 };
 function updateTimer() {
   $("timerVal").textContent = clock(timer.shown);
+  $("timerVal").classList.toggle("running", timer.running);
   // symbol button, fixed width; the tooltip says what it does
   $("timerBtn").innerHTML = icon(timer.running ? "pause" : "play");
   $("timerBtn").dataset.tip = (timer.running ? "Pause timer" : timer.shown ? "Resume timer" : "Start timer") + " (T)";
@@ -507,7 +557,7 @@ $("timerEditBtn").onclick = editTimer;
 $("timerEdit").addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
     const sec = parseDuration(e.target.value);
-    if (sec === null) { toast("Use m:ss, h:mm:ss, or a number of minutes", true); return; }
+    if (sec === null) { limit(e.target); return; }
     closeTimerEdit();
     setTimerTo(sec);
     Sound.play("confirm");
@@ -588,9 +638,8 @@ async function markDone() {
     const section = S.clusters.find((c) => c.items.some((i) => i.id === it.id));
     const lastInSection = section && section.items.every((i) => i.done || i.id === it.id);
     Sound.play(lastInSection ? "milestone" : "done");
-    const parts = [];
-    if (r.batch) parts.push(r.batch.needsAnki ? "Cards unsuspend when Anki opens" : `${r.batch.newCards} new cards added to ${S.anki.deck}`);
-    if (parts.length) toast(parts.join(". "));
+    if (r.batch) toast(r.batch.needsAnki ? "Cards unsuspend when Anki opens" : `+${r.batch.newCards} new cards in ${S.anki.deck}`);
+    await tickRow(it.id);
     await load();
     if (S.anki.gate) { gateFor = S.anki.gate.title; view = "gate"; renderGate(); }
     else goNext();
@@ -601,9 +650,24 @@ async function markDone() {
   }
 }
 
+// The queue row ticks its box, then folds away if done items are hidden.
+async function tickRow(id) {
+  const row = document.querySelector(`.qi[data-id="${id}"]`);
+  if (!row) return;
+  row.querySelector(".chk").innerHTML = icon("check");
+  row.classList.add("ticking");
+  await wait(280);
+  if (!$("hideDone").checked) return;
+  row.style.height = row.offsetHeight + "px";
+  void row.offsetWidth;
+  row.classList.add("leaving");
+  row.style.height = "0";
+  await wait(200);
+}
+
 function goNext() {
   const n = nextPending(curId);
-  if (!n) { toast("Everything in this block is done"); return; }
+  if (!n) { toast("Block done"); Sound.play("milestone"); return; }
   if (S.anki.gate && n.type === "video") { gateFor = S.anki.gate.title; view = "gate"; renderGate(); return; }
   showItem(n.id);
   renderQueue();
@@ -621,18 +685,19 @@ function renderGate() {
   $("itemNote").hidden = true;
   $("crumbs").textContent = S.block.name;
   $("itemTitle").textContent = "Anki first";
+  entered("gate", $("gate"));
   const g = S.anki.gate, next = nextPending(curId);
-  const nextTitle = next ? next.title : "the next item";
-  const from = g && (g.others ? `From ${g.title} and ${g.others} earlier video${g.others > 1 ? "s" : ""}` : `From ${g.title}`);
+  const nextTitle = next ? next.title : "Next";
+  const from = g && `${g.title}${g.others ? ` +${g.others}` : ""} → ${nextTitle}`;
   $("gateWarn").hidden = !(g && g.deckError);
-  if (g && g.deckError) $("gateWarn").textContent = "The VidAnki deck couldn't be built. Restart Anki, or study these in your AnKing deck for now.";
+  if (g && g.deckError) $("gateWarn").textContent = "Deck not built. Restart Anki";
   if (!g) {  // cleared
     if (gateFor && renderGate.cleared !== gateFor) { renderGate.cleared = gateFor; Sound.play("milestone"); }
     $("itemTitle").textContent = "Anki done";
-    $("gateNum").innerHTML = icon("check");
+    if (!$("gateNum").classList.contains("good")) $("gateNum").innerHTML = icon("check");  // draws once, not on every poll
     $("gateNum").className = "hero-num good";
     $("gateText").textContent = "All done";
-    $("gateFrom").textContent = gateFor ? `New cards from ${gateFor}` : "";
+    $("gateFrom").textContent = gateFor || "";
     $("gateProgress").hidden = true;
     $("gateOpen").hidden = true;
     $("gateSkip").hidden = true;
@@ -646,19 +711,21 @@ function renderGate() {
   $("gateNum").className = "hero-num";
   if (g.needsAnki) {
     $("gateNum").textContent = "";
-    $("gateText").textContent = "Open Anki to unsuspend the cards";
+    $("gateText").textContent = "Open Anki to unsuspend";
     $("gateFrom").textContent = from;
     $("gateProgress").hidden = true;
     return;
   }
   const left = g.newLeft + g.newLater, done = Math.max(g.total - left, 0);
+  const moved = $("gateNum").textContent !== String(g.newLeft) && $("gateNum").textContent !== "";
   $("gateNum").textContent = g.newLeft;
-  $("gateText").innerHTML = `new card${g.newLeft === 1 ? "" : "s"} before <b>${nextTitle}</b>`;
+  if (moved) cue($("gateNum"), "bump");
+  $("gateText").textContent = `new card${g.newLeft === 1 ? "" : "s"}`;
   $("gateFrom").textContent = from;
   $("gateProgress").hidden = false;
   $("gateBar").style.width = (g.total ? (done / g.total) * 100 : 100) + "%";
-  $("gateDone").textContent = `${done} of ${g.total} done`;
-  $("gateLater").textContent = g.newLater ? `${g.newLater} wait until tomorrow` : "";
+  $("gateDone").textContent = `${done} / ${g.total}`;
+  $("gateLater").textContent = g.newLater ? `+${g.newLater} tomorrow` : "";
 }
 
 function showAnki() {
@@ -675,6 +742,7 @@ function renderAnkiPanel() {
   $("undoneBtn").hidden = true;
   $("itemNote").hidden = true;
   $("crumbs").textContent = `${S.block.name} / Anki`;
+  entered("anki", $("ankiPanel"));
   const a = S.stats.ankiNow, r = S.stats.rates, g = S.anki.gate;
   // same three counts and colors as Anki's deck list
   const tile = (k, n, sec, cls) => `<div class="tile ${cls}"><div class="tile-num">${n}</div><div class="tile-k">${k}</div><div class="tile-t">${hrs(sec)}</div></div>`;
@@ -683,18 +751,33 @@ function renderAnkiPanel() {
   $("itemTitle").innerHTML = `Today's Anki <span class="title-meta">${hrs(a.sec)}</span>`;
   const next = nextPending(curId);
   const notes = [
-    g && !g.needsAnki && next ? `<b>${g.newLeft}</b> of these before <b>${next.title}</b>` : "",
-    a.newLater ? `${a.newLater} more new card${a.newLater === 1 ? "" : "s"} wait until tomorrow` : "",
+    g && !g.needsAnki && next ? `<b>${g.newLeft}</b> new → <b>${next.title}</b>` : "",
+    a.newLater ? `+${a.newLater} new tomorrow` : "",
   ].filter(Boolean);
   $("ankiSub").hidden = !notes.length;
   $("ankiSub").innerHTML = notes.map((t) => `<p>${t}</p>`).join("");
 }
-$("ankiOpen").onclick = () => api("/api/open-anki", {}).catch((e) => toast(e.message, true));
+// The button says it worked, since Anki itself opens out of sight.
+async function openAnki(btn) {
+  try {
+    await api("/api/open-anki", {});
+    Sound.play("select");
+    const label = btn.innerHTML;
+    btn.innerHTML = icon("check") + "Opened";
+    setTimeout(() => (btn.innerHTML = label), 1400);
+  } catch (e) { toast(e.message, true); }
+}
+$("ankiOpen").onclick = () => openAnki($("ankiOpen"));
 $("ankiRebuild").onclick = async () => {
+  const btn = $("ankiRebuild");
+  btn.classList.add("spin");
+  btn.disabled = true;
   try { const r = await api("/api/rebuild-deck", {}); toast(`Deck rebuilt, ${r.cards} cards`); Sound.play("confirm"); await load(); }
   catch (e) { toast(e.message, true); }
+  btn.classList.remove("spin");
+  btn.disabled = false;
 };
-$("gateOpen").onclick = () => api("/api/open-anki", {}).catch((e) => toast(e.message, true));
+$("gateOpen").onclick = () => openAnki($("gateOpen"));
 $("gateSkip").onclick = async () => {
   await api("/api/skip-gate", { block: blockId });
   await load();
@@ -731,6 +814,7 @@ function queueOrder() {
 function step(dir) {
   if (view === "gate") {  // the gate is soft: Next moves on anyway, Prev goes back
     Sound.play("select");
+    navDir = dir;
     if (dir > 0) (S.anki.gate ? $("gateSkip") : $("gateNext")).onclick();
     else { view = "item"; showItem(curId); renderQueue(); }
     return;
@@ -738,8 +822,13 @@ function step(dir) {
   const order = queueOrder();
   const at = order.indexOf(view === "anki" ? "__anki" : curId);
   const id = order[at + dir];
-  if (id === undefined) return;  // already at the end; the button is disabled there
+  if (id === undefined) {  // the end of the queue pushes back
+    limit($(dir > 0 ? "nextBtn" : "prevBtn"), dir);
+    cue($("queueList"), "rubber", dir);
+    return;
+  }
   Sound.play("select");
+  navDir = dir;
   if (id === "__anki") { showAnki(); return; }
   const it = flat.find((x) => x.id === id);
   if (dir > 0 && S.anki.gate && it.type === "video" && !it.done) {
@@ -791,12 +880,18 @@ function openSettings() {
 $("soundOn").onchange = (e) => { Sound.on = e.target.checked; Sound.play("toggle"); };
 $("soundVol").oninput = (e) => { Sound.volume = +e.target.value; };
 $("soundVol").onchange = () => Sound.play("done");  // preview at the new volume
-const modePick = new Segmented($("modePick"), { options: Theme.MODES, value: Theme.mode, onChange: (v) => { Theme.mode = v; Sound.play("toggle"); } });
-const fontPick = new Segmented($("fontPick"), { options: Theme.FONTS, value: Theme.font, onChange: (v) => { Theme.font = v; Sound.play("toggle"); } });
+function setLook(key, value) {
+  Theme.fade();
+  Theme[key] = value;
+  Sound.play("toggle");
+  renderLook();
+}
+const modePick = new Segmented($("modePick"), { options: Theme.MODES, value: Theme.mode, onChange: (v) => setLook("mode", v) });
+const fontPick = new Segmented($("fontPick"), { options: Theme.FONTS, value: Theme.font, onChange: (v) => setLook("font", v) });
 $("themePick").innerHTML = Theme.THEMES.map((t) => `<button type="button" class="swatch" role="radio" data-hue="${t.hue}" style="--sw:${t.hue}"><span class="sw-chip"></span>${t.name}</button>`).join("");
 $("themePick").onclick = (e) => {
   const b = e.target.closest(".swatch");
-  if (b) { Theme.hue = +b.dataset.hue; Sound.play("toggle"); renderLook(); }
+  if (b) setLook("hue", +b.dataset.hue);
 };
 $("hueSlider").oninput = (e) => { Theme.hue = +e.target.value; renderLook(); };
 function renderLook() {
@@ -816,7 +911,7 @@ function renderSettings() {
       <label>${f.label}</label>
       <input type="number" step="any" min="0" ${pinned ? `value="${v}"` : `placeholder="${v}"`}>
       <span class="unit">${f.unit}</span>
-      <button class="ghost reset" data-tip="Go back to the learned value">reset</button></div>`;
+      <button class="icon-btn reset" aria-label="Use learned value" data-tip="Use learned value">${icon("reset")}</button></div>`;
   }).join("");
   $("setPins").querySelectorAll(".set-row").forEach((row) => {
     const f = PIN_FIELDS.find((x) => x.key === row.dataset.key);
@@ -833,7 +928,7 @@ function renderSettings() {
     await api("/api/settings", { reviewsInDeck: e.target.checked });
     await api("/api/rebuild-deck", {}).catch((err) => toast(err.message, true));
     await load();
-    toast(e.target.checked ? "Reviews moved to the VidAnki deck" : "Reviews left in your AnKing deck");
+    toast(e.target.checked ? "Reviews in VidAnki deck" : "Reviews in AnKing deck");
   };
   $("setTiers").querySelectorAll("[data-tier]").forEach((el) => (el.onchange = async () => {
     const tiers = [...$("setTiers").querySelectorAll("[data-tier]:checked")].map((x) => x.dataset.tier);
@@ -843,9 +938,10 @@ function renderSettings() {
   renderSettingsResult();
 }
 function renderSettingsResult() {
-  const st = S.stats, w = st.work;
+  const st = S.stats, parts = workParts(st.work).filter((p) => p.sec > 0);
   $("setResult").innerHTML = `<b>≈ ${hrs(st.remainingSec)}</b> left → <b>${hrs(st.perDaySec)}/day</b> for ${st.daysLeft} days
-    <div class="small muted">Videos ${hrs(w.video)}, new cards ${hrs(w.newCards)}, reviews ${hrs(w.reviews)}, bricks ${hrs(w.bricks)}, AMBOSS ${hrs(w.amboss)}</div>`;
+    <div class="mix">${parts.map((p) => `<i class="c-${p.cls}" style="flex:${p.sec}"></i>`).join("")}</div>
+    <div class="legend">${parts.map((p) => `<span class="c-${p.cls}"><i></i>${p.label} <b>${hrs(p.sec)}</b></span>`).join("")}</div>`;
 }
 async function savePin(f, value) {
   await api("/api/settings", { pins: { [f.key]: value } });
@@ -857,10 +953,12 @@ async function setGoal(date) {
   await api("/api/settings", { goalDate: { block: blockId, date } });
   await load();
   $("setGoal").value = S.block.goalDate;
+  cue($("setResult").querySelector("b"), "bump");
   // the worker recounts already-scheduled reviews through the new date within a few seconds
   setTimeout(() => load().catch(() => {}), 7000);
 }
 function shiftGoal(days) {
+  if (days < 0 && S.stats.daysLeft <= 1) { limit($("goalMinus"), -1); return; }  // the goal can't go before today
   const d = new Date(S.block.goalDate + "T12:00");
   d.setDate(d.getDate() + days);
   setGoal(d.toISOString().slice(0, 10));
@@ -872,11 +970,19 @@ $("settingsBtn").onclick = (e) => { e.stopPropagation(); openSettings(); };
 
 // ---------- commands (keyboard, shortcuts sheet, ⌘K palette) ----------
 const isVideo = () => { const it = cur(); return !!it && it.type === "video" && view === "item"; };
-const seek = (d) => { video.currentTime += d; wake(); };
-function stepRate(dir) {
-  const i = RATES.indexOf(video.playbackRate);
-  setRate(RATES[Math.max(0, Math.min(RATES.length - 1, (i < 0 ? 0 : i) + dir))]);
+function seek(d) {
   wake();
+  const atEnd = d < 0 ? video.currentTime <= 0 : video.currentTime >= video.duration - 0.5;
+  if (atEnd) { limit($("seek"), Math.sign(d)); return; }
+  video.currentTime += d;
+  flashPic(`${d < 0 ? "−" : "+"}${Math.abs(d)}`, d < 0 ? "left" : "right");
+}
+function stepRate(dir) {
+  wake();
+  const i = Math.max(RATES.indexOf(video.playbackRate), 0), r = RATES[i + dir];
+  if (r === undefined) { limit($("rateDD"), dir); flashPic(RATES[i] + "×"); return; }
+  setRate(r);
+  flashPic(r + "×");
 }
 const COMMANDS = [
   { group: "Video", title: "Play / pause", keys: ["Space", "K"], when: isVideo, run: togglePlay },
@@ -887,7 +993,7 @@ const COMMANDS = [
   { group: "Video", title: "Slower", keys: ["["], when: isVideo, run: () => stepRate(-1) },
   { group: "Video", title: "Faster", keys: ["]"], when: isVideo, run: () => stepRate(1) },
   { group: "Video", title: "Fullscreen", keys: ["F"], when: isVideo, run: toggleFullscreen },
-  { group: "Video", title: "Mute / unmute", keys: ["M"], when: isVideo, run: () => (video.muted = !video.muted) },
+  { group: "Video", title: "Mute / unmute", keys: ["M"], when: isVideo, run: () => { video.muted = !video.muted; flashPic(video.muted ? "Muted" : "Sound on"); } },
   ...RATES.map((r) => ({ group: "Speed", title: `Speed ${r}×`, when: isVideo, run: () => setRate(r) })),
   ...DARK_MODES.map((m) => ({ group: "Picture", title: `Picture: ${m.label}`, when: isVideo, run: () => setDark(m.value) })),
   { group: "Items", title: "Next item", keys: ["N"], run: () => step(1) },
@@ -909,24 +1015,24 @@ const COMMANDS = [
     },
   })),
   { group: "Anki", title: "Today's Anki (reviews + new cards)", run: showAnki },
-  { group: "Anki", title: "Rebuild VidAnki deck (pull in reviews due now)", run: async () => {
+  { group: "Anki", title: "Rebuild VidAnki deck", run: async () => {
     try { const r = await api("/api/rebuild-deck", {}); toast(`VidAnki deck: ${r.cards} cards`); } catch (e) { toast(e.message, true); }
   } },
   { group: "Anki", title: "Refresh card counts", run: async () => { await api("/api/refresh-counts", { block: blockId }); await load(); toast("Card counts refreshed"); } },
   { group: "Items", title: "Hide / show done items", keys: ["H"], run: () => { $("hideDone").checked = !$("hideDone").checked; renderQueue(); } },
-  { group: "App", title: "Settings: goal date & estimates", keys: [","], run: openSettings },
+  { group: "App", title: "Settings", keys: [","], run: openSettings },
   { group: "App", title: "Goal date: one day later", run: () => shiftGoal(1) },
   { group: "App", title: "Goal date: one day earlier", run: () => shiftGoal(-1) },
-  ...Theme.THEMES.map((t) => ({ group: "Look", title: `Theme: ${t.name}`, run: () => { Theme.hue = t.hue; Sound.play("toggle"); } })),
-  ...Theme.MODES.map((m) => ({ group: "Look", title: `Mode: ${m.label}`, run: () => { Theme.mode = m.value; Sound.play("toggle"); } })),
-  ...Theme.FONTS.map((f) => ({ group: "Look", title: `Font: ${f.label}`, run: () => { Theme.font = f.value; Sound.play("toggle"); } })),
+  ...Theme.THEMES.map((t) => ({ group: "Look", title: `Theme: ${t.name}`, run: () => setLook("hue", t.hue) })),
+  ...Theme.MODES.map((m) => ({ group: "Look", title: `Mode: ${m.label}`, run: () => setLook("mode", m.value) })),
+  ...Theme.FONTS.map((f) => ({ group: "Look", title: `Font: ${f.label}`, run: () => setLook("font", f.value) })),
   { group: "App", title: "Sound effects on / off", run: () => { Sound.on = !Sound.on; Sound.play("toggle"); toast(Sound.on ? "Sounds on" : "Sounds off"); } },
   { group: "App", title: "Keyboard shortcuts", keys: ["?"], run: () => openModal("helpModal") },
   { group: "App", title: "Search commands", keys: ["⌘K"], run: () => openPalette() },
 ];
 const KEYMAP = { " ": 0, k: 0, ArrowLeft: 1, ArrowRight: 2, j: 3, l: 4, "[": 5, "]": 6, f: 7, m: 8 };
 COMMANDS.forEach((c, i) => {
-  const extra = { n: "Next item", p: "Previous item", t: "Start / pause timer", h: "Hide / show done items", ",": "Settings: goal date & estimates", "?": "Keyboard shortcuts" };
+  const extra = { n: "Next item", p: "Previous item", t: "Start / pause timer", h: "Hide / show done items", ",": "Settings", "?": "Keyboard shortcuts" };
   for (const [k, title] of Object.entries(extra)) if (c.title === title) KEYMAP[k] = i;
 });
 
@@ -998,8 +1104,9 @@ function drawPalette() {
 }
 function runPal(i) {
   const p = palItems[i];
+  if (!p) { limit($("palInput")); return; }  // nothing matches: stay open
   closeModals(true);  // running a command makes its own sound
-  if (p) p.run();
+  p.run();
 }
 $("palInput").addEventListener("input", renderPalette);
 $("palInput").addEventListener("keydown", (e) => {

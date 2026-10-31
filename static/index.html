@@ -16,7 +16,7 @@
   <div id="stats" class="stats"></div>
   <div class="head-tools">
     <button id="settingsBtn" class="icon-btn" aria-label="Settings" data-tip="Settings (,)"><i data-icon="settings"></i></button>
-    <button id="paletteBtn" class="icon-btn key-btn" aria-label="Search commands" data-tip="Search commands and items">⌘K</button>
+    <button id="paletteBtn" class="icon-btn key-btn" aria-label="Search commands" data-tip="Search">⌘K</button>
     <button id="helpBtn" class="icon-btn" aria-label="Keyboard shortcuts" data-tip="Keyboard shortcuts (?)"><i data-icon="help"></i></button>
     <div id="ankiDot" class="anki-dot"></div>
   </div>
@@ -37,6 +37,7 @@
         <div id="picture">
           <video id="video" playsinline preload="metadata"></video>
           <canvas id="glcanvas"></canvas>
+          <div id="picFlash" class="pic-flash"></div>
           <div id="endCard" class="overlay-card" hidden>
             <div class="oc-title">Finished?</div>
             <div class="oc-sub" id="endCardSub"></div>
@@ -54,7 +55,7 @@
             <button id="fwd10" class="icon-btn skip" aria-label="Forward 10 seconds" data-tip="Forward 10 seconds (L)">10<i data-icon="forward"></i></button>
             <span id="time" class="time">0:00 / 0:00</span>
             <span class="spacer"></span>
-            <div class="dd up" id="rateDD" data-tip="Speed, slower or faster with [ and ]"></div>
+            <div class="dd up" id="rateDD" data-tip="Speed ([ ])"></div>
             <div class="dd up" id="darkDD" data-tip="Picture mode"></div>
             <input type="range" id="vol" min="0" max="1" step="0.05" value="1" aria-label="Volume" data-tip="Volume (M)">
             <button id="fsBtn" class="icon-btn" aria-label="Fullscreen" data-tip="Fullscreen (F)"><i data-icon="fullscreen"></i></button>
@@ -113,7 +114,7 @@
         <div class="tiles" id="ankiTiles"></div>
         <div class="row hero-actions">
           <button class="primary" id="ankiOpen">Open Anki</button>
-          <button id="ankiRebuild" class="icon-btn boxed" aria-label="Rebuild deck" data-tip="Rebuild deck, to pull in reviews that came due since"><i data-icon="reset"></i></button>
+          <button id="ankiRebuild" class="icon-btn boxed" aria-label="Rebuild deck" data-tip="Rebuild deck"><i data-icon="reset"></i></button>
         </div>
       </div>
       <div class="task-sec anki-notes" id="ankiSub"></div>
@@ -157,9 +158,9 @@
       <div class="set-row">
         <label for="setGoal">Finish by</label>
         <div class="row">
-          <button id="goalMinus" data-tip="One day earlier">−1 d</button>
+          <button id="goalMinus">−1 d</button>
           <input type="date" id="setGoal">
-          <button id="goalPlus" data-tip="One day later">+1 d</button>
+          <button id="goalPlus">+1 d</button>
         </div>
       </div>
       <div class="set-section">Time per item <span class="muted small">(blank = learned)</span></div>

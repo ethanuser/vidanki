@@ -50,6 +50,12 @@ window.Theme = (function () {
 
   return {
     THEMES, MODES, FONTS,
+    // crossfade the next change; not for the slider, which changes on every step
+    fade() {
+      root.classList.add("theming");
+      clearTimeout(this.fadeT);
+      this.fadeT = setTimeout(() => root.classList.remove("theming"), 260);
+    },
     onChange(fn) { listeners.push(fn); },
     get dark() { return isDark(); },
     get theme() { return THEMES.find((t) => t.hue === hue)?.id || "custom"; },

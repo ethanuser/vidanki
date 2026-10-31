@@ -101,7 +101,8 @@ const ICON_PATHS = {
 window.icon = (name) => `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true">${ICON_PATHS[name] || ""}</svg>`;
 document.querySelectorAll("[data-icon]").forEach((el) => { el.outerHTML = icon(el.dataset.icon); });
 
-// Styled tooltips: anything with data-tip. A trailing "(X)" renders as a key cap.
+// Styled tooltips: anything with data-tip. A trailing "(X)" renders as a key cap,
+// "a\tb" lines render as rows, and data-clip means only when the text is cut off.
 (function () {
   const tip = document.createElement("div");
   tip.className = "tip";
@@ -109,6 +110,15 @@ document.querySelectorAll("[data-icon]").forEach((el) => { el.outerHTML = icon(e
   document.body.append(tip);
   let target = null, showT = 0, hideT = 0, warmUntil = 0;
   function render(text) {
+    if (text.includes("\n")) {
+      tip.replaceChildren(...text.split("\n").map((line) => {
+        const row = document.createElement("div");
+        row.className = "tip-row";
+        row.append(...line.split("\t").map((t) => { const s = document.createElement("span"); s.textContent = t; return s; }));
+        return row;
+      }));
+      return;
+    }
     const m = text.match(/^(.*?)\s*\(([^()]{1,8})\)$/);
     tip.textContent = m ? m[1] : text;
     if (m) { const k = document.createElement("kbd"); k.textContent = m[2]; tip.append(k); }
@@ -134,7 +144,8 @@ document.querySelectorAll("[data-icon]").forEach((el) => { el.outerHTML = icon(e
     const el = e.target.closest && e.target.closest("[data-tip]");
     if (el === target) return;
     clearTimeout(showT); clearTimeout(hideT);
-    if (!el || !el.dataset.tip) { hideT = setTimeout(hide, 150); return; }
+    const clipped = el && "clip" in el.dataset ? el.scrollWidth > el.clientWidth : true;
+    if (!el || !el.dataset.tip || !clipped) { hideT = setTimeout(hide, 150); return; }
     target = el;
     if (performance.now() < warmUntil || !tip.hidden) show();
     else showT = setTimeout(show, 400);

@@ -37,7 +37,7 @@ Watch B&B and Sketchy videos in dark mode, then do their high-yield Anki cards b
 <tr><td><img src="docs/images/command-palette.png" alt="Command palette"></td><td><img src="docs/images/shortcuts.png" alt="Keyboard shortcuts"></td></tr>
 </table>
 
-**Cozy themes.** One color runs through the whole app: backgrounds, buttons, progress bars, the player and the video itself. Pick Hearth, Honey, Moss, Tide, Slate, Dusk or Rose, or slide to your own color, in Settings or from ⌘K. Mode can be Auto, Light or Dark, and the font can be Cozy (a soft sans with bookish headings), Book or Plain. Your choices are saved per device. In light mode, videos play as they are.
+**Cozy themes.** One color runs through the whole app: backgrounds, buttons, progress bars, the player and the video itself. Pick Hearth, Honey, Moss, Tide, Slate, Dusk or Rose, or slide to your own color, in Settings or from ⌘K. Mode can be Auto, Light or Dark, and the font can be Cozy (a soft sans), Book (a serif) or Plain. Your choices are saved per device. In light mode, videos play as they are.
 
 <table>
 <tr><td><img src="docs/images/theme-moss.png" alt="Moss theme, dark"></td><td><img src="docs/images/theme-dusk.png" alt="Dusk theme, dark"></td></tr>
@@ -48,7 +48,7 @@ Watch B&B and Sketchy videos in dark mode, then do their high-yield Anki cards b
 
 ![The Hearth theme in light mode](docs/images/overview-light.png)
 
-**Quiet sounds.** Short, soft sounds for opening, closing and finishing things, with a warmer chime for clearing a section. Turn them off or change the volume in Settings.
+**Quiet sounds.** Short, soft sounds for opening, closing and finishing things, a warmer chime for clearing a section, and a low tap when you hit the end of the queue. Turn them off or change the volume in Settings.
 
 ## Setup
 

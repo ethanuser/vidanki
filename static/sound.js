@@ -61,6 +61,8 @@ window.Sound = (function () {
     toggle: () => { note(880, 0, 0.05, { gain: 0.08 }); note(1175, 0.035, 0.06, { gain: 0.06 }); },
     open: () => note(990, 0, 0.07, { gain: 0.07, type: "triangle" }),
     close: () => note(740, 0, 0.07, { gain: 0.06, type: "triangle" }),  // open, a step lower
+    // hit the end of something: a soft low tap
+    limit: () => note(196, 0, 0.1, { gain: 0.14, type: "triangle" }),
     // timer
     start: () => glide(520, 820, 0.12),
     pause: () => glide(820, 520, 0.12),
