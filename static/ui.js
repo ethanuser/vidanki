@@ -70,6 +70,7 @@ window.Dropdown = class Dropdown {
   key(e) {
     const items = [...this.menu.querySelectorAll(".dd-item")];
     const i = items.indexOf(document.activeElement);
+    if (this.menu.hidden && this.el.closest("#controls")) return;  // up and down are volume there
     if (e.key === "Escape") { this.close(); this.btn.focus(); }
     else if (e.key === "ArrowDown" || e.key === "ArrowUp") {
       if (this.menu.hidden) this.open();
@@ -94,6 +95,9 @@ const ICON_PATHS = {
   reset: '<path d="M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5"/>',
   replay10: '<path d="M12 4.5a8.5 8.5 0 1 1-8.5 8.5"/><path d="M12 1.5 8.5 4.5l3.5 3"/><text x="12" y="16.5">10</text>',
   forward10: '<path d="M12 4.5a8.5 8.5 0 1 0 8.5 8.5"/><path d="M12 1.5l3.5 3-3.5 3"/><text x="12" y="16.5">10</text>',
+  "volume-high": '<path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/>',
+  "volume-low": '<path d="M11 5 6 9H2v6h4l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/>',
+  "volume-off": '<path d="M11 5 6 9H2v6h4l5 4z"/><path d="m22 9-6 6M16 9l6 6"/>',
   fullscreen: '<path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/>',
   settings: '<path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6"/>',
   help: '<circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/>',

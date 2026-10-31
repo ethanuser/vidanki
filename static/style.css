@@ -292,6 +292,7 @@ main { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 360px; 
   background: var(--ctl-menu); color: var(--ctl-text); border-radius: var(--r-lg); font-size: var(--t-lg); font-weight: 600; font-variant-numeric: tabular-nums;
   opacity: 0; transform: translate(-50%, -50%); pointer-events: none; }
 .pic-flash.left { left: 20%; } .pic-flash.right { left: 80%; }
+.pic-flash { gap: var(--s2); }
 .pic-flash .icon { width: 24px; height: 24px; }
 .pic-flash.show { animation: pic-flash 520ms var(--ease); }
 .overlay-card { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 3; min-width: 280px; padding: var(--s4) var(--s5);

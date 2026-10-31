@@ -99,9 +99,12 @@ Press `?` in the app for the full list, or `⌘K` to search every command and ju
 | space / k | play / pause |
 | ← / → | back / forward 5 s |
 | j / l | back / forward 10 s |
+| 1 – 9 | jump to 10% – 90% of the video |
+| 0 | back to the start |
 | [ / ] | slower / faster |
-| f | fullscreen |
+| f, or double-click the video | fullscreen |
 | m | mute |
+| ↑ / ↓ | volume |
 | n / p | next / previous item |
 | t | start / pause the brick or AMBOSS timer |
 

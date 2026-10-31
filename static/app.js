@@ -499,18 +499,46 @@ function leaveFullscreen() { if (document.fullscreenElement) document.exitFullsc
 $("playBtn").onclick = togglePlay;
 $("back10").onclick = () => seek(-10);
 $("fwd10").onclick = () => seek(10);
-$("vol").oninput = (e) => {
-  video.volume = +e.target.value;
+function setVolume(v) {
+  video.volume = v;
   video.muted = false;
-  try { localStorage.setItem("vidanki.volume", video.volume); } catch {}
+  try { localStorage.setItem("vidanki.volume", v); } catch {}
+}
+const volumeIcon = () => (video.muted || !video.volume ? "volume-off" : video.volume < 0.5 ? "volume-low" : "volume-high");
+// The bar always shows the true state, whatever changed it: the keys, the button or the slider.
+function paintVolume() {
+  const v = video.muted ? 0 : video.volume, name = volumeIcon();
+  $("vol").value = v;
+  if ($("muteBtn").dataset.state === name) return;
+  $("muteBtn").dataset.state = name;
+  $("muteBtn").innerHTML = icon(name);
+  $("muteBtn").dataset.tip = name === "volume-off" ? "Unmute (M)" : "Mute (M)";
+}
+function toggleMute() {
+  if (!video.volume) setVolume(0.5);  // unmuting silence should make a sound
+  else video.muted = !video.muted;
+}
+video.addEventListener("volumechange", paintVolume);
+$("muteBtn").onclick = toggleMute;
+$("vol").oninput = (e) => {
+  setVolume(+e.target.value);
 };
 try {
   const v = parseFloat(localStorage.getItem("vidanki.volume"));
-  if (v >= 0 && v <= 1) { video.volume = v; $("vol").value = v; }
+  if (v >= 0 && v <= 1) video.volume = v;
 } catch {}
+paintVolume();
 $("fsBtn").onclick = toggleFullscreen;
 $("seek").oninput = (e) => { if (video.duration) video.currentTime = (e.target.value / 1000) * video.duration; };
-$("picture").addEventListener("click", (e) => { if (!e.target.closest("#endCard")) togglePlay(); });
+// One click plays or pauses, a beat late, so a double-click never touches playback.
+let clickT = 0;
+$("picture").addEventListener("click", (e) => {
+  if (e.detail === 1 && !e.target.closest("#endCard")) clickT = setTimeout(togglePlay, 200);
+});
+$("picture").addEventListener("dblclick", (e) => {
+  clearTimeout(clickT);
+  if (!e.target.closest("#endCard")) toggleFullscreen();
+});
 $("playBtn").innerHTML = icon("play");
 video.addEventListener("play", () => ($("playBtn").innerHTML = icon("pause")));
 video.addEventListener("pause", () => ($("playBtn").innerHTML = icon("play")));
@@ -1044,6 +1072,19 @@ function seek(d) {
   video.currentTime += d;
   flashPic(`${d < 0 ? "−" : "+"}${Math.abs(d)}`, d < 0 ? "left" : "right");
 }
+function stepVolume(dir) {
+  wake();
+  const from = video.volume, v = Math.max(0, Math.min(1, Math.round((from + dir * 0.05) * 20) / 20));
+  if (v === from && !video.muted) limit($("vol"), dir);
+  else setVolume(v);
+  flashPic(icon(volumeIcon()) + Math.round(v * 100) + "%");
+}
+function jump(n) {  // the number keys: 3 is 30% of the way in, 0 the start
+  if (!video.duration) return;
+  wake();
+  video.currentTime = video.duration * n / 10;
+  flashPic(clock(video.currentTime));
+}
 function stepRate(dir) {
   wake();
   const i = Math.max(RATES.indexOf(video.playbackRate), 0), r = RATES[i + dir];
@@ -1060,7 +1101,11 @@ const COMMANDS = [
   { group: "Video", title: "Slower", keys: ["["], when: isVideo, run: () => stepRate(-1) },
   { group: "Video", title: "Faster", keys: ["]"], when: isVideo, run: () => stepRate(1) },
   { group: "Video", title: "Fullscreen", keys: ["F"], when: isVideo, run: toggleFullscreen },
-  { group: "Video", title: "Mute / unmute", keys: ["M"], when: isVideo, run: () => { video.muted = !video.muted; flashPic(video.muted ? "Muted" : "Sound on"); } },
+  { group: "Video", title: "Mute / unmute", keys: ["M"], when: isVideo, run: () => { toggleMute(); flashPic(icon(volumeIcon())); } },
+  { group: "Video", title: "Volume up", keys: ["↑"], when: isVideo, run: () => stepVolume(1) },
+  { group: "Video", title: "Volume down", keys: ["↓"], when: isVideo, run: () => stepVolume(-1) },
+  { group: "Video", title: "Jump to 0–90%", keys: ["0–9"], when: () => false, run: () => {} },  // the sheet's one row for these
+  ...[...Array(10).keys()].map((n) => ({ group: "Video", title: n ? `Jump to ${n * 10}%` : "Jump to start", digit: n, when: isVideo, run: () => jump(n) })),
   ...RATES.map((r) => ({ group: "Speed", title: `Speed ${r}×`, when: isVideo, run: () => setRate(r) })),
   ...DARK_MODES.map((m) => ({ group: "Picture", title: `Picture: ${m.label}`, when: isVideo, run: () => setDark(m.value) })),
   { group: "Items", title: "Next item", keys: ["N"], run: () => step(1) },
@@ -1102,8 +1147,9 @@ const COMMANDS = [
 ];
 const KEYMAP = { " ": 0, k: 0, ArrowLeft: 1, ArrowRight: 2, j: 3, l: 4, "[": 5, "]": 6, f: 7, m: 8 };
 COMMANDS.forEach((c, i) => {
-  const extra = { n: "Next item", p: "Previous item", t: "Start / pause timer", h: "Hide / show done items", ",": "Settings", "?": "Keyboard shortcuts" };
+  const extra = { ArrowUp: "Volume up", ArrowDown: "Volume down", n: "Next item", p: "Previous item", t: "Start / pause timer", h: "Hide / show done items", ",": "Settings", "?": "Keyboard shortcuts" };
   for (const [k, title] of Object.entries(extra)) if (c.title === title) KEYMAP[k] = i;
+  if (c.digit !== undefined) KEYMAP[c.digit] = i;
 });
 
 // shortcuts sheet
