@@ -61,6 +61,7 @@
   --sw-surface: oklch(.3 .02 var(--h));
   /* the All done landscape: night in dark mode, far hills palest */
   --sc-sky: oklch(.24 .04 var(--h));
+  --sc-snow: oklch(.72 .05 var(--h));
   --sc-sun: oklch(.84 .1 var(--h));
   --sc-halo1: oklch(.34 .06 var(--h));
   --sc-halo2: oklch(.29 .05 var(--h));
@@ -97,6 +98,7 @@
   --thumb: oklch(.8 .018 var(--h));
   --sw-surface: oklch(.92 .02 var(--h));
   --sc-sky: oklch(.94 .03 var(--h));
+  --sc-snow: oklch(.98 .012 var(--h));
   --sc-sun: oklch(.74 .15 var(--h));
   --sc-halo1: oklch(.87 .07 var(--h));
   --sc-halo2: oklch(.91 .05 var(--h));
@@ -317,6 +319,8 @@ main { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 360px; 
 :root[data-mode="dark"] .sc-cloud, :root[data-mode="light"] .sc-star { display: none; }
 .sc-1 { fill: var(--sc-1); } .sc-2 { fill: var(--sc-2); } .sc-3 { fill: var(--sc-3); } .sc-4 { fill: var(--sc-4); } .sc-5 { fill: var(--sc-5); }
 .sc-glow { fill: var(--sc-sun); }
+.sc-water { fill: var(--sc-halo1); } .sc-snow { fill: var(--sc-snow); }
+#gate.cleared .hero-num { cursor: pointer; }
 #ankiPanel .task-sec:first-child { display: flex; flex: 1; flex-direction: column; }
 .sec-label { font-size: var(--t-sm); color: var(--muted); font-weight: 600; margin-bottom: var(--s2); }
 .fields { display: flex; justify-content: center; gap: var(--s3); align-items: end; flex-wrap: wrap; }

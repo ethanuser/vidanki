@@ -15,7 +15,7 @@ Watch B&B and Sketchy videos in dark mode, then do their high-yield Anki cards b
 <tr><td align="center">Original</td><td align="center">Smart dark</td></tr>
 </table>
 
-**Video → Anki → next video.** Near the end of a video VidAnki offers to mark it done. That renames the file with a leading `_`, unsuspends its high-yield AnKing cards, and puts the new ones in a filtered deck. The next video waits until you've studied them; you can always skip.
+**Video → Anki → next video.** Near the end of a video VidAnki offers to mark it done. That renames the file with a leading `_`, unsuspends its high-yield AnKing cards, and puts the new ones in a filtered deck. The next video waits until you've studied them; you can always skip. Clearing them shows a random landscape in your theme's color (click the sun for another).
 
 <table>
 <tr><td><img src="docs/images/end-of-video.png" alt="End-of-video prompt"></td><td><img src="docs/images/anki-gate.png" alt="Anki gate showing new cards left"></td></tr>
