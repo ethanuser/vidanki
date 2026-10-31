@@ -766,16 +766,23 @@ function renderGate() {
     $("gateProgress").hidden = true;
     return;
   }
-  const left = g.newLeft + g.newLater, done = Math.max(g.total - left, 0);
-  const moved = $("gateNum").textContent !== String(g.newLeft) && $("gateNum").textContent !== "";
-  $("gateNum").textContent = g.newLeft;
+  const n = gateCount(g), left = n + g.newLater, done = Math.max(g.total - left, 0);
+  const moved = $("gateNum").textContent !== String(n) && $("gateNum").textContent !== "";
+  $("gateNum").textContent = n;
   if (moved) cue($("gateNum"), "bump");
-  $("gateText").textContent = `new card${g.newLeft === 1 ? "" : "s"}`;
+  $("gateText").textContent = gateLabel(g);
   $("gateFrom").textContent = from;
   $("gateProgress").hidden = false;
   $("gateBar").style.width = (g.total ? (done / g.total) * 100 : 100) + "%";
   $("gateDone").textContent = `${done} / ${g.total}`;
   $("gateLater").textContent = g.newLater ? `+${g.newLater} tomorrow` : "";
+}
+
+const gateCount = (g) => g.newLeft + g.learn;
+function gateLabel(g) {
+  const n = gateCount(g), s = n === 1 ? "" : "s";
+  if (!g.learn) return `new card${s}`;
+  return g.newLeft ? `card${s} left` : `review${s}`;
 }
 
 // A different picture each time a gate clears; a click on the sun shows another.
@@ -813,7 +820,7 @@ function renderAnkiPanel() {
   $("itemTitle").innerHTML = `Today's Anki <span class="title-meta">${hrs(a.sec)}</span>`;
   const next = nextPending(curId);
   const notes = [
-    g && !g.needsAnki && next ? `<b>${g.newLeft}</b> new → <b>${next.title}</b>` : "",
+    g && !g.needsAnki && next ? `<b>${gateCount(g)}</b> ${gateLabel(g)} → <b>${next.title}</b>` : "",
     a.newLater ? `+${a.newLater} new tomorrow` : "",
   ].filter(Boolean);
   $("ankiSub").hidden = !notes.length;

@@ -427,6 +427,11 @@ def open_batch_cids():
     return sorted({c for b in state["batches"] if not b.get("closed") for c in b.get("cids", [])})
 
 
+def unfinished_batch_cids():
+    """Open batches plus finished ones whose cards are still in learning steps."""
+    return sorted({c for b in state["batches"] if not b.get("reviewsFinal") for c in b.get("cids", [])})
+
+
 def new_searches():
     """New cards for the deck: from finished videos, plus (with "one deck" on) any
     other unsuspended high-yield new cards in your AnKing deck."""
@@ -442,9 +447,9 @@ def new_searches():
 def reviews_waiting():
     """Is anything already studied due right now, in the VidAnki deck or about to join it?"""
     places = [f'"deck:{FILTERED_DECK}"']
-    open_cids = open_batch_cids()
-    if open_cids:
-        places.append(f'cid:{",".join(map(str, open_cids))}')
+    cids = unfinished_batch_cids()
+    if cids:
+        places.append(f'cid:{",".join(map(str, cids))}')
     if state["settings"].get("reviewsInDeck", True):
         places.append(f'"deck:{REVIEW_DECK}"')
     return bool(anki("findCards", query=f'({" OR ".join(places)}) is:due -is:new -is:suspended -is:buried'))
@@ -460,12 +465,12 @@ def rebuild_filtered_deck():
     # 1) cards already studied (reviews, learning) by due date, most overdue first;
     # 2) new cards, in deck order. Anki allows only two search terms, so both kinds
     #    of new card share this one.
-    open_cids = open_batch_cids()
+    cids = unfinished_batch_cids()
     seen = []
     if state["settings"].get("reviewsInDeck", True):
         seen.append(f'("deck:{REVIEW_DECK}" (is:due OR is:learn) -is:new -is:suspended)')
-    if open_cids:
-        seen.append(f'(cid:{",".join(map(str, open_cids))} is:learn)')
+    if cids:
+        seen.append(f'(cid:{",".join(map(str, cids))} is:learn)')
     terms = []
     if seen:
         terms.append({"search": " OR ".join(seen), "order": "DUE"})
@@ -540,6 +545,8 @@ def refresh_batches():
         due_notes = set(cache.get("deckNow", {}).get("dueNotes", []))
         b["newToday"] = len({c["note"] for c in info if c["type"] == 0 and c["queue"] == 0} - due_notes)
         b["learning"] = sum(1 for c in info if c["type"] in (1, 3))
+        # learning cards still to see today; a step that lands tomorrow doesn't count
+        b["learnToday"] = len(anki("findCards", query=f'cid:{",".join(map(str, cids))} is:learn -is:suspended -is:buried -prop:due>0'))
         reviews = anki("getReviewsOfCards", cards=[int(c) for c in cids])
         since_ms = b["createdAt"] * 1000
         per_day = {}
@@ -781,11 +788,11 @@ def refresh_anki_today():
 # ---------- API ----------
 
 def current_gate(block):
-    # a video's cards only block the next one while some can be studied today;
-    # siblings Anki holds back until tomorrow don't
+    # a video's cards only block the next one while some can be studied today, seen
+    # or not; siblings Anki holds back until tomorrow don't
     open_b = [b for b in state["batches"]
-              if b["block"] == block["id"] and not b.get("closed") and not b.get("skipped")
-              and b.get("newToday", b.get("newLeft", 1)) > 0]
+              if b["block"] == block["id"] and not b.get("skipped")
+              and ((not b.get("closed") and b.get("newToday", b.get("newLeft", 1)) > 0) or b.get("learnToday", 0) > 0)]
     if not open_b:
         return None
     # Every open video counts: the next one waits on all of them, so show one total.
@@ -797,6 +804,7 @@ def current_gate(block):
         "needsAnki": any(b.get("needsAnki") for b in open_b),
         "total": sum(b.get("activeTotal", len(b.get("cids", []))) for b in open_b),
         "newLeft": new_today, "newLater": new_left - new_today,
+        "learn": sum(b.get("learnToday", 0) for b in open_b),
         "deckError": next((b["deckError"] for b in open_b if b.get("deckError")), None),
     }
 
@@ -965,7 +973,7 @@ def api_undone(body):
 
 def api_skip_gate(body):
     for b in state["batches"]:
-        if b["block"] == body["block"] and not b.get("closed"):
+        if b["block"] == body["block"] and not b.get("reviewsFinal"):
             b["skipped"] = True
     save_state()
     return {"ok": True}

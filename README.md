@@ -84,7 +84,7 @@ Then open http://localhost:8770. Keep Anki open: it's needed to unsuspend cards 
 1. Renames the file to start with `_` (so it's skipped next time). **Mark not done** renames it back.
 2. Unsuspends `(1-HighYield ∪ 2-RelativelyHighYield ∪ 3-HighYield-temporary) ∩ <the video's tags>`.
 3. Puts that video's new cards into the filtered deck **VidAnki**, so your daily new-card limit doesn't apply.
-4. Shows the Anki gate. The next video unlocks once none of those cards are still new. **Skip, next item anyway** always works.
+4. Shows the Anki gate. The next video unlocks once you've seen those cards and finished today's learning steps. **Skip, next item anyway** always works.
 
 If Anki is closed, steps 2 and 3 wait and run as soon as Anki is open.
 
