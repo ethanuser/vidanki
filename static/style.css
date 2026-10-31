@@ -293,6 +293,12 @@ main { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 360px; 
   background: var(--panel); border: 1px solid var(--line); border-radius: var(--r-lg); box-shadow: var(--shadow-sm); }
 #task .task-sec { align-items: center; background: color-mix(in srgb, var(--c, transparent) 8%, var(--panel)); }
 #gate.cleared .task-sec:first-child { background: color-mix(in srgb, var(--good) 12%, var(--panel)); }
+/* the reward for clearing Anki: two still fractal trees in the corners, clear of the text */
+#gate .task-sec:first-child { position: relative; overflow: hidden; }
+#gate .task-sec:first-child > :not(.ornament) { position: relative; }
+.ornament { display: none; position: absolute; left: 0; bottom: 0; width: 34%; max-height: 90%; fill: none; stroke: var(--good); stroke-width: 1; stroke-linecap: round; opacity: .3; }
+.ornament.flip { left: auto; right: 0; transform: scaleX(-1); }
+#gate.cleared .ornament { display: block; animation: ornament-in 600ms var(--ease); }
 #ankiPanel .task-sec:first-child { display: flex; flex: 1; flex-direction: column; }
 .sec-label { font-size: var(--t-sm); color: var(--muted); font-weight: 600; margin-bottom: var(--s2); }
 .fields { display: flex; justify-content: center; gap: var(--s3); align-items: end; flex-wrap: wrap; }
@@ -457,6 +463,7 @@ button.quiet { background: transparent; color: var(--muted); }
 @keyframes bump { 40% { transform: scale(1.1); color: var(--accent); } }
 @keyframes pop { 45% { transform: scale(1.3); } }
 @keyframes draw { from { stroke-dashoffset: 30; } }
+@keyframes ornament-in { from { opacity: 0; } }
 @keyframes spin { to { transform: rotate(360deg); } }
 @keyframes pic-flash { 0% { opacity: 0; transform: translate(-50%, -50%) scale(.9); } 15%, 60% { opacity: 1; transform: translate(-50%, -50%) scale(1); } }
 .nudge { animation: nudge 280ms var(--ease); }

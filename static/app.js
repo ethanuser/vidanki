@@ -775,6 +775,20 @@ function renderGate() {
   $("gateLater").textContent = g.newLater ? `+${g.newLater} tomorrow` : "";
 }
 
+// A branching tree for the "All done" screen, drawn once. The two sides differ, so it reads as a plant.
+(function growBranches() {
+  let d = "";
+  const grow = (x, y, angle, len, depth) => {
+    const nx = x + len * Math.cos(angle), ny = y + len * Math.sin(angle);
+    d += `M${x.toFixed(1)} ${y.toFixed(1)}L${nx.toFixed(1)} ${ny.toFixed(1)}`;
+    if (!depth) return;
+    grow(nx, ny, angle - 0.42, len * 0.76, depth - 1);
+    grow(nx, ny, angle + 0.3, len * 0.72, depth - 1);
+  };
+  grow(4, 400, -1, 96, 9);
+  $("branches").setAttribute("d", d);
+})();
+
 function showAnki() {
   flushTime();
   view = "anki";
