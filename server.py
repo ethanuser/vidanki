@@ -833,7 +833,7 @@ def api_state(block_id):
             st = peek_state(it["id"])
             e = {
                 "id": it["id"], "type": it["type"], "title": it["title"], "source": it.get("source"),
-                "done": is_done(block, it), "note": it.get("note"), "optional": it.get("optional", False), "doneAt": st.get("doneAt"), "questions": it.get("questions"), "url": it.get("url"),
+                "done": is_done(block, it), "note": it.get("note"), "optional": it.get("optional", False), "doneAt": st.get("doneAt"), "topic": it.get("topic"), "questions": it.get("questions"), "url": it.get("url"),
                 "pos": st.get("pos", 0), "activeSec": st.get("activeSec", 0),
                 "ambossLog": st.get("amboss"), "est": est["perItem"].get(it["id"], {}),
             }
@@ -843,7 +843,7 @@ def api_state(block_id):
                 e["duration"] = duration(block, it)
                 e["file"] = it["file"]
             out.append(e)
-        clusters.append({"title": c["title"], "items": out})
+        clusters.append({"title": c["title"], "group": c.get("group"), "items": out})
     return {
         "block": {"id": block["id"], "name": block["name"], "goalDate": goal_date(block)},
         "blocks": [{"id": b["id"], "name": b["name"]} for b in BLOCKS.values()],

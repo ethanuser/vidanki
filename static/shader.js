@@ -107,7 +107,12 @@ window.SmartDark = (function () {
     // row before it's used, so a dark scene doesn't get clipped.
     const probe = document.createElement("canvas");
     const pctx = probe.getContext("2d", { willReadFrequently: true });
-    let crop = [0, 0, 1, 1], candidate = null, lastProbe = 0;
+    let crop = [0, 0, 1, 1], candidate = null, lastProbe = 0, black = false;
+    function applyCrop() {
+      gl.useProgram(prog);
+      if (black) gl.uniform4f(uCrop, 2, 2, -1, -1);  // nothing is inside: the whole frame draws black
+      else gl.uniform4f(uCrop, ...crop);
+    }
     function detectBars() {
       if (video.readyState < 2 || !video.videoWidth) return;
       const W = 96, H = Math.max(8, Math.round(96 * video.videoHeight / video.videoWidth));
@@ -123,19 +128,22 @@ window.SmartDark = (function () {
       while (r > W / 2 && colMax(r) < DARK) r--;
       while (t < H / 2 && rowMax(t) < DARK) t++;
       while (b > H / 2 && rowMax(b) < DARK) b--;
-      if (l >= W / 2 - 1 || t >= H / 2 - 1) return;  // all dark (a fade): keep what we had
+      // An all-black frame is a fade, not a page: keep it black instead of flipping it pale.
+      const allDark = l >= W / 2 - 1 || t >= H / 2 - 1;
+      if (allDark !== black) { black = allDark; applyCrop(); kick(); }
+      if (allDark) return;
       // bars thinner than ~2% are just a dark edge of the picture; ignore them
       const minX = Math.ceil(W * 0.02), minY = Math.ceil(H * 0.02);
       const next = [l >= minX ? l / W : 0, t >= minY ? t / H : 0,
                     W - 1 - r >= minX ? (r + 1) / W : 1, H - 1 - b >= minY ? (b + 1) / H : 1];
       const same = (a, c) => a && a.every((v, i) => Math.abs(v - c[i]) < 0.015);
-      if (same(candidate, next) && !same(crop, next)) { crop = next; gl.useProgram(prog); gl.uniform4f(uCrop, ...crop); kick(); }
+      if (same(candidate, next) && !same(crop, next)) { crop = next; applyCrop(); kick(); }
       candidate = next;
     }
     // a paused frame (just loaded or seeked) won't be probed again by playback,
     // so probe it twice to pass the "seen twice" check
     const probeNow = () => setTimeout(() => { detectBars(); detectBars(); }, 250);
-    video.addEventListener("loadeddata", () => { crop = [0, 0, 1, 1]; candidate = null; gl.useProgram(prog); gl.uniform4f(uCrop, 0, 0, 1, 1); probeNow(); });
+    video.addEventListener("loadeddata", () => { crop = [0, 0, 1, 1]; candidate = null; black = false; applyCrop(); probeNow(); });
     video.addEventListener("seeked", probeNow);
 
     let running = false;
@@ -157,7 +165,7 @@ window.SmartDark = (function () {
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, video);
         gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
         const now = performance.now();
-        if (now - lastProbe > 1500) { lastProbe = now; detectBars(); }
+        if (black || now - lastProbe > 1500) { lastProbe = now; detectBars(); }  // a fade ends fast: check every frame
       }
     }
     // While playing, draw every decoded frame; while paused, draw only when the

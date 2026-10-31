@@ -31,13 +31,15 @@ function clock(s) {
 }
 const estTotal = (it) => { const e = it.est || {}; return (e.video || 0) + (e.anki || 0) + (e.other || 0); };
 const cur = () => flat.find((i) => i.id === curId);
+const attr = (t) => String(t).replace(/&/g, "&amp;").replace(/"/g, "&quot;");
 function toast(msg, err = false) {
   const t = $("toast");
   t.textContent = msg;
   t.className = "toast" + (err ? " err" : "");
+  t.hidden = false;
   if (err) Sound.play("error");
   clearTimeout(toast.t);
-  toast.t = setTimeout(() => (t.textContent = ""), 9000);
+  toast.t = setTimeout(() => (t.hidden = true), err ? 9000 : 5000);
 }
 function nextPending(fromId) {
   const i = flat.findIndex((x) => x.id === fromId);
@@ -63,7 +65,7 @@ function render() {
   renderEstimates();
   const dot = $("ankiDot");
   dot.className = "anki-dot" + (S.anki.ok ? " ok" : "");
-  dot.title = S.anki.ok ? "Anki connected" : "Anki not running (cards get unsuspended once it's open)";
+  dot.dataset.tip = S.anki.ok ? "Anki connected" : "Anki isn't running. Cards get unsuspended once it's open";
   if (view === "gate") renderGate();
   else if (view === "anki") renderAnkiPanel();
   else showItem(curId);
@@ -86,7 +88,7 @@ function switchBlock(id) {
 }
 
 function stat(k, v, cls = "", bar = null, title = "") {
-  return `<div class="stat" title="${title}"><span class="k">${k}</span><span class="v ${cls}">${v}</span>` +
+  return `<div class="stat" data-tip="${attr(title)}"><span class="k">${k}</span><span class="v ${cls}">${v}</span>` +
     (bar === null ? "" : `<div class="bar"><div style="width:${Math.min(100, bar * 100).toFixed(1)}%"></div></div>`) + "</div>";
 }
 
@@ -110,16 +112,16 @@ function renderStats() {
       stat("Hours", `${hrs(hoursDone())} / ${hrs(hoursDone() + st.remainingSec)}`, "",
         hoursDone() / (hoursDone() + st.remainingSec), "Hours done (items + Anki) out of the total, done plus left")),
     group("goal clickable",
-      stat("Goal", `${goalStr} · ${st.daysLeft} d`),
+      stat("Goal", `${goalStr}, ${st.daysLeft} d`),
       stat("Work left", "≈ " + hrs(st.remainingSec), "", null,
-        `Videos ${hrs(w.video)} · New cards ${hrs(w.newCards)} · Reviews ${hrs(w.reviews)} · Bricks ${hrs(w.bricks)} · AMBOSS ${hrs(w.amboss)}`),
+        `Videos ${hrs(w.video)}, new cards ${hrs(w.newCards)}, reviews ${hrs(w.reviews)}, bricks ${hrs(w.bricks)}, AMBOSS ${hrs(w.amboss)}`),
       stat("Needed", `${hrs(st.perDaySec)}/day`)),
     group("",
       stat("Today", `${hrs(st.todaySec)} / ${hrs(st.todayNeededSec)}`, "", st.todaySec / st.todayNeededSec),
       stat("Pace", pace, paceCls, null, "Average of the last 3 days you studied → projected finish")),
   ].join("");
   const goalGroup = $("stats").querySelector(".goal");
-  goalGroup.title = "Change goal date and estimates";
+  goalGroup.dataset.tip = "Change goal date and estimates (,)";
   goalGroup.onclick = openSettings;
   if (!$("settingsModal").hidden) renderSettingsResult();
 }
@@ -164,55 +166,69 @@ function timeTaken(i) {
 function renderQueue() {
   const hide = $("hideDone").checked;
   const today = todaySet();
-  let html = "";
+  const pendingPlan = flat.filter((i) => !i.done && inPlan(i)).length;
+  const lastToday = today.size < pendingPlan ? [...today].at(-1) : undefined;
+  const leftToday = Math.max(S.stats.todayNeededSec - S.stats.todaySec, 0);
+  // The line where today's target runs out. Everything below it can wait.
+  const todayLine = () => `<div class="today-line"><span>${leftToday ? "End of today" : "Today's target reached"}</span>${leftToday ? `<span>${hrs(leftToday)} left</span>` : ""}</div>`;
+  let html = "", beyond = false, group = null;
   const a = S.stats.ankiNow;
   // Anki row: only when there's a real chunk of cards (or a video is waiting on them)
-  if (S.anki.ok && (a.sec >= a.minSec || S.anki.gate)) {
-    // same order and wording as Anki's deck list: new · learning · review
+  if (ankiRowShown()) {
+    // same order and wording as Anki's deck list: new, learning, review
     const parts = [a.new && `${a.new} new`, a.learn && `${a.learn} learning`, a.review && `${a.review} review`].filter(Boolean);
-    html += `<div class="cluster today-anki"><div class="cluster-title"><span>Anki</span><span>${hrs(a.sec)}</span></div>
-      <div class="qi today ${view === "anki" ? "current" : ""}" data-id="__anki" title="VidAnki deck: due reviews and new cards">
-        <span class="chk"></span><span class="qt"><span class="tag anki">ANKI</span>${parts.join(" · ") || "Cards waiting"}</span>
+    html += `<div class="cluster"><div class="cluster-title lead"><span>Anki</span><span>${hrs(a.sec)}</span></div>
+      <div class="qi ${view === "anki" ? "current" : ""}" data-id="__anki" data-tip="Due reviews and new cards in the VidAnki deck">
+        <span class="chk"></span><span class="qt"><span class="tag anki">ANKI</span>${parts.join(", ") || "Cards waiting"}</span>
         <span class="qm">${hrs(a.sec)}</span></div></div>`;
   }
+  if (!today.size && pendingPlan) { html += todayLine(); beyond = true; }
+  const left = (items) => items.filter((i) => !i.done).reduce((t, i) => t + estTotal(i), 0);
+  const taken = (items) => items.filter((i) => i.done).reduce((t, i) => t + timeTaken(i), 0);
+  // right side of a section title: time left, or with done items showing, progress
+  const sectionMeta = (items) => {
+    const l = left(items), n = items.filter((i) => i.done).length;
+    if (n === items.length) return { html: `${icon("check")}${hide ? "" : hrs(taken(items))}`, tip: "Finished. Total time, tracked or estimated" };
+    if (hide) return { html: hrs(l), tip: "Time left" };
+    const t = taken(items);
+    return { html: `<span class="count">${n}/${items.length}</span>${n ? `${hrs(t)} / ${hrs(t + l)}` : hrs(l)}`, tip: "Items done of total, then time done of total" };
+  };
   for (const c of S.clusters) {
     const items = c.items.filter((i) => !hide || !i.done || i.id === curId);
     if (!items.length) continue;
-    const left = c.items.filter((i) => !i.done).reduce((a, i) => a + estTotal(i), 0);
-    const nDone = c.items.filter((i) => i.done).length;
-    let meta = left ? hrs(left) : "✓", metaTip = "Time left";
-    if (!hide && nDone === c.items.length) {  // finished section: how long it took
-      meta = `✓ ${hrs(c.items.reduce((a, i) => a + timeTaken(i), 0))}`;
-      metaTip = "Total time (tracked, or estimated where VidAnki didn't track it)";
-    } else if (!hide) {
-      const spent = c.items.filter((i) => i.done).reduce((a, i) => a + timeTaken(i), 0);
-      meta = `${nDone}/${c.items.length} · ` + (nDone ? `${hrs(spent)} / ${hrs(spent + left)}` : hrs(left));
-      metaTip = "Items done / total · time done / total time";
+    if (c.group && c.group !== group) {  // heading over the topic sections of a phase
+      group = c.group;
+      const all = S.clusters.filter((x) => x.group === group).flatMap((x) => x.items);
+      const m = sectionMeta(all);
+      html += `<div class="group-title"><span>${group}</span><span class="meta" data-tip="${attr(m.tip)}">${m.html}</span></div>`;
     }
+    const meta = sectionMeta(c.items);
     const opt = c.items.some((i) => i.optional);
     if (opt) {  // "If time": a dropdown; open = shown and counted in the totals
       const open = S.stats.includeOptional;
-      html += `<div class="cluster optional"><div class="cluster-title opt-toggle" data-toggle-optional
-        title="${open ? "Shown and counted in your totals. Click to hide." : "Click to show and count these in your totals."}">
-        <span><span class="caret ${open ? "open" : ""}"></span>${c.title} (${c.items.length})</span><span>${meta}</span></div>`;
+      html += `<div class="cluster optional"><button class="cluster-title lead opt-toggle" data-toggle-optional aria-expanded="${open}"
+        data-tip="${open ? "Shown and counted in your totals. Click to hide" : "Click to show and count these in your totals"}">
+        <span><span class="caret"></span>${c.title} (${c.items.length})</span><span class="meta">${meta.html}</span></button>`;
       if (!open) { html += "</div>"; continue; }
     } else {
-      html += `<div class="cluster"><div class="cluster-title"><span>${c.title}</span><span title="${metaTip}">${meta}</span></div>`;
+      html += `<div class="cluster"><div class="cluster-title ${c.group ? "" : "lead"}"><span data-tip="${attr(c.title)}">${c.title}</span><span class="meta" data-tip="${attr(meta.tip)}">${meta.html}</span></div>`;
     }
     for (const i of items) {
       const tag = i.type === "video" ? (i.source === "bnb" ? "B&B" : "SK") : i.type === "brick" ? "BRX" : "AMB";
       const cls = i.type === "video" ? i.source : i.type;
-      let meta = hrs(i.done ? timeTaken(i) : estTotal(i));
-      if (i.done && !hide && i.doneAt) meta = `${shortDate(i.doneAt)} · ${meta}`;
-      let title = "";
+      let m = hrs(i.done ? timeTaken(i) : estTotal(i));
+      if (i.done && !hide && i.doneAt) m = `<span class="date">${shortDate(i.doneAt)}</span>${m}`;
+      const name = i.title.replace(/^Sketchy (Micro|Pharm): /, "");
+      let tip = i.title;
       if (i.type === "video" && i.est) {
-        title = `Video ${hrs(i.est.video || 0)} + Anki ${hrs(i.est.anki || 0)} (${i.est.cards || 0} HY cards)`;
-        if (i.missing) meta = "missing";
+        tip += `. Video ${hrs(i.est.video || 0)}, Anki ${hrs(i.est.anki || 0)}, ${i.est.cards || 0} cards`;
+        if (i.missing) m = "missing";
       }
-      html += `<div class="qi ${i.done ? "done" : ""} ${i.id === curId && view !== "anki" ? "current" : ""} ${today.has(i.id) ? "today" : ""}" data-id="${i.id}" title="${title}">
-        <span class="chk">${i.done ? "✓" : ""}</span>
-        <span class="qt"><span class="tag ${cls}">${tag}</span>${i.title.replace(/^Sketchy (Micro|Pharm): /, "")}</span>
-        <span class="qm">${meta}</span></div>`;
+      html += `<div class="qi ${i.done ? "done" : ""} ${i.id === curId && view !== "anki" ? "current" : ""} ${beyond && !i.done ? "later" : ""}" data-id="${i.id}" data-tip="${attr(tip)}">
+        <span class="chk">${i.done ? icon("check") : ""}</span>
+        <span class="qt"><span class="tag ${cls}">${tag}</span>${name}</span>
+        <span class="qm">${m}</span></div>`;
+      if (i.id === lastToday) { html += todayLine(); beyond = true; }
     }
     html += "</div>";
   }
@@ -229,7 +245,7 @@ function renderEstimates() {
   const aq = pending.filter((i) => i.type === "amboss").reduce((s, i) => s + (i.questions || 0), 0);
   const total = Object.values(w).reduce((a, b) => a + b, 0);
   const row = (k, amount, rate, sec, tip = "") =>
-    `<tr title="${tip}"><td>${k}</td><td>${amount}</td><td>${rate}</td><td>${hrs(sec)}</td></tr>`;
+    `<tr data-tip="${attr(tip)}"><td>${k}</td><td>${amount}</td><td>${rate}</td><td>${hrs(sec)}</td></tr>`;
   $("estBody").innerHTML = `<table class="est-table">
     <thead><tr><th></th><th>Left</th><th>Each</th><th>Time</th></tr></thead>
     <tbody>
@@ -248,7 +264,6 @@ function renderEstimates() {
   </div>
   <div class="est-notes">
     <div>Rates adapt as you study. Card times come from Anki's review log.</div>
-    <div><span class="today-dot"></span>= fits in today's target</div>
   </div>`;
   $("estBody").querySelectorAll("[data-tier]").forEach((el) => (el.onchange = setTiers));
 }
@@ -284,14 +299,14 @@ function showItem(id) {
   view = "item";
   $("gate").hidden = true;
   $("ankiPanel").hidden = true;
-  $("crumbs").textContent = `${S.block.name} · ${it.cluster}`;
+  $("crumbs").textContent = `${S.block.name} / ${it.topic || it.cluster}`;
   $("itemTitle").textContent = it.title;
   $("itemNote").hidden = !it.note;
   $("itemNote").textContent = it.note || "";
   $("doneBtn").hidden = it.done;
   $("undoneBtn").hidden = !it.done;
-  $("doneBtn").textContent = it.optional ? "Mark done (no cards)"
-    : it.type === "video" && it.est && it.est.cards ? `Mark done · unsuspend ${it.est.cards} cards` : "Mark done";
+  $("doneBtn").innerHTML = icon("check") + (it.optional ? "Mark done, no cards"
+    : it.type === "video" && it.est && it.est.cards ? `Mark done, unsuspend ${it.est.cards} cards` : "Mark done");
   const isVideo = it.type === "video";
   $("player").hidden = !isVideo;
   $("task").hidden = isVideo;
@@ -306,7 +321,7 @@ function setupTask(it) {
   $("ambossFields").hidden = !amb;
   $("brickLink").hidden = amb || !it.url;
   if (it.url) $("brickLink").href = it.url;
-  $("taskKind").textContent = amb ? "AMBOSS questions" : "ScholarRx brick · end questions";
+  $("taskKind").textContent = amb ? "AMBOSS questions" : "ScholarRx brick, end questions";
   $("taskInstr").hidden = !amb;
   $("taskInstr").textContent = amb ? `${it.questions} recommended` : "";
   if (timer.id !== it.id) {  // first time showing this item (polling re-renders must not wipe input)
@@ -404,16 +419,16 @@ $("fwd10").onclick = () => (video.currentTime += 10);
 $("vol").oninput = (e) => { video.volume = +e.target.value; video.muted = false; };
 $("fsBtn").onclick = toggleFullscreen;
 $("seek").oninput = (e) => { if (video.duration) video.currentTime = (e.target.value / 1000) * video.duration; };
-$("stage").addEventListener("click", (e) => {
-  if (e.target === video || e.target === $("stage") || e.target === $("glcanvas")) togglePlay();
-});
-video.addEventListener("play", () => ($("playBtn").textContent = "❚❚"));
-video.addEventListener("pause", () => ($("playBtn").textContent = "▶"));
+$("picture").addEventListener("click", (e) => { if (!e.target.closest("#endCard")) togglePlay(); });
+$("playBtn").innerHTML = icon("play");
+video.addEventListener("play", () => ($("playBtn").innerHTML = icon("pause")));
+video.addEventListener("pause", () => ($("playBtn").innerHTML = icon("play")));
 video.addEventListener("timeupdate", () => {
   const d = video.duration || 0;
   $("time").textContent = `${clock(video.currentTime)} / ${clock(d)}` +
-    (video.playbackRate !== 1 ? ` · ${clock((d - video.currentTime) / video.playbackRate)} left` : "");
+    (video.playbackRate !== 1 ? `, ${clock((d - video.currentTime) / video.playbackRate)} left` : "");
   if (document.activeElement !== $("seek")) $("seek").value = d ? (video.currentTime / d) * 1000 : 0;
+  $("seek").style.setProperty("--p", (d ? (video.currentTime / d) * 100 : 0) + "%");
   if (d && !endShown && video.currentTime >= d - 12) showEndCard();
 });
 video.addEventListener("ended", showEndCard);
@@ -454,10 +469,8 @@ const timer = { id: null, running: false, shown: 0 };
 function updateTimer() {
   $("timerVal").textContent = clock(timer.shown);
   // symbol button, fixed width; the tooltip says what it does
-  $("timerBtn").innerHTML = timer.running
-    ? '<svg viewBox="0 0 14 14"><rect x="2" y="1" width="3.5" height="12"/><rect x="8.5" y="1" width="3.5" height="12"/></svg>'
-    : '<svg viewBox="0 0 14 14"><path d="M3 1 L13 7 L3 13 Z"/></svg>';
-  $("timerBtn").title = (timer.running ? "Pause timer" : timer.shown ? "Resume timer" : "Start timer") + " (t)";
+  $("timerBtn").innerHTML = icon(timer.running ? "pause" : "play");
+  $("timerBtn").dataset.tip = (timer.running ? "Pause timer" : timer.shown ? "Resume timer" : "Start timer") + " (T)";
   $("timerBtn").className = timer.running ? "t-pause" : "t-start";
 }
 $("timerBtn").onclick = () => { timer.running = !timer.running; Sound.play(timer.running ? "start" : "pause"); updateTimer(); };
@@ -508,12 +521,12 @@ $("timerReset").onclick = () => {
   if (!resetArmed) {  // two clicks, so a stray one doesn't wipe the time
     btn.textContent = "Confirm reset";
     btn.classList.add("confirm");
-    resetArmed = setTimeout(() => { resetArmed = null; btn.textContent = "Reset"; btn.classList.remove("confirm"); }, 3000);
+    resetArmed = setTimeout(() => { resetArmed = null; btn.innerHTML = icon("reset"); btn.classList.remove("confirm"); }, 3000);
     return;
   }
   clearTimeout(resetArmed);
   resetArmed = null;
-  btn.textContent = "Reset";
+  btn.innerHTML = icon("reset");
   btn.classList.remove("confirm");
   timer.running = false;
   setTimerTo(0);
@@ -580,9 +593,9 @@ async function markDone() {
     if (r.renamed) parts.push(`Renamed → ${r.renamed}`);
     if (r.batch) {
       if (r.batch.needsAnki) parts.push("Anki isn't open: cards will be unsuspended once it is");
-      else parts.push(`Unsuspended ${r.batch.unsuspended} · ${r.batch.newCards} new cards in “${S.anki.deck}”`);
+      else parts.push(`Unsuspended ${r.batch.unsuspended}, ${r.batch.newCards} new cards in ${S.anki.deck}`);
     }
-    toast(parts.join(" · ") || "Done");
+    toast(parts.join(". ") || "Done");
     await load();
     if (S.anki.gate) { gateFor = S.anki.gate.title; view = "gate"; renderGate(); }
     else goNext();
@@ -595,7 +608,7 @@ async function markDone() {
 
 function goNext() {
   const n = nextPending(curId);
-  if (!n) { toast("Everything in this block is done 🎉"); return; }
+  if (!n) { toast("Everything in this block is done"); return; }
   if (S.anki.gate && n.type === "video") { gateFor = S.anki.gate.title; view = "gate"; renderGate(); return; }
   showItem(n.id);
   renderQueue();
@@ -621,7 +634,7 @@ function renderGate() {
     $("gateBar").style.width = "100%";
     $("gateSub").textContent = "";
     $("gateNext").hidden = !next;
-    $("gateNext").textContent = `Continue: ${nextTitle} ▸`;
+    $("gateNext").textContent = `Continue: ${nextTitle}`;
     $("gateSkip").hidden = true;
     return;
   }
@@ -634,7 +647,7 @@ function renderGate() {
     return;
   }
   const done = g.total - g.newLeft;
-  $("gateText").innerHTML = `<b>${g.newLeft}</b> of ${g.total} new cards left · ${g.title}`;
+  $("gateText").innerHTML = `<b>${g.newLeft}</b> of ${g.total} new cards left from <b>${g.title}</b>`;
   $("gateBar").style.width = (g.total ? (done / g.total) * 100 : 100) + "%";
   $("gateSub").textContent = [
     g.learning ? `${g.learning} in learning` : "",
@@ -642,7 +655,7 @@ function renderGate() {
     g.openBatches > 1 ? `${g.openBatches} videos' cards are still open` : "",
     g.deckError ? `Couldn't build the filtered deck (${g.deckError}). Restart Anki once so the VidAnki bridge add-on loads; until then study them in your normal deck.` : "",
     `Next: ${nextTitle}`,
-  ].filter(Boolean).join(" · ");
+  ].filter(Boolean).join(". ");
 }
 
 function showAnki() {
@@ -658,7 +671,7 @@ function renderAnkiPanel() {
   $("doneBtn").hidden = true;
   $("undoneBtn").hidden = true;
   $("itemNote").hidden = true;
-  $("crumbs").textContent = `${S.block.name} · Anki`;
+  $("crumbs").textContent = `${S.block.name} / Anki`;
   $("itemTitle").textContent = "Today's Anki";
   const a = S.stats.ankiNow, r = S.stats.rates, g = S.anki.gate;
   $("ankiLabel").textContent = `In the ${S.anki.deck} deck`;
@@ -749,6 +762,8 @@ $("queueList").onclick = (e) => {
   renderQueue();
 };
 $("hideDone").onchange = () => { Sound.play("toggle"); renderQueue(); };
+// keep the player from outgrowing the window, whatever height the header wraps to
+new ResizeObserver(([e]) => document.documentElement.style.setProperty("--head-h", e.target.offsetHeight + "px")).observe($("top"));
 
 // ---------- settings ----------
 const PIN_FIELDS = [
@@ -779,7 +794,7 @@ function renderSettings() {
       <label>${f.label}</label>
       <input type="number" step="any" min="0" ${pinned ? `value="${v}"` : `placeholder="${v}"`}>
       <span class="unit">${f.unit}</span>
-      <button class="ghost reset" title="Go back to the learned value">reset</button></div>`;
+      <button class="ghost reset" data-tip="Go back to the learned value">reset</button></div>`;
   }).join("");
   $("setPins").querySelectorAll(".set-row").forEach((row) => {
     const f = PIN_FIELDS.find((x) => x.key === row.dataset.key);
@@ -808,7 +823,7 @@ function renderSettings() {
 function renderSettingsResult() {
   const st = S.stats, w = st.work;
   $("setResult").innerHTML = `<b>≈ ${hrs(st.remainingSec)}</b> left → <b>${hrs(st.perDaySec)}/day</b> for ${st.daysLeft} days
-    <div class="small muted">Videos ${hrs(w.video)} · New cards ${hrs(w.newCards)} · Reviews ${hrs(w.reviews)} · Bricks ${hrs(w.bricks)} · AMBOSS ${hrs(w.amboss)}</div>`;
+    <div class="small muted">Videos ${hrs(w.video)}, new cards ${hrs(w.newCards)}, reviews ${hrs(w.reviews)}, bricks ${hrs(w.bricks)}, AMBOSS ${hrs(w.amboss)}</div>`;
 }
 async function savePin(f, value) {
   await api("/api/settings", { pins: { [f.key]: value } });
@@ -835,10 +850,11 @@ $("settingsBtn").onclick = (e) => { e.stopPropagation(); openSettings(); };
 
 // ---------- commands (keyboard, shortcuts sheet, ⌘K palette) ----------
 const isVideo = () => { const it = cur(); return !!it && it.type === "video" && view === "item"; };
-const seek = (d) => (video.currentTime += d);
+const seek = (d) => { video.currentTime += d; wake(); };
 function stepRate(dir) {
   const i = RATES.indexOf(video.playbackRate);
   setRate(RATES[Math.max(0, Math.min(RATES.length - 1, (i < 0 ? 0 : i) + dir))]);
+  wake();
 }
 const COMMANDS = [
   { group: "Video", title: "Play / pause", keys: ["Space", "K"], when: isVideo, run: togglePlay },

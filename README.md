@@ -21,7 +21,7 @@ Watch B&B and Sketchy videos in dark mode, then do their high-yield Anki cards b
 <tr><td><img src="docs/images/end-of-video.png" alt="End-of-video prompt"></td><td><img src="docs/images/anki-gate.png" alt="Anki gate showing new cards left"></td></tr>
 </table>
 
-**One queue for everything.** Sketchy Micro and Pharm videos sit next to the B&B video that covers the same topic, followed by ScholarRx brick questions and AMBOSS question sets. Opening a brick starts its timer, and you can edit or reset any timer.
+**One queue, in priority order.** All the B&B videos come first, then the ScholarRx questions, then Sketchy and AMBOSS by topic, with optional lessons in an "If time" dropdown at the bottom. A line in the queue marks where today's target ends. Opening a brick starts its timer, and you can edit or reset any timer.
 
 ![A ScholarRx brick with its timer](docs/images/brick-timer.png)
 
@@ -102,7 +102,7 @@ Bricks link to their ScholarRx page; the links came from the course tracklist sp
 
 ## Time estimates
 
-The header shows B&B hours watched, total work left (video + Anki + bricks + AMBOSS), hours/day needed to hit the goal date, today's progress, and your recent pace with a projected finish date.
+The header shows items and hours done, total work left (video + Anki + bricks + AMBOSS), hours/day needed to hit the goal date, today's progress, and your recent pace with a projected finish date.
 
 The estimates start from defaults and move toward your own times as you go:
 
