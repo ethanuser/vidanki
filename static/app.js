@@ -133,7 +133,7 @@ function renderStats() {
         workParts(w).map((p) => `${p.label}\t${hrs(p.sec)}`).join("\n")),
       stat("Needed", `${hrs(st.perDaySec)}/day`)),
     group("",
-      stat("Today", `${hrs(st.todaySec)} / ${hrs(st.todayNeededSec)}`, "", st.todaySec / st.todayNeededSec),
+      stat("Today", `${hrs(st.todaySec)} / ${hrs(st.todayNeededSec)}`, st.todaySec >= st.todayNeededSec ? "good" : "", st.todaySec / st.todayNeededSec),
       stat("Pace", pace, paceCls, null, "Last 3 study days → finish")),
   ].join("");
   if (html === renderStats.html) { if (!$("settingsModal").hidden) renderSettingsResult(); return; }  // a poll with no news leaves the header alone
@@ -208,7 +208,7 @@ function renderQueue() {
   const lastToday = today.size < pendingPlan ? [...today].at(-1) : undefined;
   const leftToday = Math.max(S.stats.todayNeededSec - S.stats.todaySec, 0);
   // The line where today's target runs out. Everything below it can wait.
-  const todayLine = () => `<div class="today-line"><span>${leftToday ? "End of today" : "Today's target reached"}</span>${leftToday ? `<span>${hrs(leftToday)} left</span>` : ""}</div>`;
+  const todayLine = () => `<div class="today-line ${leftToday ? "" : "reached"}"><span>${leftToday ? "End of today" : "Today's target reached"}</span>${leftToday ? `<span>${hrs(leftToday)} left</span>` : ""}</div>`;
   let html = "", beyond = false, group = null;
   const a = S.stats.ankiNow;
   // Anki row: only when there's a real chunk of cards (or a video is waiting on them)
@@ -352,6 +352,7 @@ function showItem(id) {
 function setupTask(it) {
   const amb = it.type === "amboss";
   $("ambossFields").hidden = !amb;
+  $("task").style.setProperty("--c", amb ? "var(--amboss)" : "var(--brick)");
   $("taskLink").hidden = !amb && !it.url;
   $("taskLink").href = amb ? "https://next.amboss.com/us/learning" : it.url || "";
   $("taskLinkText").textContent = amb ? "Open AMBOSS" : "Open brick";
@@ -732,6 +733,7 @@ function renderGate() {
   $("crumbs").textContent = S.block.name;
   $("itemTitle").textContent = "Anki first";
   const g = S.anki.gate, next = nextPending(curId);
+  $("gate").classList.toggle("cleared", !g);
   const nextTitle = next ? next.title : "Next";
   const from = g && `${g.title}${g.others ? ` +${g.others}` : ""} → ${nextTitle}`;
   $("gateWarn").hidden = !(g && g.deckError);
