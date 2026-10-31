@@ -190,6 +190,9 @@ window.SmartDark = (function () {
     new ResizeObserver(kick).observe(canvas);
     return {
       start() { running = true; kick(); },
+      drawNow: draw,
+      // first frame of a new video: find its bars before anything is shown
+      settle() { detectBars(); detectBars(); draw(); },
       setPlain(v) { gl.useProgram(prog); gl.uniform1f(uPlain, v ? 1 : 0); kick(); },
       setTint(hue) {
         const a = hue * Math.PI / 180;

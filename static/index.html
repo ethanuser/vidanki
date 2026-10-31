@@ -24,10 +24,13 @@
 
 <main>
   <section id="center">
+    <div id="view">
     <div id="itemHead">
-      <div class="crumbs" id="crumbs"></div>
-      <h1 id="itemTitle">Loading…</h1>
-      <div id="itemNote" class="note" hidden></div>
+      <div class="crumb-row">
+        <div class="crumbs" id="crumbs"></div>
+        <div id="itemNote" class="note" hidden></div>
+      </div>
+      <h1 id="itemTitle" data-clip>Loading…</h1>
     </div>
 
     <!-- video player -->
@@ -37,6 +40,7 @@
         <div id="picture">
           <video id="video" playsinline preload="metadata"></video>
           <canvas id="glcanvas"></canvas>
+          <canvas id="freeze" hidden></canvas>
           <div id="picFlash" class="pic-flash"></div>
           <div id="endCard" class="overlay-card" hidden>
             <div class="oc-title">Finished?</div>
@@ -68,13 +72,7 @@
     <div id="task" class="panel task" hidden>
       <div class="task-sec">
         <div class="sec-label" id="taskKind">ScholarRx brick</div>
-        <p id="taskInstr"></p>
-        <a id="brickLink" class="btn primary" target="_blank" rel="noopener">Open brick<i data-icon="external"></i></a>
-        <div id="ambossFields" class="fields" hidden>
-          <label>Questions done <input type="number" id="ambN" min="0" inputmode="numeric"></label>
-          <label>Correct <input type="number" id="ambC" min="0" inputmode="numeric"></label>
-          <a id="ambLink" class="btn primary" href="https://next.amboss.com/us/learning" target="_blank" rel="noopener">Open AMBOSS<i data-icon="external"></i></a>
-        </div>
+        <a id="taskLink" class="btn primary" target="_blank" rel="noopener"><span id="taskLinkText">Open brick</span><i data-icon="external"></i></a>
       </div>
       <div class="task-sec">
         <div class="sec-label">Time spent</div>
@@ -84,6 +82,13 @@
           <button id="timerBtn" class="t-start" aria-label="Start or pause timer"></button>
           <button id="timerEditBtn" class="icon-btn boxed" aria-label="Edit time" data-tip="Edit time"><i data-icon="pencil"></i></button>
           <button id="timerReset" class="icon-btn boxed" aria-label="Reset time" data-tip="Reset time"><i data-icon="reset"></i></button>
+        </div>
+      </div>
+      <div class="task-sec" id="ambossFields" hidden>
+        <div class="sec-label">Score</div>
+        <div class="fields">
+          <label>Questions done <input type="number" id="ambN" min="0" inputmode="numeric"></label>
+          <label>Correct <input type="number" id="ambC" min="0" inputmode="numeric"></label>
         </div>
       </div>
     </div>
@@ -119,12 +124,14 @@
       </div>
       <div class="task-sec anki-notes" id="ankiSub"></div>
     </div>
+    </div>
 
+    <!-- stays in one spot on every view; Prev and Next come first so a changing Mark done can't move them -->
     <div id="actions" class="row actions">
       <button id="prevBtn" data-tip="Previous item (P)"><i data-icon="chevron-left"></i>Prev</button>
+      <button id="nextBtn" data-tip="Next item (N)">Next<i data-icon="chevron-right"></i></button>
       <button class="primary" id="doneBtn">Mark done</button>
       <button id="undoneBtn" hidden>Mark not done</button>
-      <button id="nextBtn" data-tip="Next item (N)">Next<i data-icon="chevron-right"></i></button>
     </div>
   </section>
 

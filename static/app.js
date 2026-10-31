@@ -121,7 +121,7 @@ function renderStats() {
   }
   // three groups: overall progress | the goal and what it takes | today
   const group = (cls, ...stats) => `<div class="stat-group ${cls}">${stats.join("")}</div>`;
-  $("stats").innerHTML = [
+  const html = [
     group("",
       stat("Done", `${st.items.done} / ${st.items.count}`, "", st.items.done / st.items.count,
         `${st.items.videosDone}/${st.items.videos} videos`),
@@ -136,6 +136,9 @@ function renderStats() {
       stat("Today", `${hrs(st.todaySec)} / ${hrs(st.todayNeededSec)}`, "", st.todaySec / st.todayNeededSec),
       stat("Pace", pace, paceCls, null, "Last 3 study days → finish")),
   ].join("");
+  if (html === renderStats.html) { if (!$("settingsModal").hidden) renderSettingsResult(); return; }  // a poll with no news leaves the header alone
+  renderStats.html = html;
+  $("stats").innerHTML = html;
   animateStats();
   const goalGroup = $("stats").querySelector(".goal");
   goalGroup.dataset.tip = "Edit goal (,)";
@@ -261,7 +264,7 @@ function renderQueue() {
     }
     html += "</div>";
   }
-  $("queueList").innerHTML = html;
+  if (html !== renderQueue.html) $("queueList").innerHTML = renderQueue.html = html;
   syncQueue();
 }
 
@@ -330,6 +333,7 @@ function showItem(id) {
   $("ankiPanel").hidden = true;
   $("crumbs").textContent = `${S.block.name} / ${it.topic || it.cluster}`;
   $("itemTitle").textContent = it.title;
+  $("itemTitle").dataset.tip = it.title;
   $("itemNote").hidden = !it.note;
   $("itemNote").textContent = it.note || "";
   $("doneBtn").hidden = it.done;
@@ -341,29 +345,17 @@ function showItem(id) {
   $("player").hidden = !isVideo;
   $("task").hidden = isVideo;
   if (isVideo) setupVideo(it);
-  else { pauseVideo(); setupTask(it); }
+  else { pauseVideo(); setupTask(it); leaveFullscreen(); }
   document.querySelectorAll(".qi").forEach((el) => el.classList.toggle("current", el.dataset.id === curId));
   syncQueue();
-  entered(id, isVideo ? null : $("task"));
 }
-// Slide a new view in, from the side you're moving toward. Polling re-renders stay still.
-let shownView = null, navDir = 0;
-function entered(key, panel) {
-  if (key === shownView) return;
-  shownView = key;
-  cue($("itemHead"), "enter", navDir);
-  if (panel) cue(panel, "enter", navDir);
-  navDir = 0;
-}
-
 function setupTask(it) {
   const amb = it.type === "amboss";
   $("ambossFields").hidden = !amb;
-  $("brickLink").hidden = amb || !it.url;
-  if (it.url) $("brickLink").href = it.url;
-  $("taskKind").textContent = amb ? "AMBOSS questions" : "ScholarRx brick, end questions";
-  $("taskInstr").hidden = !amb;
-  $("taskInstr").textContent = amb ? `${it.questions} Q` : "";
+  $("taskLink").hidden = !amb && !it.url;
+  $("taskLink").href = amb ? "https://next.amboss.com/us/learning" : it.url || "";
+  $("taskLinkText").textContent = amb ? "Open AMBOSS" : "Open brick";
+  $("taskKind").textContent = amb ? `AMBOSS, ${it.questions} Q` : "ScholarRx brick, end questions";
   if (timer.id !== it.id) {  // first time showing this item (polling re-renders must not wipe input)
     timer.running = false;
     timer.id = it.id;
@@ -398,16 +390,56 @@ function setupVideo(it) {
     loadedVideoId = it.id;
     endShown = false;
     $("endCard").hidden = true;
+    freezeFrame();
+    const resume = it.pos > 5 && !(it.duration && it.pos >= it.duration - 20);
+    const l = loading = { it, resume };
+    clearTimeout(revealT);
+    revealT = setTimeout(() => l === loading && reveal(), 2000);
     video.src = `/media/${encodeURIComponent(blockId)}/${encodeURIComponent(it.id)}`;
-    video.addEventListener("loadedmetadata", () => {
-      if (it.pos > 5 && it.pos < video.duration - 20) video.currentTime = it.pos;
-      video.playbackRate = S.settings.rate || 1;
-    }, { once: true });
+    showTime(resume ? it.pos : 0, it.duration || 0);
   }
   rateDD.setValue(S.settings.rate || 1);
   darkDD.setValue(darkSetting(it));
-  applyDark(darkSetting(it));
+  if (!loading) applyDark(darkSetting(it));
 }
+
+// Changing a video's source blanks it, so the last picture stays up, as a copy,
+// until the new video has a frame at the right spot. Then they swap in one paint.
+let loading = null, revealT = 0;
+function freezeFrame() {
+  const fz = $("freeze"), gl = $("glcanvas");
+  if (!fz.hidden || video.readyState < 2) return;
+  const shaded = renderer && !gl.hidden;
+  if (shaded) renderer.drawNow();  // WebGL's buffer is only readable right after a draw
+  fz.width = shaded ? gl.width : video.videoWidth;
+  fz.height = shaded ? gl.height : video.videoHeight;
+  fz.getContext("2d").drawImage(shaded ? gl : video, 0, 0, fz.width, fz.height);
+  fz.style.filter = video.style.filter;
+  fz.hidden = false;
+}
+function frameReady() {
+  const l = loading;
+  if ("requestVideoFrameCallback" in video) video.requestVideoFrameCallback(() => l === loading && reveal());
+  setTimeout(() => l === loading && reveal(), 120);  // the frame may already be up, or the tab hidden
+}
+function reveal() {
+  const { it } = loading;
+  loading = null;
+  clearTimeout(revealT);
+  applyDark(darkSetting(it));
+  if (renderer && !$("glcanvas").hidden) renderer.settle();
+  $("freeze").hidden = true;
+  if (video.duration) showTime(video.currentTime, video.duration);
+}
+video.addEventListener("loadedmetadata", () => {
+  video.playbackRate = S.settings.rate || 1;
+  if (!loading) return;
+  if (loading.resume && loading.it.pos < video.duration - 20) video.currentTime = loading.it.pos;
+  else loading.resume = false;
+});
+video.addEventListener("loadeddata", () => { if (loading && !loading.resume) frameReady(); });
+video.addEventListener("seeked", () => { if (loading) frameReady(); });
+video.addEventListener("error", () => { if (loading) reveal(); });
 
 function setDark(mode) {
   const it = cur();
@@ -432,7 +464,7 @@ function applyDark(mode) {
   }
   const shaded = renderer && (mode === "smart" || mode === "invert");
   canvas.hidden = !shaded;
-  if (shaded) { renderer.setPlain(mode === "invert"); renderer.setTint(Theme.hue); renderer.start(); } else if (renderer) renderer.stop();
+  if (shaded) { renderer.setPlain(mode === "invert"); renderer.setTint(Theme.hue); renderer.start(); renderer.drawNow(); } else if (renderer) renderer.stop();
   video.style.filter = shaded ? "" : ({ invert: "invert(1) hue-rotate(180deg)", dim: "brightness(.78) contrast(1.05)" }[mode] || "");
 }
 Theme.onChange(() => {
@@ -461,23 +493,36 @@ function setRate(r) {
 function toggleFullscreen() {
   if (document.fullscreenElement) document.exitFullscreen(); else $("stage").requestFullscreen();
 }
+function leaveFullscreen() { if (document.fullscreenElement) document.exitFullscreen(); }  // only the player can be fullscreen
 
 $("playBtn").onclick = togglePlay;
 $("back10").onclick = () => seek(-10);
 $("fwd10").onclick = () => seek(10);
-$("vol").oninput = (e) => { video.volume = +e.target.value; video.muted = false; };
+$("vol").oninput = (e) => {
+  video.volume = +e.target.value;
+  video.muted = false;
+  try { localStorage.setItem("vidanki.volume", video.volume); } catch {}
+};
+try {
+  const v = parseFloat(localStorage.getItem("vidanki.volume"));
+  if (v >= 0 && v <= 1) { video.volume = v; $("vol").value = v; }
+} catch {}
 $("fsBtn").onclick = toggleFullscreen;
 $("seek").oninput = (e) => { if (video.duration) video.currentTime = (e.target.value / 1000) * video.duration; };
 $("picture").addEventListener("click", (e) => { if (!e.target.closest("#endCard")) togglePlay(); });
 $("playBtn").innerHTML = icon("play");
 video.addEventListener("play", () => ($("playBtn").innerHTML = icon("pause")));
 video.addEventListener("pause", () => ($("playBtn").innerHTML = icon("play")));
+function showTime(t, d) {
+  $("time").textContent = `${clock(t)} / ${clock(d)}` +
+    (video.playbackRate !== 1 ? `, ${clock((d - t) / video.playbackRate)} left` : "");
+  if (document.activeElement !== $("seek")) $("seek").value = d ? (t / d) * 1000 : 0;
+  $("seek").style.setProperty("--p", (d ? (t / d) * 100 : 0) + "%");
+}
 video.addEventListener("timeupdate", () => {
+  if (loading) return;  // the old position, or frame 0 before the resume seek lands
   const d = video.duration || 0;
-  $("time").textContent = `${clock(video.currentTime)} / ${clock(d)}` +
-    (video.playbackRate !== 1 ? `, ${clock((d - video.currentTime) / video.playbackRate)} left` : "");
-  if (document.activeElement !== $("seek")) $("seek").value = d ? (video.currentTime / d) * 1000 : 0;
-  $("seek").style.setProperty("--p", (d ? (video.currentTime / d) * 100 : 0) + "%");
+  showTime(video.currentTime, d);
   if (d && !endShown && video.currentTime >= d - 12) showEndCard();
 });
 video.addEventListener("ended", showEndCard);
@@ -584,8 +629,7 @@ $("timerReset").onclick = () => {
 
 // Opening the brick or AMBOSS starts the timer (it keeps running while you're in that tab).
 function startTimer() { if (!timer.running) { timer.running = true; Sound.play("start"); updateTimer(); } }
-$("brickLink").addEventListener("click", startTimer);
-$("ambLink").addEventListener("click", startTimer);
+$("taskLink").addEventListener("click", startTimer);
 
 // ---------- active-time tracking ----------
 let pending = 0, pauseRun = 0, sinceFlush = 0, last = performance.now(), playedThisItem = false;
@@ -676,6 +720,7 @@ function goNext() {
 function renderGate() {
   flushTime();
   pauseVideo();
+  leaveFullscreen();
   $("ankiPanel").hidden = true;
   $("player").hidden = true;
   $("task").hidden = true;
@@ -685,7 +730,6 @@ function renderGate() {
   $("itemNote").hidden = true;
   $("crumbs").textContent = S.block.name;
   $("itemTitle").textContent = "Anki first";
-  entered("gate", $("gate"));
   const g = S.anki.gate, next = nextPending(curId);
   const nextTitle = next ? next.title : "Next";
   const from = g && `${g.title}${g.others ? ` +${g.others}` : ""} → ${nextTitle}`;
@@ -736,13 +780,13 @@ function showAnki() {
 }
 function renderAnkiPanel() {
   pauseVideo();
+  leaveFullscreen();
   ["player", "task", "gate"].forEach((id) => ($(id).hidden = true));
   $("ankiPanel").hidden = false;
   $("doneBtn").hidden = true;
   $("undoneBtn").hidden = true;
   $("itemNote").hidden = true;
   $("crumbs").textContent = `${S.block.name} / Anki`;
-  entered("anki", $("ankiPanel"));
   const a = S.stats.ankiNow, r = S.stats.rates, g = S.anki.gate;
   // same three counts and colors as Anki's deck list
   const tile = (k, n, sec, cls) => `<div class="tile ${cls}"><div class="tile-num">${n}</div><div class="tile-k">${k}</div><div class="tile-t">${hrs(sec)}</div></div>`;
@@ -814,7 +858,6 @@ function queueOrder() {
 function step(dir) {
   if (view === "gate") {  // the gate is soft: Next moves on anyway, Prev goes back
     Sound.play("select");
-    navDir = dir;
     if (dir > 0) (S.anki.gate ? $("gateSkip") : $("gateNext")).onclick();
     else { view = "item"; showItem(curId); renderQueue(); }
     return;
@@ -828,7 +871,6 @@ function step(dir) {
     return;
   }
   Sound.play("select");
-  navDir = dir;
   if (id === "__anki") { showAnki(); return; }
   const it = flat.find((x) => x.id === id);
   if (dir > 0 && S.anki.gate && it.type === "video" && !it.done) {

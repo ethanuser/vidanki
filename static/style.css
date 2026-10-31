@@ -230,12 +230,16 @@ header { flex: none; display: flex; align-items: center; gap: var(--s4); padding
 .anki-dot.ok { background: var(--good); }
 
 /* ---------- layout ---------- */
-main { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 360px; }
-#center { padding: var(--s4) var(--s5); overflow: auto; min-width: 0; }
-#itemHead h1 { font-size: var(--t-lg); line-height: 1.2; letter-spacing: -.02em; margin: 2px 0 var(--s3); }
-.crumbs { color: var(--muted); font-size: var(--t-sm); }
-.note { display: inline-block; margin-bottom: var(--s2); padding: 2px var(--s2); border-radius: var(--r-xs); background: var(--panel2); color: var(--muted); font-size: var(--t-sm); font-weight: 500; }
-.actions { margin-top: var(--s3); }
+main { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 360px; grid-template-rows: minmax(0, 1fr); }
+/* the view scrolls if it must; the action bar below it never moves */
+#center { display: flex; flex-direction: column; min-width: 0; min-height: 0; padding: var(--s4) var(--s5); }
+#view { flex: 1; min-height: 0; margin: -4px; padding: 4px; overflow: auto; }
+/* one line each, so the picture and panels start at the same height for every item */
+.crumb-row { display: flex; align-items: center; gap: var(--s2); min-height: 20px; }
+.crumbs { min-width: 0; overflow: hidden; color: var(--muted); font-size: var(--t-sm); text-overflow: ellipsis; white-space: nowrap; }
+.note { flex: none; padding: 0 6px; border-radius: var(--r-xs); background: var(--panel2); color: var(--muted); font-size: var(--t-xs); font-weight: 500; line-height: 18px; }
+#itemHead h1 { overflow: hidden; font-size: var(--t-lg); line-height: 1.2; letter-spacing: -.02em; margin: 2px 0 var(--s3); text-overflow: ellipsis; white-space: nowrap; }
+.actions { flex: none; flex-wrap: nowrap; margin-top: var(--s3); }
 
 /* ---------- player: picture on top, controls in their own strip below ---------- */
 #stage { display: flex; flex-direction: column; background: #000; border-radius: var(--r-lg); overflow: hidden; }
@@ -285,7 +289,6 @@ main { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 360px; 
 .task-sec { padding: var(--s4) var(--s5); }
 .task-sec + .task-sec { border-top: 1px solid var(--line); }
 .sec-label { font-size: var(--t-sm); color: var(--muted); font-weight: 600; margin-bottom: var(--s2); }
-#taskInstr { margin: 0 0 var(--s3); color: var(--muted); }
 .fields { display: flex; gap: var(--s3); align-items: end; flex-wrap: wrap; }
 .fields label { display: flex; flex-direction: column; gap: var(--s1); color: var(--muted); font-size: var(--t-sm); }
 .timer { display: flex; align-items: center; gap: var(--s2); }
@@ -444,7 +447,6 @@ button.quiet { background: transparent; color: var(--muted); }
 @keyframes nudge { 30% { transform: translateX(calc(var(--dir, 1) * 6px)); } 65% { transform: translateX(calc(var(--dir, 1) * -2px)); } }
 @keyframes rubber { 35% { transform: translateY(calc(var(--dir, 1) * -10px)); } }
 @keyframes bump { 40% { transform: scale(1.1); color: var(--accent); } }
-@keyframes enter { from { opacity: 0; transform: translateX(calc(var(--dir, 0) * 16px)); } }
 @keyframes pop { 45% { transform: scale(1.3); } }
 @keyframes draw { from { stroke-dashoffset: 30; } }
 @keyframes spin { to { transform: rotate(360deg); } }
@@ -452,7 +454,6 @@ button.quiet { background: transparent; color: var(--muted); }
 .nudge { animation: nudge 280ms var(--ease); }
 .rubber { animation: rubber 340ms var(--ease); }
 .bump { animation: bump 340ms var(--ease); transform-origin: left center; }
-.enter { animation: enter var(--med) var(--ease); }
 /* switching theme, mode or font crossfades */
 .theming, .theming * { transition: background-color var(--med) var(--ease), color var(--med) var(--ease), border-color var(--med) var(--ease) !important; }
 @media (prefers-reduced-motion: reduce) {
@@ -462,10 +463,13 @@ button.quiet { background: transparent; color: var(--muted); }
 
 /* ---------- phone ---------- */
 @media (max-width: 900px) {
-  body { display: block; height: auto; overflow: auto; }  /* one scrolling page */
+  body { display: block; height: auto; padding-bottom: 52px; overflow: auto; }  /* one scrolling page */
   main { grid-template-columns: 1fr; }
   #queue { border-left: 0; border-top: 1px solid var(--line); }
-  #center { padding: var(--s3) var(--s4); }
+  #center { display: block; padding: var(--s3) var(--s4) 0; }
+  #view { margin: 0; padding: 0; overflow: visible; }
+  .actions { position: fixed; left: 0; right: 0; bottom: 0; z-index: 4; margin: 0; padding: var(--s2) var(--s4); border-top: 1px solid var(--line); background: var(--panel); }
+  .toast { bottom: 64px; }
   header { flex-wrap: wrap; gap: var(--s2); padding: var(--s2) var(--s4); }
   .stats { order: 3; flex-basis: 100%; gap: var(--s3); }
   .stat-group { border-left: 0; padding: 0; gap: var(--s4); }
