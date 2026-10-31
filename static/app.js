@@ -280,8 +280,8 @@ function syncQueue() {
     }
     if (!S) return;
     const order = queueOrder(), at = order.indexOf(key);
-    $("prevBtn").disabled = at <= 0;
-    $("nextBtn").disabled = at < 0 || at >= order.length - 1;
+    $("prevBtn").disabled = view !== "gate" && at <= 0;
+    $("nextBtn").disabled = view !== "gate" && (at < 0 || at >= order.length - 1);
   }, 0);
 }
 async function setTiers() {
@@ -730,6 +730,12 @@ function queueOrder() {
   return ankiRowShown() ? ["__anki", ...ids] : ids;
 }
 function step(dir) {
+  if (view === "gate") {  // the gate is soft: Next moves on anyway, Prev goes back
+    Sound.play("select");
+    if (dir > 0) (S.anki.gate ? $("gateSkip") : $("gateNext")).onclick();
+    else { view = "item"; showItem(curId); renderQueue(); }
+    return;
+  }
   const order = queueOrder();
   const at = order.indexOf(view === "anki" ? "__anki" : curId);
   const id = order[at + dir];
