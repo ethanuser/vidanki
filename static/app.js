@@ -552,7 +552,8 @@ video.addEventListener("timeupdate", () => {
   if (loading) return;  // the old position, or frame 0 before the resume seek lands
   const d = video.duration || 0;
   showTime(video.currentTime, d);
-  if (d && !endShown && video.currentTime >= d - 12) showEndCard();
+  if (d && video.currentTime >= d - 3) showEndCard();
+  else if (endShown) { endShown = false; $("endCard").hidden = true; }  // seeked back from the end
 });
 video.addEventListener("ended", showEndCard);
 
