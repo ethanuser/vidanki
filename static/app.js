@@ -337,9 +337,8 @@ function setupTask(it) {
 // ---------- video ----------
 const video = $("video");
 let endShown = false;
-const systemDark = window.matchMedia("(prefers-color-scheme: dark)");
 const DARK_MODES = [
-  { value: "auto", label: "Follow system", short: "Auto" },
+  { value: "auto", label: "Match app", short: "Auto" },
   { value: "smart", label: "Smart dark", short: "Smart dark" },
   { value: "invert", label: "Invert", short: "Invert" },
   { value: "dim", label: "Dim", short: "Dim" },
@@ -380,7 +379,7 @@ function setDark(mode) {
 }
 
 function applyDark(mode) {
-  if (mode === "auto") mode = systemDark.matches ? "smart" : "off";
+  if (mode === "auto") mode = Theme.dark ? "smart" : "off";
   const canvas = $("glcanvas");
   if (mode === "smart" && !renderer) {
     try { renderer = SmartDark.create(canvas, video); } catch (e) { console.error(e); }
@@ -393,10 +392,10 @@ function applyDark(mode) {
   }
   const shaded = renderer && (mode === "smart" || mode === "invert");
   canvas.hidden = !shaded;
-  if (shaded) { renderer.setPlain(mode === "invert"); renderer.start(); } else if (renderer) renderer.stop();
+  if (shaded) { renderer.setPlain(mode === "invert"); renderer.setTint(Theme.hue); renderer.start(); } else if (renderer) renderer.stop();
   video.style.filter = shaded ? "" : ({ invert: "invert(1) hue-rotate(180deg)", dim: "brightness(.78) contrast(1.05)" }[mode] || "");
 }
-systemDark.addEventListener("change", () => {
+Theme.onChange(() => {
   const it = cur();
   if (it && it.type === "video") applyDark(darkSetting(it));
 });
@@ -787,10 +786,25 @@ function openSettings() {
   renderSettings();
   $("soundOn").checked = Sound.on;
   $("soundVol").value = Sound.volume;
+  renderLook();
 }
 $("soundOn").onchange = (e) => { Sound.on = e.target.checked; Sound.play("toggle"); };
 $("soundVol").oninput = (e) => { Sound.volume = +e.target.value; };
 $("soundVol").onchange = () => Sound.play("done");  // preview at the new volume
+const modePick = new Segmented($("modePick"), { options: Theme.MODES, value: Theme.mode, onChange: (v) => { Theme.mode = v; Sound.play("toggle"); } });
+const fontPick = new Segmented($("fontPick"), { options: Theme.FONTS, value: Theme.font, onChange: (v) => { Theme.font = v; Sound.play("toggle"); } });
+$("themePick").innerHTML = Theme.THEMES.map((t) => `<button type="button" class="swatch" role="radio" data-hue="${t.hue}" style="--sw:${t.hue}"><span class="sw-chip"></span>${t.name}</button>`).join("");
+$("themePick").onclick = (e) => {
+  const b = e.target.closest(".swatch");
+  if (b) { Theme.hue = +b.dataset.hue; Sound.play("toggle"); renderLook(); }
+};
+$("hueSlider").oninput = (e) => { Theme.hue = +e.target.value; renderLook(); };
+function renderLook() {
+  $("hueSlider").value = Theme.hue;
+  document.querySelectorAll(".swatch").forEach((b) => b.setAttribute("aria-checked", +b.dataset.hue === Theme.hue));
+  modePick.setValue(Theme.mode);
+  fontPick.setValue(Theme.font);
+}
 function renderSettings() {
   const r = S.stats.rates;
   $("setBlockName").textContent = S.block.name;
@@ -903,6 +917,9 @@ const COMMANDS = [
   { group: "App", title: "Settings: goal date & estimates", keys: [","], run: openSettings },
   { group: "App", title: "Goal date: one day later", run: () => shiftGoal(1) },
   { group: "App", title: "Goal date: one day earlier", run: () => shiftGoal(-1) },
+  ...Theme.THEMES.map((t) => ({ group: "Look", title: `Theme: ${t.name}`, run: () => { Theme.hue = t.hue; Sound.play("toggle"); } })),
+  ...Theme.MODES.map((m) => ({ group: "Look", title: `Mode: ${m.label}`, run: () => { Theme.mode = m.value; Sound.play("toggle"); } })),
+  ...Theme.FONTS.map((f) => ({ group: "Look", title: `Font: ${f.label}`, run: () => { Theme.font = f.value; Sound.play("toggle"); } })),
   { group: "App", title: "Sound effects on / off", run: () => { Sound.on = !Sound.on; Sound.play("toggle"); toast(Sound.on ? "Sounds on" : "Sounds off"); } },
   { group: "App", title: "Keyboard shortcuts", keys: ["?"], run: () => openModal("helpModal") },
   { group: "App", title: "Search commands", keys: ["⌘K"], run: () => openPalette() },

@@ -4,7 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>VidAnki</title>
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><path d='M4 2l10 6-10 6z' fill='%236ea8ff'/></svg>">
+<link rel="icon" href="data:,">
+<script src="theme.js"></script>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -14,7 +15,7 @@
   </div>
   <div id="stats" class="stats"></div>
   <div class="head-tools">
-    <button id="settingsBtn" class="icon-btn" aria-label="Settings" data-tip="Goal date and estimates (,)"><i data-icon="settings"></i></button>
+    <button id="settingsBtn" class="icon-btn" aria-label="Settings" data-tip="Settings (,)"><i data-icon="settings"></i></button>
     <button id="paletteBtn" class="icon-btn key-btn" aria-label="Search commands" data-tip="Search commands and items">⌘K</button>
     <button id="helpBtn" class="icon-btn" aria-label="Keyboard shortcuts" data-tip="Keyboard shortcuts (?)"><i data-icon="help"></i></button>
     <div id="ankiDot" class="anki-dot"></div>
@@ -167,6 +168,11 @@
       <div class="tiers" id="setTiers"></div>
       <div class="set-section">Deck</div>
       <div class="tiers" id="setDeck"></div>
+      <div class="set-section">Look</div>
+      <div class="swatches" id="themePick" role="radiogroup" aria-label="Theme"></div>
+      <div class="set-row"><label for="hueSlider">Your own color</label><input type="range" id="hueSlider" min="0" max="359" step="1"></div>
+      <div class="set-row"><label>Mode</label><div class="seg" id="modePick" role="radiogroup" aria-label="Mode"></div></div>
+      <div class="set-row"><label>Font</label><div class="seg" id="fontPick" role="radiogroup" aria-label="Font"></div></div>
       <div class="set-section">Sound</div>
       <div class="set-row">
         <label class="check"><input type="checkbox" id="soundOn"><span></span>Sound effects</label>

@@ -1,4 +1,24 @@
 "use strict";
+// Segmented control: shows every option, and one highlight slides to the chosen one.
+window.Segmented = class Segmented {
+  constructor(el, { options, value, onChange = () => {} }) {
+    this.el = el;
+    this.options = options;
+    el.style.setProperty("--n", options.length);
+    el.innerHTML = options.map((o) => `<button type="button" role="radio" data-value="${o.value}">${o.label}</button>`).join("");
+    el.addEventListener("click", (e) => {
+      const b = e.target.closest("button");
+      if (b && b.dataset.value !== this.value) { this.setValue(b.dataset.value); onChange(this.value); }
+    });
+    this.setValue(value);
+  }
+  setValue(v) {
+    this.value = v;
+    this.el.style.setProperty("--i", this.options.findIndex((o) => o.value === v));
+    this.el.querySelectorAll("button").forEach((b) => b.setAttribute("aria-checked", b.dataset.value === v));
+  }
+};
+
 // Custom dropdown: a button plus a square menu, replacing native <select>.
 // Arrow keys move, Enter picks, Escape closes.
 window.Dropdown = class Dropdown {

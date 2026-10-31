@@ -2,13 +2,13 @@
 
 Watch B&B and Sketchy videos in dark mode, then do their high-yield Anki cards before the next video.
 
-![VidAnki in dark mode: the player, progress toward the goal date, and the study queue](docs/images/overview-dark.png)
+![VidAnki in the Hearth theme: the player, progress toward the goal date, and the study queue](docs/images/overview-dark.png)
 
 <sub>Screenshots use a made-up demo slide and sample progress, not real course videos.</sub>
 
 ## Features
 
-**Smart dark mode for videos.** White slides turn near-black and black ink turns light, while colored ink keeps its color, like Dark Reader for video. Highlighter fills darken so the text on them stays readable. It follows your system theme, and you can switch to Invert, Dim or Original.
+**Smart dark mode for videos.** White slides turn near-black and black ink turns light, while colored ink keeps its color, like Dark Reader for video. Highlighter fills darken so the text on them stays readable. White slides pick up your theme's color, so the video matches the app. It follows light and dark mode, and you can switch to Invert, Dim or Original.
 
 <table>
 <tr><td><img src="docs/images/player-original.png" alt="Original video frame"></td><td><img src="docs/images/player-smart-dark.png" alt="Same frame in smart dark mode"></td></tr>
@@ -37,9 +37,18 @@ Watch B&B and Sketchy videos in dark mode, then do their high-yield Anki cards b
 <tr><td><img src="docs/images/command-palette.png" alt="Command palette"></td><td><img src="docs/images/shortcuts.png" alt="Keyboard shortcuts"></td></tr>
 </table>
 
-**Light mode too.** The interface follows your system theme. In light mode, videos play as they are.
+**Cozy themes.** One color runs through the whole app: backgrounds, buttons, progress bars, the player and the video itself. Pick Hearth, Honey, Moss, Tide, Slate, Dusk or Rose, or slide to your own color, in Settings or from ⌘K. Mode can be Auto, Light or Dark, and the font can be Cozy (a soft sans with bookish headings), Book or Plain. Your choices are saved per device. In light mode, videos play as they are.
 
-![VidAnki in light mode](docs/images/overview-light.png)
+<table>
+<tr><td><img src="docs/images/theme-moss.png" alt="Moss theme, dark"></td><td><img src="docs/images/theme-dusk.png" alt="Dusk theme, dark"></td></tr>
+<tr><td align="center">Moss</td><td align="center">Dusk</td></tr>
+<tr><td><img src="docs/images/theme-rose.png" alt="Rose theme, light"></td><td><img src="docs/images/theme-tide.png" alt="Tide theme, light, with the Book font"></td></tr>
+<tr><td align="center">Rose</td><td align="center">Tide, with the Book font</td></tr>
+</table>
+
+![The Hearth theme in light mode](docs/images/overview-light.png)
+
+**Quiet sounds.** Short, soft sounds for opening, closing and finishing things, with a warmer chime for clearing a section. Turn them off or change the volume in Settings.
 
 ## Setup
 
@@ -96,7 +105,7 @@ Press `?` in the app for the full list, or `⌘K` to search every command and ju
 | n / p | next / previous item |
 | t | start / pause the brick or AMBOSS timer |
 
-Picture mode defaults to **Auto**: Smart dark when macOS is in dark mode, the original video in light mode. Smart dark flips white to near-black and black ink to light, while keeping colors. Change it per source (B&B or Sketchy) from the control bar or the ⌘K palette.
+Picture mode defaults to **Auto**: Smart dark when the app is in dark mode, the original video in light mode. Smart dark flips white to near-black and black ink to light, while keeping colors. Change it per source (B&B or Sketchy) from the control bar or the ⌘K palette.
 
 Bricks link to their ScholarRx page; the links came from the course tracklist spreadsheet.
 
@@ -110,7 +119,7 @@ The estimates start from defaults and move toward your own times as you go:
 - Anki: review times from Anki's own log for the cards this tool unsuspended.
 - Bricks and AMBOSS: the timer on their page.
 
-Days roll over at 4 am, as in Anki. Open "How estimates are learned" in the queue to see the current numbers.
+Days roll over at 4 am, as in Anki. Open "Time breakdown & card tiers" at the bottom of the queue to see the current numbers.
 
 ## Adding a block
 
@@ -122,6 +131,10 @@ Copy `blocks/pulm.json` to e.g. `blocks/renal.json` and edit it:
 
 Restart the server and pick the block from the dropdown at top left.
 
+## Adding a theme
+
+A theme is just a hue. Add a line to `THEMES` in `static/theme.js` with an [OKLCH](https://oklch.com) hue from 0 to 359; every color in `static/style.css` comes from it. The Cozy and Book fonts use Avenir Next and Iowan Old Style, which come with macOS and iOS, so nothing is downloaded. Other systems fall back to a similar font.
+
 ## Phone (later)
 
 `python3 server.py --lan` listens on your network: open `http://<your-mac's-ip>:8770` on your phone. With Tailscale on both devices, it works away from home too. Videos stream from the Mac, so the Mac must be on.
@@ -129,7 +142,7 @@ Restart the server and pick the block from the dropdown at top left.
 ## Files
 
 - `server.py`: Python standard library only; no installs needed.
-- `static/`: the web page. The dark-mode shader is `shader.js`.
+- `static/`: the web page. The dark-mode shader is `shader.js`; themes are in `theme.js`.
 - `blocks/*.json`: curricula.
 - `data/state.json`: your progress and time logs.
 - `data/cache.json`: video durations and card counts.

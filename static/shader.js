@@ -16,6 +16,7 @@ window.SmartDark = (function () {
     uniform float fg;   // output lightness for pure black
     uniform vec4 crop;  // picture area inside the frame (x0, y0, x1, y1); outside = black bars
     uniform float plain; // 1 = plain invert (lightness flip, hue kept), 0 = smart dark
+    uniform vec2 tint;  // OKLab a/b the neutrals pick up, so the board matches the theme
 
     vec3 toLin(vec3 c) { return mix(c / 12.92, pow((c + 0.055) / 1.055, vec3(2.4)), step(0.04045, c)); }
     vec3 toSrgb(vec3 c) { return mix(c * 12.92, 1.055 * pow(c, vec3(1.0 / 2.4)) - 0.055, step(0.0031308, c)); }
@@ -63,6 +64,7 @@ window.SmartDark = (function () {
       lab.yz *= mix(1.0, 0.65, fill);              // less chroma so dark fills stay in gamut
       float w = smoothstep(0.035, 0.11, C);        // how "coloured" the pixel is
       lab.x = mix(inv, keep, w);
+      lab.yz += tint * (1.0 - w);
       gl_FragColor = vec4(toSrgb(clamp(fromOklab(lab), 0.0, 1.0)), 1.0);
     }`;
 
@@ -98,7 +100,7 @@ window.SmartDark = (function () {
     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
     gl.uniform1f(gl.getUniformLocation(prog, "bg"), 0.17);
     gl.uniform1f(gl.getUniformLocation(prog, "fg"), 0.93);
-    const uCrop = gl.getUniformLocation(prog, "crop"), uPlain = gl.getUniformLocation(prog, "plain");
+    const uCrop = gl.getUniformLocation(prog, "crop"), uPlain = gl.getUniformLocation(prog, "plain"), uTint = gl.getUniformLocation(prog, "tint");
     gl.uniform4f(uCrop, 0, 0, 1, 1);
     gl.uniform1f(uPlain, 0);
 
@@ -189,6 +191,10 @@ window.SmartDark = (function () {
     return {
       start() { running = true; kick(); },
       setPlain(v) { gl.useProgram(prog); gl.uniform1f(uPlain, v ? 1 : 0); kick(); },
+      setTint(hue) {
+        const a = hue * Math.PI / 180;
+        gl.useProgram(prog); gl.uniform2f(uTint, 0.012 * Math.cos(a), 0.012 * Math.sin(a)); kick();
+      },
       stop() { running = false; },
       redraw: kick,
     };
