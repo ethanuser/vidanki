@@ -329,9 +329,9 @@ main { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 360px; 
 .fields label { display: flex; flex-direction: column; gap: var(--s1); color: var(--muted); font-size: var(--t-sm); }
 .timer { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: var(--s2); width: 100%; container-type: inline-size; }
 /* the time and its edit field share one box, so Edit doesn't shift the buttons */
-#timerVal, #timerEdit { flex-basis: 100%; height: 72px; margin-bottom: var(--s2); }
-#timerVal { display: inline-flex; align-items: center; justify-content: center; font-size: min(var(--t-big), 24cqw);  /* 1:05:00 still fits a narrow tile */ font-weight: 600; letter-spacing: -.02em; font-variant-numeric: tabular-nums; cursor: text; transition: color var(--fast) var(--ease); }
-#timerEdit { max-width: 200px; font-size: var(--t-xl); font-weight: 600; font-variant-numeric: tabular-nums; text-align: center; }
+#timerVal, #timerEdit { flex-basis: 100%; height: 1.4em;  /* an input clips anything taller */ margin-bottom: var(--s2); font-size: min(var(--t-big), 24cqw);  /* 1:05:00 still fits a narrow tile */ font-weight: 600; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+#timerVal { display: inline-flex; align-items: center; justify-content: center; cursor: text; transition: color var(--fast) var(--ease); }
+#timerEdit { width: 100%; padding: 0; border: 0; background: transparent; color: var(--accent); text-align: center; }  /* the time itself becomes editable, right where it was */
 #timerVal.running { color: var(--accent); }
 @media (hover: hover) { #timerVal:hover { color: var(--accent); } }
 #timerBtn { width: 52px; padding: 0; }
